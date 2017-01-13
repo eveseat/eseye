@@ -1,0 +1,25 @@
+{
+    "name": "seat/eseye",
+    "description": "A Standalone PHP ESI (EVE Swagger Interface) Client Library",
+    "type": "library",
+    "require": {
+        "php": ">= 7.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "nesbot/carbon": "^1.21"
+    },
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Leon Jacobs",
+            "email": "leonja511@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Seat\\Eseye\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    }
+}
