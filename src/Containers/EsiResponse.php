@@ -21,16 +21,65 @@
 
 namespace Seat\Eseye\Containers;
 
+use ArrayAccess;
+use Carbon\Carbon;
+use Iterator;
 
-class EsiResponse implements \ArrayAccess
+
+/**
+ * Class EsiResponse
+ * @package Seat\Eseye\Containers
+ */
+class EsiResponse implements ArrayAccess, Iterator
 {
+    /**
+     * @var
+     */
+    private $position;
 
+    /**
+     * @var array
+     */
     protected $data;
 
-    public function __construct(array $result, array $headers)
+    /**
+     * @var array
+     */
+    protected $expires_at;
+
+    /**
+     * @var string
+     */
+    protected $response_code;
+
+    /**
+     * @var mixed
+     */
+    protected $error_message;
+
+    /**
+     * EsiResponse constructor.
+     *
+     * @param array  $data
+     * @param string $expires
+     * @param int    $response_code
+     */
+    public function __construct(
+        array $data, string $expires, int $response_code)
     {
 
+        $this->data = $data;
 
+        // Ensure that the value for 'expires' is longer than
+        // 2 character. The shortest expected value is 'now'
+        $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
+        $this->response_code = $response_code;
+
+        $this->position = 0;
+
+        // If there is an error, set that
+        if (array_key_exists('error', $data))
+            $this->error_message = $data['error'];
     }
 
     /**
@@ -95,4 +144,89 @@ class EsiResponse implements \ArrayAccess
         $this[$key] = $val;
     }
 
+    /**
+     * @return mixed
+     */
+    public function current()
+    {
+
+        return $this->data[$this->position];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function next()
+    {
+
+        return ++$this->position;
+    }
+
+    /**
+     *
+     */
+    public function key()
+    {
+
+        return $this->position;
+    }
+
+    /**
+     * @return bool
+     */
+    public function valid()
+    {
+
+        return isset($this->data[$this->position]);
+    }
+
+    /**
+     *
+     */
+    public function rewind()
+    {
+
+        $this->position = 0;
+    }
+
+    /**
+     * @return \Carbon\Carbon
+     */
+    public function expires(): Carbon
+    {
+
+        return carbon($this->expires_at);
+    }
+
+    /**
+     * Determine if this containers data should be considered
+     * expired.
+     *
+     * Expiry is calculated by taking the expiry time and comparing
+     * that to the local time. Before comparison though, the local
+     * time is converted to the timezone in which the expiry time
+     * is recorded. The resultant local time is then checked to
+     * ensure that the expiry is not less than local time.
+     *
+     * @return bool
+     */
+    public function expired(): bool
+    {
+
+        if ($this->expires()->lte(
+            carbon()->now($this->expires()->timezoneName))
+        )
+            return true;
+
+        return false;
+    }
+
+    /**
+     * @return string
+     */
+    public function error(): string
+    {
+
+        return $this->error_message;
+    }
 }

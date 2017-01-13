@@ -28,6 +28,7 @@ use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiConfiguration;
+use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\InvalidConfigurationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
@@ -213,7 +214,7 @@ class Eseye
      *
      * @return mixed
      */
-    public function fetch(string $method, string $uri, array $data = [])
+    public function fetch(string $method, string $uri, array $data = []): EsiResponse
     {
 
         // Check the Access Requirement
@@ -248,15 +249,6 @@ class Eseye
     {
 
         return $this->getFetcher()->call($method, $uri);
-    }
-
-    /**
-     *
-     */
-    public function verifyAccess()
-    {
-
-
     }
 
     /**

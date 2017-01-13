@@ -25,6 +25,7 @@ namespace Seat\Eseye;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Seat\Eseye\Containers\EsiAuthentication;
+use Seat\Eseye\Containers\EsiResponse;
 
 /**
  * Class EseyeFetcher
@@ -65,7 +66,7 @@ class EseyeFetcher
      *
      * @return mixed
      */
-    public function call(string $method, string $uri): array
+    public function call(string $method, string $uri): EsiResponse
     {
 
         return $this->httpRequest($method, $uri, [
@@ -87,7 +88,11 @@ class EseyeFetcher
         $response = $this->client->send(
             new Request($method, $uri, $headers));
 
-        return json_decode($response->getBody(), true);
+        return new EsiResponse(
+            json_decode($response->getBody(), true),
+            $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : 'now',
+            $response->getStatusCode()
+        );
     }
 
     /**
@@ -170,10 +175,10 @@ class EseyeFetcher
         $authentication = $this->getAuthentication();
 
         // Set the new authentication values from the request
-        $authentication->access_token = $response['access_token'];
-        $authentication->refresh_token = $response['refresh_token'];
+        $authentication->access_token = $response->access_token;
+        $authentication->refresh_token = $response->refresh_token;
         $authentication->token_expires = carbon('now')
-            ->addSeconds($response['expires_in']);
+            ->addSeconds($response->expires_in);
 
         // ... and update the container
         $this->authentication = $authentication;
