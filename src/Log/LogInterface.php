@@ -19,31 +19,42 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Eseye\Containers;
-
-use Monolog\Logger;
-use Seat\Eseye\Log\FileLogger;
-use Seat\Eseye\Traits\ConstructsContainers;
-use Seat\Eseye\Traits\ValidatesContainers;
+namespace Seat\Eseye\Log;
 
 
 /**
- * Class EsiConfiguration
- * @package Seat\Eseye\Containers
+ * Interface LogInterface
+ * @package Seat\Eseye\Log
  */
-class EsiConfiguration extends AbstractArrayAccess
+interface LogInterface
 {
 
-    use ConstructsContainers, ValidatesContainers;
+    /**
+     * @param string $message
+     *
+     * @return mixed
+     */
+    public function log(string $message);
 
     /**
-     * @var array
+     * @param string $message
+     *
+     * @return mixed
      */
-    protected $data = [
-        'datasource'       => 'tranquility',
-        'logger'           => FileLogger::class,
-        'logger_level'     => Logger::INFO,
-        'logfile_location' => __DIR__ . '/../../logs/eseye.log',
-    ];
+    public function debug(string $message);
+
+    /**
+     * @param string $message
+     *
+     * @return mixed
+     */
+    public function warning(string $message);
+
+    /**
+     * @param string $message
+     *
+     * @return mixed
+     */
+    public function error(string $message);
 
 }

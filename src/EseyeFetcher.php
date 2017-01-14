@@ -44,6 +44,11 @@ class EseyeFetcher
     protected $client;
 
     /**
+     * @var \Seat\Eseye\Log\LogInterface
+     */
+    protected $logger;
+
+    /**
      * @var string
      */
     protected $sso_base = 'https://login.eveonline.com/oauth';
@@ -58,7 +63,11 @@ class EseyeFetcher
 
         $this->authentication = $authentication;
         $this->client = new Client();
+
+        // Setup the logger
+        $this->logger = Configuration::getInstance()->getLogger();
     }
+
 
     /**
      * @param string $method
@@ -86,13 +95,18 @@ class EseyeFetcher
         string $method, string $uri, array $headers = []): EsiResponse
     {
 
-        $response = $this->client->send(
-            new Request($method, $uri, $headers));
+        $this->logger->debug('Making ' . $method . ' request to ' . $uri);
 
-        return new EsiResponse(
-            json_decode($response->getBody()),
-            $response->hasHeader('Expires') ?
-                $response->getHeader('Expires')[0] : 'now',
+        // Make the _actual_ request to ESI
+        $response = $this->client->send(new Request($method, $uri, $headers));
+
+        // TODO: Make URI logging 'safe' by removing access tokens
+        $this->logger->log('[http ' . $response->getStatusCode() . '] ' .
+            $method . ' -> ' . $uri);
+
+        // Return a container response that can be parsed.
+        return new EsiResponse(json_decode($response->getBody()),
+            $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : 'now',
             $response->getStatusCode()
         );
     }
@@ -104,6 +118,47 @@ class EseyeFetcher
     {
 
         return $this->authentication;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getAuthenticationScopes(): array
+    {
+
+        // If there are no scopes that we know of, update them.
+        // There will always be at least 1 as we add the internal
+        // 'public' scope.
+        if (count($this->getAuthentication()->scopes) <= 0)
+            $this->setAuthenticationScopes();
+
+        return $this->getAuthentication()->scopes;
+    }
+
+    /**
+     * Verify a token and set the Authentication scopes
+     */
+    public function setAuthenticationScopes()
+    {
+
+        $scopes = $this->verifyToken()['Scopes'];
+
+        // Add the internal 'public' scope
+        $scopes = $scopes . ' public';
+        $this->authentication->scopes = explode(' ', $scopes);
+    }
+
+    /**
+     * Verify that an access_token is still valid.
+     */
+    private function verifyToken()
+    {
+
+        return $this->httpRequest('get', $this->sso_base . '/verify/', [
+            'Accept'        => 'application/json',
+            'Authorization' => 'Bearer ' . $this->getToken(),
+        ]);
     }
 
     /**
@@ -120,40 +175,6 @@ class EseyeFetcher
             $this->refreshToken();
 
         return $this->getAuthentication()->access_token;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAuthenticationScopes(): array
-    {
-
-        if (empty($this->getAuthentication()->scopes))
-            $this->setAuthenticationScopes();
-
-        return $this->getAuthentication()->scopes;
-    }
-
-    /**
-     * Verify a token and set the Authentication scopes
-     */
-    public function setAuthenticationScopes()
-    {
-
-        $scopes = $this->verifyToken()['Scopes'];
-        $this->authentication->scopes = explode(' ', $scopes);
-    }
-
-    /**
-     * Verify that an access_token is still valid.
-     */
-    private function verifyToken()
-    {
-
-        return $this->httpRequest('get', $this->sso_base . '/verify/', [
-            'Accept'        => 'application/json',
-            'Authorization' => 'Bearer ' . $this->getToken(),
-        ]);
     }
 
     /**

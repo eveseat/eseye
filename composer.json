@@ -5,7 +5,8 @@
     "require": {
         "php": ">= 7.0",
         "guzzlehttp/guzzle": "^6.2",
-        "nesbot/carbon": "^1.21"
+        "nesbot/carbon": "^1.21",
+        "monolog/monolog": "^1.22"
     },
     "license": "GPL-2.0",
     "authors": [

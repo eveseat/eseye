@@ -27,12 +27,11 @@ use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Containers\EsiAuthentication;
-use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
-use Seat\Eseye\Exceptions\InvalidConfigurationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
+use Seat\Eseye\Log\LogInterface;
 
 
 /**
@@ -45,11 +44,6 @@ class Eseye
      * @var \Seat\Eseye\Containers\EsiAuthentication
      */
     protected $authentication;
-
-    /**
-     * @var \Seat\Eseye\Containers\EsiConfiguration
-     */
-    protected $configuration;
 
     /**
      * @var
@@ -79,17 +73,13 @@ class Eseye
      * Eseye constructor.
      *
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
-     * @param \Seat\Eseye\Containers\EsiConfiguration  $configuration
      */
     public function __construct(
-        EsiAuthentication $authentication = null, EsiConfiguration $configuration = null)
+        EsiAuthentication $authentication = null)
     {
 
         if (! is_null($authentication))
             $this->authentication = $authentication;
-
-        if (! is_null($configuration))
-            $this->configuration = $configuration;
 
         return $this;
     }
@@ -125,32 +115,21 @@ class Eseye
     }
 
     /**
-     * @param \Seat\Eseye\Containers\EsiConfiguration $configuration
-     *
-     * @return \Seat\Eseye\Eseye
-     * @throws \Seat\Eseye\Exceptions\InvalidConfigurationException
+     * @return \Seat\Eseye\Configuration
      */
-    public function setConfiguration(EsiConfiguration $configuration): Eseye
+    public function getConfiguration(): Configuration
     {
 
-        if (! $configuration->valid())
-            throw new InvalidConfigurationException('Configuration data invalid/empty');
-
-        $this->configuration = $configuration;
-
-        return $this;
+        return Configuration::getInstance();
     }
 
     /**
-     * @return \Seat\Eseye\Containers\EsiConfiguration
+     * @return \Seat\Eseye\Log\LogInterface
      */
-    public function getConfiguration(): EsiConfiguration
+    public function getLogger(): LogInterface
     {
 
-        if (! $this->configuration)
-            $this->configuration = new EsiConfiguration;
-
-        return $this->configuration;
+        return $this->getConfiguration()->getLogger();
     }
 
     /**
@@ -214,7 +193,8 @@ class Eseye
      *
      * @return mixed
      */
-    public function invoke(string $method, string $uri, array $data = []): EsiResponse
+    public function invoke(
+        string $method, string $uri, array $data = []): EsiResponse
     {
 
         // Check the Access Requirement
@@ -232,7 +212,7 @@ class Eseye
             'scheme' => $this->esi['scheme'],
             'host'   => $this->esi['host'],
             'path'   => rtrim($this->esi['path'], '/') . $this->mapDataToUri($uri, $data),
-            'query'  => 'datasource=' . $this->getConfiguration()['datasource'],
+            'query'  => 'datasource=' . $this->getConfiguration()->datasource,
         ]);
 
         // Call ESI itself
