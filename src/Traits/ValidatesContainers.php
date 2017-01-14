@@ -38,7 +38,7 @@ trait ValidatesContainers
     public function valid(): bool
     {
 
-        return in_array(null, $this->data);
+        return ! in_array(null, $this->data);
     }
 
 }
