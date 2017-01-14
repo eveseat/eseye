@@ -214,7 +214,7 @@ class Eseye
      *
      * @return mixed
      */
-    public function fetch(string $method, string $uri, array $data = []): EsiResponse
+    public function invoke(string $method, string $uri, array $data = []): EsiResponse
     {
 
         // Check the Access Requirement
