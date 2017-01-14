@@ -21,17 +21,15 @@
 
 namespace Seat\Eseye\Containers;
 
+use Seat\Eseye\Traits\ConstructsContainers;
+use Seat\Eseye\Traits\ValidatesContainers;
 
-use ArrayAccess;
-use Seat\Eseye\Traits\{
-    ConstructsContainers, ValidatesContainers
-};
 
 /**
  * Class EsiAuthentication
  * @package Seat\Eseye\Containers
  */
-class EsiAuthentication implements ArrayAccess
+class EsiAuthentication extends AbstractArrayAccess
 {
 
     use ConstructsContainers, ValidatesContainers;
@@ -47,67 +45,5 @@ class EsiAuthentication implements ArrayAccess
         'token_expires' => '1970-01-01 00:00:00',
         'scopes'        => [],
     ];
-
-    /**
-     * @param mixed $offset
-     *
-     * @return bool
-     */
-    public function offsetExists($offset)
-    {
-
-        return array_key_exists($offset, $this->data);
-    }
-
-    /**
-     * @param mixed $offset
-     *
-     * @return mixed
-     */
-    public function offsetGet($offset)
-    {
-
-        return $this->data[$offset];
-    }
-
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
-    public function offsetSet($offset, $value)
-    {
-
-        $this->data[$offset] = $value;
-    }
-
-    /**
-     * @param mixed $offset
-     */
-    public function offsetUnset($offset)
-    {
-
-        unset($this->data[$offset]);
-    }
-
-    /**
-     * @param $key
-     *
-     * @return mixed
-     */
-    public function __get($key)
-    {
-
-        return $this[$key];
-    }
-
-    /**
-     * @param $key
-     * @param $val
-     */
-    public function __set($key, $val)
-    {
-
-        $this[$key] = $val;
-    }
 
 }

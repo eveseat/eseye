@@ -21,17 +21,15 @@
 
 namespace Seat\Eseye\Containers;
 
+use Seat\Eseye\Traits\ConstructsContainers;
+use Seat\Eseye\Traits\ValidatesContainers;
 
-use ArrayAccess;
-use Seat\Eseye\Traits\{
-    ConstructsContainers, ValidatesContainers
-};
 
 /**
  * Class EsiConfiguration
  * @package Seat\Eseye\Containers
  */
-class EsiConfiguration implements ArrayAccess
+class EsiConfiguration extends AbstractArrayAccess
 {
 
     use ConstructsContainers, ValidatesContainers;
@@ -43,65 +41,4 @@ class EsiConfiguration implements ArrayAccess
         'datasource' => 'tranquility',
     ];
 
-    /**
-     * @param mixed $offset
-     *
-     * @return bool
-     */
-    public function offsetExists($offset)
-    {
-
-        return array_key_exists($offset, $this->data);
-    }
-
-    /**
-     * @param mixed $offset
-     *
-     * @return mixed
-     */
-    public function offsetGet($offset)
-    {
-
-        return $this->data[$offset];
-    }
-
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
-    public function offsetSet($offset, $value)
-    {
-
-        $this->data[$offset] = $value;
-    }
-
-    /**
-     * @param mixed $offset
-     */
-    public function offsetUnset($offset)
-    {
-
-        unset($this->data[$offset]);
-    }
-
-    /**
-     * @param $key
-     *
-     * @return mixed
-     */
-    public function __get($key)
-    {
-
-        return $this[$key];
-    }
-
-    /**
-     * @param $key
-     * @param $val
-     */
-    public function __set($key, $val)
-    {
-
-        $this[$key] = $val;
-    }
 }
