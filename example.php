@@ -36,9 +36,21 @@ $authentication = new EsiAuthentication([
 // Instantiate a new ESI instance.
 $esi = new Eseye($authentication);
 
-// Get the location information for a character.
-$location = $esi->fetch('get', '/characters/{character_id}/location/', [
+// Get character information. This is a public call to the EVE
+// Swagger Interface
+$character_info = $esi->invoke('get', '/characters/{character_id}/', [
     'character_id' => 1477919642,
 ]);
 
-var_dump($location);
+// Get the location information for a character. This is an authenticated
+// call to the EVE Swagger Interface.
+$location = $esi->invoke('get', '/characters/{character_id}/location/', [
+    'character_id' => 1477919642,
+]);
+
+// Print some information from the calls we have made.
+echo 'Character Name is:        ' . $character_info->name . PHP_EOL;
+echo 'Character was born:       ' . carbon($character_info->birthday)
+        ->diffForHumans() . PHP_EOL;    // The 'carbon' helper is included in the package.
+echo 'Home Solar System ID is:  ' . $location->solar_system_id . PHP_EOL;
+echo 'Home Station ID is:       ' . $location->station_id . PHP_EOL;
