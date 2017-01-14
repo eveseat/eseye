@@ -82,15 +82,17 @@ class EseyeFetcher
      *
      * @return mixed
      */
-    public function httpRequest(string $method, string $uri, array $headers = [])
+    public function httpRequest(
+        string $method, string $uri, array $headers = []): EsiResponse
     {
 
         $response = $this->client->send(
             new Request($method, $uri, $headers));
 
         return new EsiResponse(
-            json_decode($response->getBody(), true),
-            $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : 'now',
+            json_decode($response->getBody()),
+            $response->hasHeader('Expires') ?
+                $response->getHeader('Expires')[0] : 'now',
             $response->getStatusCode()
         );
     }

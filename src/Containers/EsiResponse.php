@@ -21,27 +21,16 @@
 
 namespace Seat\Eseye\Containers;
 
-use ArrayAccess;
+use ArrayObject;
 use Carbon\Carbon;
-use Iterator;
-
+use stdClass;
 
 /**
  * Class EsiResponse
  * @package Seat\Eseye\Containers
  */
-class EsiResponse implements ArrayAccess, Iterator
+class EsiResponse extends ArrayObject
 {
-    /**
-     * @var
-     */
-    private $position;
-
-    /**
-     * @var array
-     */
-    protected $data;
-
     /**
      * @var array
      */
@@ -60,133 +49,26 @@ class EsiResponse implements ArrayAccess, Iterator
     /**
      * EsiResponse constructor.
      *
-     * @param array  $data
-     * @param string $expires
-     * @param int    $response_code
+     * @param stdClass $data
+     * @param string    $expires
+     * @param int       $response_code
      */
     public function __construct(
-        array $data, string $expires, int $response_code)
+        stdClass $data, string $expires, int $response_code)
     {
-
-        $this->data = $data;
 
         // Ensure that the value for 'expires' is longer than
         // 2 character. The shortest expected value is 'now'
         $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
         $this->response_code = $response_code;
 
-        $this->position = 0;
 
         // If there is an error, set that
-        if (array_key_exists('error', $data))
-            $this->error_message = $data['error'];
-    }
+        if (property_exists($data, 'error'))
+            $this->error_message = $data->error;
 
-    /**
-     * @param mixed $offset
-     *
-     * @return bool
-     */
-    public function offsetExists($offset)
-    {
-
-        return array_key_exists($offset, $this->data);
-    }
-
-    /**
-     * @param mixed $offset
-     *
-     * @return mixed
-     */
-    public function offsetGet($offset)
-    {
-
-        return $this->data[$offset];
-    }
-
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
-    public function offsetSet($offset, $value)
-    {
-
-        $this->data[$offset] = $value;
-    }
-
-    /**
-     * @param mixed $offset
-     */
-    public function offsetUnset($offset)
-    {
-
-        unset($this->data[$offset]);
-    }
-
-    /**
-     * @param $key
-     *
-     * @return mixed
-     */
-    public function __get($key)
-    {
-
-        return $this[$key];
-    }
-
-    /**
-     * @param $key
-     * @param $val
-     */
-    public function __set($key, $val)
-    {
-
-        $this[$key] = $val;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function current()
-    {
-
-        return $this->data[$this->position];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function next()
-    {
-
-        return ++$this->position;
-    }
-
-    /**
-     *
-     */
-    public function key()
-    {
-
-        return $this->position;
-    }
-
-    /**
-     * @return bool
-     */
-    public function valid()
-    {
-
-        return isset($this->data[$this->position]);
-    }
-
-    /**
-     *
-     */
-    public function rewind()
-    {
-
-        $this->position = 0;
+        // Run the parent constructor
+        parent::__construct($data, ArrayObject::ARRAY_AS_PROPS);
     }
 
     /**
