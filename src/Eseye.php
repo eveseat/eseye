@@ -25,7 +25,6 @@ use GuzzleHttp\Psr7\Uri;
 use Seat\Eseye\Access\AccessInterface;
 use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
-use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
@@ -145,25 +144,10 @@ class Eseye
         return $this->fetcher;
     }
 
-    /**
-     * @param \Seat\Eseye\Cache\CacheInterface $cache
-     */
-    public function setCache(CacheInterface $cache)
+    private function getCache(): CacheInterface
     {
 
-        $this->cache = $cache;
-    }
-
-    /**
-     * @return \Seat\Eseye\Cache\FileCache
-     */
-    private function getCache()
-    {
-
-        if (! $this->cache)
-            $this->cache = new FileCache;
-
-        return $this->cache;
+        return $this->getConfiguration()->getCache();
     }
 
     /**
@@ -209,16 +193,36 @@ class Eseye
             throw new EsiScopeAccessDeniedException('Access denied to ' . $uri);
         }
 
-        // Build the URI from the template and data array
-        $uri = Uri::fromParts([
+        $uri = $this->buildDataUri($uri, $data);
+
+        // Check if there is a cached response we can return
+        if ($cached = $this->getCache()->get($uri->getPath()))
+            return $cached;
+
+        // Call ESI itself
+        $result = $this->rawFetch($method, $uri);
+
+        // Cache the response
+        $this->getCache()->set($uri->getPath(), $result);
+
+        return $result;
+    }
+
+    /**
+     * @param string $uri
+     * @param array  $data
+     *
+     * @return \GuzzleHttp\Psr7\Uri
+     */
+    public function buildDataUri(string $uri, array $data): Uri
+    {
+
+        return Uri::fromParts([
             'scheme' => $this->esi['scheme'],
             'host'   => $this->esi['host'],
             'path'   => rtrim($this->esi['path'], '/') . $this->mapDataToUri($uri, $data),
             'query'  => 'datasource=' . $this->getConfiguration()->datasource,
         ]);
-
-        // Call ESI itself
-        return $this->rawFetch($method, $uri);
     }
 
     /**

@@ -21,9 +21,17 @@
 
 include 'vendor/autoload.php';
 
-use Seat\Eseye\{
-    Containers\EsiAuthentication, Eseye
-};
+use Seat\Eseye\Cache\NullCache;
+use Seat\Eseye\Configuration;
+use Seat\Eseye\Containers\EsiAuthentication;
+use Seat\Eseye\Eseye;
+
+
+// Disable all caching by setting the NullCache as the
+// preferred cache handler. By default, Eseye will use the
+// FileCache.
+$configuration = Configuration::getInstance();
+$configuration->cache = NullCache::class;
 
 // Prepare an authentication container for ESI
 $authentication = new EsiAuthentication([
@@ -47,7 +55,7 @@ $location = $esi->invoke('get', '/characters/{character_id}/location/', [
     'character_id' => 1477919642,
 ]);
 
-$clones = $esi->invoke('get', '/characters/{character_id}/clones/',[
+$clones = $esi->invoke('get', '/characters/{character_id}/clones/', [
     'character_id' => 1477919642,
 ]);
 

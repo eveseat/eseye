@@ -21,6 +21,10 @@
 
 namespace Seat\Eseye\Cache;
 
+use Seat\Eseye\Configuration;
+use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Exceptions\CachePathException;
+
 
 /**
  * Class FileCache
@@ -30,46 +34,154 @@ class FileCache implements CacheInterface
 {
 
     /**
-     * @param string $key
-     * @param string $value
-     * @param string $expires
-     *
-     * @return mixed
+     * @var string
      */
-    public function set(string $key, string $value, string $expires)
+    protected $cache_path;
+
+    /**
+     * @var string
+     */
+    protected $results_filename = 'results.cache';
+
+    /**
+     * FileCache constructor.
+     */
+    public function __construct()
     {
-        // TODO: Implement set() method.
+
+        $this->cache_path = Configuration::getInstance()
+            ->file_cache_location;
+
+        // Ensure the cache directory is OK
+        $this->checkCacheDirectory();
+    }
+
+
+    /**
+     * @return bool
+     * @throws \Seat\Eseye\Exceptions\CachePathException
+     */
+    public function checkCacheDirectory()
+    {
+
+        // Ensure the cache path exists
+        if (! is_dir($this->cache_path) &&
+            ! mkdir($this->cache_path, 0775, true)
+        ) {
+            throw new CachePathException(
+                'Unable to create cache directory ' . $this->cache_path);
+        }
+
+        // Ensure the cache directory is readable/writable
+        if (! is_readable($this->cache_path) ||
+            ! is_writable($this->cache_path)
+        ) {
+
+            if (! chmod($this->getCachePath(), 0775))
+                throw new CachePathException(
+                    $this->cache_path . ' must be readable and writeable');
+        }
+
+        return true;
     }
 
     /**
-     * @param string $key
-     * @param string $value
+     * @param string $path
      *
-     * @return mixed
+     * @return string
      */
-    public function get(string $key, string $value)
+    public function buildRelativePath(string $path): string
     {
-        // TODO: Implement get() method.
+
+        return rtrim(rtrim($this->cache_path, '/') . rtrim($path), '/') . '/';
     }
 
     /**
-     * @param string $key
+     * @param string $uri
      *
-     * @return mixed
+     * @return string
      */
-    public function forget(string $key)
+    public function safePath(string $uri): string
     {
-        // TODO: Implement forget() method.
+
+        return preg_replace('/[^A-Za-z0-9\/]/', '', $uri);
+    }
+
+
+    /**
+     * @param string                             $uri
+     * @param \Seat\Eseye\Containers\EsiResponse $data
+     *
+     * @return mixed|void
+     */
+    public function set(string $uri, EsiResponse $data)
+    {
+
+        $path = $this->safePath($this->buildRelativePath($uri));
+
+        // Create the subpath if that does not already exist
+        if (! file_exists($path))
+            mkdir($path, 0775, true);
+
+        // Dump the contents to file
+        file_put_contents($path . $this->results_filename, serialize($data));
     }
 
     /**
-     * @param string $key
-     * @param string $value
+     *
+     * @param string $uri
      *
      * @return mixed
      */
-    public function has(string $key, string $value)
+    public function get(string $uri)
     {
-        // TODO: Implement has() method.
+
+        $path = $this->safePath($this->buildRelativePath($uri));
+        $cache_file_path = $path . $this->results_filename;
+
+        // If we cant read from the cache, then just return false.
+        if (! is_readable($cache_file_path))
+            return false;
+
+        // Get the data from the file and unserialize it
+        $file = unserialize(file_get_contents($cache_file_path));
+
+        // If the cached entry is expired, remove it.
+        if ($file->expired()) {
+
+            $this->forget($uri);
+
+            return false;
+        }
+
+        return $file;
+    }
+
+    /**
+     * @param string $uri
+     *
+     * @return mixed
+     */
+    public function forget(string $uri)
+    {
+
+        $path = $this->buildRelativePath($uri);
+        $cache_file_path = $path . $this->results_filename;
+
+        unlink($cache_file_path);
+    }
+
+    /**
+     * @param string $uri
+     *
+     * @return mixed
+     */
+    public function has(string $uri): bool
+    {
+
+        if ($status = $this->get($uri))
+            return true;
+
+        return false;
     }
 }

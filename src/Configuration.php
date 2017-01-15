@@ -22,6 +22,7 @@
 namespace Seat\Eseye;
 
 
+use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Exceptions\InvalidConfigurationException;
 use Seat\Eseye\Log\LogInterface;
@@ -42,6 +43,11 @@ class Configuration
      * @var LogInterface
      */
     protected $logger;
+
+    /**
+     * @var CacheInterface
+     */
+    protected $cache;
 
     /**
      * @var EsiConfiguration
@@ -103,6 +109,18 @@ class Configuration
             $this->logger = new $this->configuration->logger;
 
         return $this->logger;
+    }
+
+    /**
+     * @return \Seat\Eseye\Cache\CacheInterface
+     */
+    public function getCache(): CacheInterface
+    {
+
+        if (! $this->cache)
+            $this->cache = new $this->configuration->cache;
+
+        return $this->cache;
     }
 
     /**

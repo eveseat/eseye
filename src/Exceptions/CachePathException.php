@@ -19,46 +19,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Eseye\Cache;
+namespace Seat\Eseye\Exceptions;
 
-use Seat\Eseye\Containers\EsiResponse;
 
+use Exception;
 
 /**
- * Interface CacheInterface
- * @package Seat\Eseye\Cache
+ * Class CachePathException
+ * @package Seat\Eseye\Exceptions
  */
-interface CacheInterface
+class CachePathException extends Exception
 {
-
-    /**
-     * @param string                             $uri
-     * @param \Seat\Eseye\Containers\EsiResponse $data
-     *
-     * @return mixed
-     */
-    public function set(string $uri, EsiResponse $data);
-
-    /**
-     *
-     * @param string $uri
-     *
-     * @return mixed
-     */
-    public function get(string $uri);
-
-    /**
-     * @param string $uri
-     *
-     * @return mixed
-     */
-    public function forget(string $uri);
-
-    /**
-     * @param string $uri
-     *
-     * @return mixed
-     */
-    public function has(string $uri): bool;
 
 }

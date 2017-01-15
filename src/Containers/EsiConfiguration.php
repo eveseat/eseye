@@ -22,6 +22,7 @@
 namespace Seat\Eseye\Containers;
 
 use Monolog\Logger;
+use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Log\FileLogger;
 use Seat\Eseye\Traits\ConstructsContainers;
 use Seat\Eseye\Traits\ValidatesContainers;
@@ -40,10 +41,16 @@ class EsiConfiguration extends AbstractArrayAccess
      * @var array
      */
     protected $data = [
-        'datasource'       => 'tranquility',
-        'logger'           => FileLogger::class,
-        'logger_level'     => Logger::INFO,
-        'logfile_location' => __DIR__ . '/../../logs/eseye.log',
+        'datasource'          => 'tranquility',
+
+        // Logging
+        'logger'              => FileLogger::class,
+        'logger_level'        => Logger::INFO,
+        'logfile_location'    => 'logs/eseye.log',
+
+        // Cache
+        'cache'               => FileCache::class,
+        'file_cache_location' => 'cache/',
     ];
 
 }
