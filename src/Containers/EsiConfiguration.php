@@ -41,16 +41,22 @@ class EsiConfiguration extends AbstractArrayAccess
      * @var array
      */
     protected $data = [
-        'datasource'          => 'tranquility',
+        'datasource'           => 'tranquility',
 
         // Logging
-        'logger'              => FileLogger::class,
-        'logger_level'        => Logger::INFO,
-        'logfile_location'    => 'logs/eseye.log',
+        'logger'               => FileLogger::class,
+        'logger_level'         => Logger::INFO,
+        'logfile_location'     => 'logs/eseye.log',
 
         // Cache
-        'cache'               => FileCache::class,
-        'file_cache_location' => 'cache/',
+        'cache'                => FileCache::class,
+
+        // File Cache
+        'file_cache_location'  => 'cache/',
+
+        // Redis Cache
+        'redis_cache_location' => 'tcp://127.0.0.1',
+        'redis_cache_prefix'   => 'eseye:',
     ];
 
 }
