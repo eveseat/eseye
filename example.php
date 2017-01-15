@@ -29,7 +29,6 @@ use Seat\Eseye\{
 $authentication = new EsiAuthentication([
     'client_id'     => 'SSO_CLIENT_ID',
     'secret'        => 'SSO_SECRET',
-    'access_token'  => 'CHARACTER_ACCESS_TOKEN',
     'refresh_token' => 'CHARACTER_REFRESH_TOKEN',
 ]);
 
