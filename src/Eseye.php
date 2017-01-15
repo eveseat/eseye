@@ -28,6 +28,7 @@ use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
@@ -191,7 +192,8 @@ class Eseye
      * @param string $uri
      * @param array  $data
      *
-     * @return mixed
+     * @return \Seat\Eseye\Containers\EsiResponse
+     * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
      */
     public function invoke(
         string $method, string $uri, array $data = []): EsiResponse
@@ -202,9 +204,9 @@ class Eseye
             $method, $uri, $this->getFetcher()->getAuthenticationScopes())
         ) {
 
-            echo 'ERROR: No access to call: ' . $uri . PHP_EOL;
+            $this->getLogger()->error('Access denied to ' . $uri);
 
-            return;
+            throw new EsiScopeAccessDeniedException('Access denied to ' . $uri);
         }
 
         // Build the URI from the template and data array

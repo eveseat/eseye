@@ -95,14 +95,16 @@ class EseyeFetcher
         string $method, string $uri, array $headers = []): EsiResponse
     {
 
+        // Add some debug logging and start measuring how long the request took.
         $this->logger->debug('Making ' . $method . ' request to ' . $uri);
+        $start = microtime(true);
 
         // Make the _actual_ request to ESI
         $response = $this->client->send(new Request($method, $uri, $headers));
 
         // TODO: Make URI logging 'safe' by removing access tokens
         $this->logger->log('[http ' . $response->getStatusCode() . '] ' .
-            $method . ' -> ' . $uri);
+            $method . ' -> ' . $uri . ' [' . number_format(microtime(true) - $start, 2) . 's]');
 
         // Return a container response that can be parsed.
         return new EsiResponse(json_decode($response->getBody()),
