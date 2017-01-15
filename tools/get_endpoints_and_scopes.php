@@ -44,10 +44,13 @@ foreach ($esi['paths'] as $path => $description) {
 
         // Update the scope map!
         $scope_map[$method][$path] = $scope;
+        echo $method . ' | ' . $path . ' | ' . $scope . PHP_EOL;
     }
 }
 
 // Output the scopes in a way that we can
 // copy/pasta in code!
+echo 'Var Export of the scope map:' . PHP_EOL;
+echo PHP_EOL;
 var_export($scope_map);
-
+echo PHP_EOL;

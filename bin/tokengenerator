@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# 2017 - Leon Jacobs
+
+# Server the token generator app using PHP's builtin web server.
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+php -S 127.0.0.1:9009 -t $DIR
