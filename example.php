@@ -47,9 +47,20 @@ $location = $esi->invoke('get', '/characters/{character_id}/location/', [
     'character_id' => 1477919642,
 ]);
 
+$clones = $esi->invoke('get', '/characters/{character_id}/clones/',[
+    'character_id' => 1477919642,
+]);
+
 // Print some information from the calls we have made.
 echo 'Character Name is:        ' . $character_info->name . PHP_EOL;
 echo 'Character was born:       ' . carbon($character_info->birthday)
         ->diffForHumans() . PHP_EOL;    // The 'carbon' helper is included in the package.
 echo 'Home Solar System ID is:  ' . $location->solar_system_id . PHP_EOL;
 echo 'Home Station ID is:       ' . $location->station_id . PHP_EOL;
+
+echo 'You have the following clones: ' . PHP_EOL;
+foreach ($clones->jump_clones as $jump_clone) {
+
+    echo 'Clone at a ' . $jump_clone->location_type .
+        ' with ' . count($jump_clone->implants) . ' implants' . PHP_EOL;
+}
