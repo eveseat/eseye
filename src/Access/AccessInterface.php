@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,14 +22,12 @@
 
 namespace Seat\Eseye\Access;
 
-
 /**
- * Interface AccessInterface
+ * Interface AccessInterface.
  * @package Seat\Eseye\Access
  */
 interface AccessInterface
 {
-
     /**
      * @param string $method
      * @param string $uri
@@ -37,5 +36,4 @@ interface AccessInterface
      * @return bool|mixed
      */
     public function can(string $method, string $uri, array $scopes): bool;
-
 }

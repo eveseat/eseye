@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,11 +22,10 @@
 
 namespace Seat\Eseye\Exceptions;
 
-
 use Exception;
 
 /**
- * Class UriDataMissingException
+ * Class UriDataMissingException.
  * @package Seat\Eseye\Exceptions
  */
 class UriDataMissingException extends Exception

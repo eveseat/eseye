@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -25,9 +26,8 @@ use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\CachePathException;
 
-
 /**
- * Class FileCache
+ * Class FileCache.
  * @package Seat\Eseye\Cache
  */
 class FileCache implements CacheInterface
@@ -57,7 +57,6 @@ class FileCache implements CacheInterface
         // Ensure the cache directory is OK
         $this->checkCacheDirectory();
     }
-
 
     /**
      * @return bool
@@ -122,7 +121,7 @@ class FileCache implements CacheInterface
      *
      * @return mixed|void
      */
-    public function set(string $uri, string $query = '', EsiResponse $data)
+    public function set(string $uri, string $query, EsiResponse $data)
     {
 
         $path = $this->safePath($this->buildRelativePath($uri, $query));
@@ -136,7 +135,6 @@ class FileCache implements CacheInterface
     }
 
     /**
-     *
      * @param string $uri
      * @param string $query
      *

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -23,5 +24,5 @@ include '../vendor/autoload.php';
 
 $client = new \GuzzleHttp\Client();
 $client->request('get', 'https://esi.tech.ccp.is/latest/swagger.json?datasource=tranquility', [
-    'sink' => 'esi.json'
+    'sink' => 'esi.json',
 ]);

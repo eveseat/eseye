@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,11 +22,10 @@
 
 namespace Seat\Eseye\Traits;
 
-
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 
 /**
- * Class ConstructsContainers
+ * Class ConstructsContainers.
  * @package Seat\Eseye\Traits
  */
 trait ConstructsContainers

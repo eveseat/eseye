@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,14 +22,12 @@
 
 namespace Seat\Eseye\Log;
 
-
 /**
- * Interface LogInterface
+ * Interface LogInterface.
  * @package Seat\Eseye\Log
  */
 interface LogInterface
 {
-
     /**
      * @param string $message
      *
@@ -56,5 +55,4 @@ interface LogInterface
      * @return mixed
      */
     public function error(string $message);
-
 }

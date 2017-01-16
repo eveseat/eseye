@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,11 +22,10 @@
 
 namespace Seat\Eseye\Exceptions;
 
-
 use Exception;
 
 /**
- * Class EsiScopeAccessDeniedException
+ * Class EsiScopeAccessDeniedException.
  * @package Seat\Eseye\Exceptions
  */
 class EsiScopeAccessDeniedException extends Exception

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -23,14 +24,12 @@ namespace Seat\Eseye\Cache;
 
 use Seat\Eseye\Containers\EsiResponse;
 
-
 /**
- * Interface CacheInterface
+ * Interface CacheInterface.
  * @package Seat\Eseye\Cache
  */
 interface CacheInterface
 {
-
     /**
      * @param string                             $uri
      * @param string                             $query
@@ -38,10 +37,9 @@ interface CacheInterface
      *
      * @return mixed
      */
-    public function set(string $uri, string $query = '', EsiResponse $data);
+    public function set(string $uri, string $query, EsiResponse $data);
 
     /**
-     *
      * @param string $uri
      * @param string $query
      *
@@ -64,5 +62,4 @@ interface CacheInterface
      * @return bool|mixed
      */
     public function has(string $uri, string $query = ''): bool;
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,17 +22,15 @@
 
 namespace Seat\Eseye\Traits;
 
-
 /**
- * Class ValidatesContainers
+ * Class ValidatesContainers.
  * @package Seat\Eseye\Traits
  */
 trait ValidatesContainers
 {
-
     /**
      * Determine is a Container should be considered valid by
-     * check if there are any null values in the data property
+     * check if there are any null values in the data property.
      *
      * @return bool
      */
@@ -40,5 +39,4 @@ trait ValidatesContainers
 
         return ! in_array(null, $this->data);
     }
-
 }

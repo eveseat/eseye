@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,16 +22,14 @@
 
 namespace Seat\Eseye\Cache;
 
-
 use Seat\Eseye\Containers\EsiResponse;
 
 /**
- * Class NullCache
+ * Class NullCache.
  * @package Seat\Eseye\Cache
  */
 class NullCache implements CacheInterface
 {
-
     /**
      * @param string                             $uri
      * @param string                             $query
@@ -38,12 +37,11 @@ class NullCache implements CacheInterface
      *
      * @return mixed
      */
-    public function set(string $uri, string $query = '', EsiResponse $data)
+    public function set(string $uri, string $query, EsiResponse $data)
     {
     }
 
     /**
-     *
      * @param string $uri
      * @param string $query
      *

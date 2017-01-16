@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,9 +22,8 @@
 
 namespace Seat\Eseye\Containers;
 
-
 /**
- * Class AbstractArrayAccess
+ * Class AbstractArrayAccess.
  * @package Seat\Eseye\Containers
  */
 abstract class AbstractArrayAccess implements \ArrayAccess
@@ -95,5 +95,4 @@ abstract class AbstractArrayAccess implements \ArrayAccess
 
         $this[$key] = $val;
     }
-
 }
