@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,14 +22,12 @@
 
 namespace Seat\Eseye\Cache;
 
-
 /**
- * Class HashesStrings
+ * Class HashesStrings.
  * @package Seat\Eseye\Cache
  */
 trait HashesStrings
 {
-
     /**
      * @param string $string
      *
@@ -39,5 +38,4 @@ trait HashesStrings
 
         return sha1($string);
     }
-
 }

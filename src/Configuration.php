@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,14 +22,13 @@
 
 namespace Seat\Eseye;
 
-
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Exceptions\InvalidConfigurationException;
 use Seat\Eseye\Log\LogInterface;
 
 /**
- * Class Configuration
+ * Class Configuration.
  * @package Seat\Eseye
  */
 class Configuration
@@ -148,5 +148,4 @@ class Configuration
 
         return $this->configuration->$name = $value;
     }
-
 }

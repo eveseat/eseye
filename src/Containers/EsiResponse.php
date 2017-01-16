@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -26,7 +27,7 @@ use Carbon\Carbon;
 use stdClass;
 
 /**
- * Class EsiResponse
+ * Class EsiResponse.
  * @package Seat\Eseye\Containers
  */
 class EsiResponse extends ArrayObject
@@ -61,7 +62,6 @@ class EsiResponse extends ArrayObject
         // 2 character. The shortest expected value is 'now'
         $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
         $this->response_code = $response_code;
-
 
         // If there is an error, set that
         if (property_exists($data, 'error'))

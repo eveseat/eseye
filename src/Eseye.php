@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -33,9 +34,8 @@ use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
 use Seat\Eseye\Log\LogInterface;
 
-
 /**
- * Class Eseye
+ * Class Eseye.
  * @package Seat\Eseye
  */
 class Eseye
@@ -340,5 +340,4 @@ class Eseye
 
         return $uri;
     }
-
 }

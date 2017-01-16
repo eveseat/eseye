@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -23,9 +24,8 @@ namespace Seat\Eseye\Access;
 
 use Seat\Eseye\Configuration;
 
-
 /**
- * Class CheckAccess
+ * Class CheckAccess.
  * @package Seat\Eseye\Access
  */
 class CheckAccess implements AccessInterface

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,7 +22,6 @@
 
 namespace Seat\Eseye;
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
@@ -29,7 +29,7 @@ use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 
 /**
- * Class EseyeFetcher
+ * Class EseyeFetcher.
  * @package Seat\Eseye
  */
 class EseyeFetcher
@@ -68,7 +68,6 @@ class EseyeFetcher
         // Setup the logger
         $this->logger = Configuration::getInstance()->getLogger();
     }
-
 
     /**
      * @param string $method
@@ -145,7 +144,6 @@ class EseyeFetcher
         return $this->authentication;
     }
 
-
     /**
      * @return array
      */
@@ -162,7 +160,7 @@ class EseyeFetcher
     }
 
     /**
-     * Verify a token and set the Authentication scopes
+     * Verify a token and set the Authentication scopes.
      */
     public function setAuthenticationScopes()
     {
@@ -204,7 +202,7 @@ class EseyeFetcher
     }
 
     /**
-     * Refresh the Access token that we have in the EsiAccess container
+     * Refresh the Access token that we have in the EsiAccess container.
      */
     private function refreshToken()
     {
@@ -233,5 +231,4 @@ class EseyeFetcher
         // ... and update the container
         $this->authentication = $authentication;
     }
-
 }

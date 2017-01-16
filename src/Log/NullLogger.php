@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,15 +22,12 @@
 
 namespace Seat\Eseye\Log;
 
-
 /**
- * Class NullLogger
+ * Class NullLogger.
  * @package Seat\Eseye\Log
  */
 class NullLogger implements LogInterface
 {
-
-
     /**
      * @param string $message
      *
@@ -65,5 +63,4 @@ class NullLogger implements LogInterface
     public function error(string $message)
     {
     }
-
 }

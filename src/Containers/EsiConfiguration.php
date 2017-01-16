@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -27,9 +28,8 @@ use Seat\Eseye\Log\FileLogger;
 use Seat\Eseye\Traits\ConstructsContainers;
 use Seat\Eseye\Traits\ValidatesContainers;
 
-
 /**
- * Class EsiConfiguration
+ * Class EsiConfiguration.
  * @package Seat\Eseye\Containers
  */
 class EsiConfiguration extends AbstractArrayAccess

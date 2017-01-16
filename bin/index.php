@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -29,7 +30,7 @@ session_start();
 // Helpers
 
 /**
- * Redirect a request to the start of this script
+ * Redirect a request to the start of this script.
  */
 function redirect_to_new()
 {
@@ -59,7 +60,7 @@ function get_sso_callback_url()
 function get_header()
 {
 
-    return <<<EOF
+    return <<<'EOF'
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -99,7 +100,7 @@ EOF;
 function get_footer()
 {
 
-    return <<<EOF
+    return <<<'EOF'
     </div> <!-- /container -->
   </body>
 </html>
@@ -110,7 +111,7 @@ EOF;
 // Page contents
 
 /**
- * Fresh, new login page
+ * Fresh, new login page.
  */
 function new_login()
 {

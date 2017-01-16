@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,13 +22,12 @@
 
 namespace Seat\Eseye\Cache;
 
-
 use Predis\Client;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
 
 /**
- * Class RedisCache
+ * Class RedisCache.
  * @package Seat\Eseye\Cache
  */
 class RedisCache implements CacheInterface
@@ -74,7 +74,7 @@ class RedisCache implements CacheInterface
      *
      * @return mixed
      */
-    public function set(string $uri, string $query = '', EsiResponse $data)
+    public function set(string $uri, string $query, EsiResponse $data)
     {
 
         $this->redis->set($this->buildCacheKey($uri, $query), serialize($data));

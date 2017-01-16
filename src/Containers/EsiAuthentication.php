@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -24,9 +25,8 @@ namespace Seat\Eseye\Containers;
 use Seat\Eseye\Traits\ConstructsContainers;
 use Seat\Eseye\Traits\ValidatesContainers;
 
-
 /**
- * Class EsiAuthentication
+ * Class EsiAuthentication.
  * @package Seat\Eseye\Containers
  */
 class EsiAuthentication extends AbstractArrayAccess

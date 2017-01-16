@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,14 +22,13 @@
 
 namespace Seat\Eseye\Log;
 
-
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Seat\Eseye\Configuration;
 
 /**
- * Class FileLogger
+ * Class FileLogger.
  * @package Seat\Eseye\Log
  */
 class FileLogger implements LogInterface
