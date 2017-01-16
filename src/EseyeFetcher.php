@@ -24,6 +24,7 @@ namespace Seat\Eseye;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Uri;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 
@@ -72,27 +73,46 @@ class EseyeFetcher
     /**
      * @param string $method
      * @param string $uri
+     * @param array  $body
      *
-     * @return mixed
+     * @return mixed|\Seat\Eseye\Containers\EsiResponse
      */
-    public function call(string $method, string $uri): EsiResponse
+    public function call(string $method, string $uri, array $body): EsiResponse
     {
 
         return $this->httpRequest($method, $uri, [
             'Accept'        => 'application/json',
+            'Content-Type'  => 'application/json',
             'Authorization' => 'Bearer ' . $this->getToken(),
-        ]);
+        ], $body);
+    }
+
+    /**
+     * @param string $uri
+     *
+     * @return string
+     */
+    private function stripRefreshTokenValue(string $uri): string
+    {
+
+        // If we have 'refresh_token' in the URI, strip it.
+        if (strpos($uri, 'refresh_token'))
+            return Uri::withoutQueryValue((new Uri($uri)), 'refresh_token')
+                ->__toString();
+
+        return $uri;
     }
 
     /**
      * @param string $method
      * @param string $uri
      * @param array  $headers
+     * @param array  $body
      *
-     * @return mixed
+     * @return mixed|\Seat\Eseye\Containers\EsiResponse
      */
     public function httpRequest(
-        string $method, string $uri, array $headers = []): EsiResponse
+        string $method, string $uri, array $headers = [], array $body = []): EsiResponse
     {
 
         // Add some debug logging and start measuring how long the request took.
@@ -100,14 +120,17 @@ class EseyeFetcher
         $start = microtime(true);
 
         // Make the _actual_ request to ESI
-        $response = $this->client->send(new Request($method, $uri, $headers));
+        $response = $this->client->send(
+            new Request($method, $uri, $headers, json_encode($body)));
 
-        // TODO: Make URI logging 'safe' by removing access tokens
+        // Log the event.
         $this->logger->log('[http ' . $response->getStatusCode() . '] ' .
-            $method . ' -> ' . $uri . ' [' . number_format(microtime(true) - $start, 2) . 's]');
+            $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [' .
+            number_format(microtime(true) - $start, 2) . 's]');
 
         // Return a container response that can be parsed.
-        return new EsiResponse(json_decode($response->getBody()),
+        return new EsiResponse(
+            (object) json_decode($response->getBody()),
             $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : 'now',
             $response->getStatusCode()
         );
@@ -159,6 +182,7 @@ class EseyeFetcher
 
         return $this->httpRequest('get', $this->sso_base . '/verify/', [
             'Accept'        => 'application/json',
+            'Content-Type'  => 'application/json',
             'Authorization' => 'Bearer ' . $this->getToken(),
         ]);
     }
@@ -190,6 +214,7 @@ class EseyeFetcher
             $this->sso_base . '/token/?grant_type=refresh_token&refresh_token=' .
             $this->authentication->refresh_token, [
                 'Accept'        => 'application/json',
+                'Content-Type'  => 'application/json',
                 'Authorization' => 'Basic ' .
                     base64_encode($this->authentication->client_id . ':' .
                         $this->authentication->secret),

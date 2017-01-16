@@ -33,6 +33,8 @@ use Seat\Eseye\Exceptions\CachePathException;
 class FileCache implements CacheInterface
 {
 
+    use HashesStrings;
+
     /**
      * @var string
      */
@@ -87,13 +89,19 @@ class FileCache implements CacheInterface
 
     /**
      * @param string $path
+     * @param string $query
      *
      * @return string
      */
-    public function buildRelativePath(string $path): string
+    public function buildRelativePath(string $path, string $query = ''): string
     {
 
-        return rtrim(rtrim($this->cache_path, '/') . rtrim($path), '/') . '/';
+        // If the query string has data, hash it.
+        if ($query != '')
+            $query = $this->hashString($query);
+
+        return rtrim(rtrim($this->cache_path, '/') . rtrim($path), '/') .
+            '/' . $query . '/';
     }
 
     /**
@@ -107,17 +115,17 @@ class FileCache implements CacheInterface
         return preg_replace('/[^A-Za-z0-9\/]/', '', $uri);
     }
 
-
     /**
      * @param string                             $uri
+     * @param string                             $query
      * @param \Seat\Eseye\Containers\EsiResponse $data
      *
      * @return mixed|void
      */
-    public function set(string $uri, EsiResponse $data)
+    public function set(string $uri, string $query = '', EsiResponse $data)
     {
 
-        $path = $this->safePath($this->buildRelativePath($uri));
+        $path = $this->safePath($this->buildRelativePath($uri, $query));
 
         // Create the subpath if that does not already exist
         if (! file_exists($path))
@@ -130,13 +138,14 @@ class FileCache implements CacheInterface
     /**
      *
      * @param string $uri
+     * @param string $query
      *
      * @return mixed
      */
-    public function get(string $uri)
+    public function get(string $uri, string $query = '')
     {
 
-        $path = $this->safePath($this->buildRelativePath($uri));
+        $path = $this->safePath($this->buildRelativePath($uri, $query));
         $cache_file_path = $path . $this->results_filename;
 
         // If we cant read from the cache, then just return false.
@@ -159,13 +168,14 @@ class FileCache implements CacheInterface
 
     /**
      * @param string $uri
+     * @param string $query
      *
      * @return mixed
      */
-    public function forget(string $uri)
+    public function forget(string $uri, string $query = '')
     {
 
-        $path = $this->buildRelativePath($uri);
+        $path = $this->buildRelativePath($uri, $query);
         $cache_file_path = $path . $this->results_filename;
 
         unlink($cache_file_path);
@@ -173,13 +183,14 @@ class FileCache implements CacheInterface
 
     /**
      * @param string $uri
+     * @param string $query
      *
-     * @return mixed
+     * @return bool|mixed
      */
-    public function has(string $uri): bool
+    public function has(string $uri, string $query = ''): bool
     {
 
-        if ($status = $this->get($uri))
+        if ($status = $this->get($uri, $query))
             return true;
 
         return false;

@@ -61,6 +61,16 @@ class Eseye
     protected $access_checker;
 
     /**
+     * @var array
+     */
+    protected $query_string = [];
+
+    /**
+     * @var array
+     */
+    protected $request_body = [];
+
+    /**
      * @var string
      */
     protected $esi = [
@@ -90,7 +100,7 @@ class Eseye
      * @return \Seat\Eseye\Eseye
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function setAuthentication(EsiAuthentication $authentication): Eseye
+    public function setAuthentication(EsiAuthentication $authentication): self
     {
 
         if (! $authentication->valid())
@@ -144,6 +154,9 @@ class Eseye
         return $this->fetcher;
     }
 
+    /**
+     * @return \Seat\Eseye\Cache\CacheInterface
+     */
     private function getCache(): CacheInterface
     {
 
@@ -152,11 +165,15 @@ class Eseye
 
     /**
      * @param \Seat\Eseye\Access\AccessInterface $checker
+     *
+     * @return \Seat\Eseye\Eseye
      */
-    public function setAccessChecker(AccessInterface $checker)
+    public function setAccessChecker(AccessInterface $checker): self
     {
 
         $this->access_checker = $checker;
+
+        return $this;
     }
 
     /**
@@ -172,15 +189,58 @@ class Eseye
     }
 
     /**
+     * @param array $query
+     *
+     * @return \Seat\Eseye\Eseye
+     */
+    public function setQueryString(array $query): self
+    {
+
+        $this->query_string = $query;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getQueryString(): array
+    {
+
+        return $this->query_string;
+    }
+
+    /**
+     * @param array $body
+     *
+     * @return \Seat\Eseye\Eseye
+     */
+    public function setBody(array $body): self
+    {
+
+        $this->request_body = $body;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBody(): array
+    {
+
+        return $this->request_body;
+    }
+
+    /**
      * @param string $method
      * @param string $uri
-     * @param array  $data
+     * @param array  $uri_data
      *
      * @return \Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
      */
-    public function invoke(
-        string $method, string $uri, array $data = []): EsiResponse
+    public function invoke(string $method, string $uri, array $uri_data = []): EsiResponse
     {
 
         // Check the Access Requirement
@@ -193,17 +253,21 @@ class Eseye
             throw new EsiScopeAccessDeniedException('Access denied to ' . $uri);
         }
 
-        $uri = $this->buildDataUri($uri, $data);
+        // Build the URI from the parts we have.
+        $uri = $this->buildDataUri($uri, $uri_data);
 
         // Check if there is a cached response we can return
-        if ($cached = $this->getCache()->get($uri->getPath()))
+        if (strtolower($method) == 'get' &&
+            $cached = $this->getCache()->get($uri->getPath(), $uri->getQuery())
+        )
             return $cached;
 
-        // Call ESI itself
-        $result = $this->rawFetch($method, $uri);
+        // Call ESI itself and get the EsiResponse
+        $result = $this->rawFetch($method, $uri, $this->getBody());
 
-        // Cache the response
-        $this->getCache()->set($uri->getPath(), $result);
+        // Cache the response if it was a get
+        if (strtolower($method) == 'get')
+            $this->getCache()->set($uri->getPath(), $uri->getQuery(), $result);
 
         return $result;
     }
@@ -217,24 +281,32 @@ class Eseye
     public function buildDataUri(string $uri, array $data): Uri
     {
 
+        // Create a query string for the URI. We automatically
+        // include the datasource value from the configuration.
+        $query_params = array_merge([
+            'datasource' => $this->getConfiguration()->datasource,
+        ], $this->getQueryString());
+
         return Uri::fromParts([
             'scheme' => $this->esi['scheme'],
             'host'   => $this->esi['host'],
-            'path'   => rtrim($this->esi['path'], '/') . $this->mapDataToUri($uri, $data),
-            'query'  => 'datasource=' . $this->getConfiguration()->datasource,
+            'path'   => rtrim($this->esi['path'], '/') .
+                $this->mapDataToUri($uri, $data),
+            'query'  => http_build_query($query_params),
         ]);
     }
 
     /**
      * @param string $method
      * @param string $uri
+     * @param array  $body
      *
      * @return mixed
      */
-    public function rawFetch(string $method, string $uri)
+    public function rawFetch(string $method, string $uri, array $body)
     {
 
-        return $this->getFetcher()->call($method, $uri);
+        return $this->getFetcher()->call($method, $uri, $body);
     }
 
     /**

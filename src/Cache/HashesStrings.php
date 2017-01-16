@@ -21,48 +21,23 @@
 
 namespace Seat\Eseye\Cache;
 
-use Seat\Eseye\Containers\EsiResponse;
-
 
 /**
- * Interface CacheInterface
+ * Class HashesStrings
  * @package Seat\Eseye\Cache
  */
-interface CacheInterface
+trait HashesStrings
 {
 
     /**
-     * @param string                             $uri
-     * @param string                             $query
-     * @param \Seat\Eseye\Containers\EsiResponse $data
+     * @param string $string
      *
-     * @return mixed
+     * @return string
      */
-    public function set(string $uri, string $query = '', EsiResponse $data);
+    public function hashString(string $string)
+    {
 
-    /**
-     *
-     * @param string $uri
-     * @param string $query
-     *
-     * @return mixed
-     */
-    public function get(string $uri, string $query = '');
-
-    /**
-     * @param string $uri
-     * @param string $query
-     *
-     * @return mixed
-     */
-    public function forget(string $uri, string $query = '');
-
-    /**
-     * @param string $uri
-     * @param string $query
-     *
-     * @return bool|mixed
-     */
-    public function has(string $uri, string $query = ''): bool;
+        return sha1($string);
+    }
 
 }

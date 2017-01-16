@@ -33,21 +33,23 @@ class NullCache implements CacheInterface
 
     /**
      * @param string                             $uri
+     * @param string                             $query
      * @param \Seat\Eseye\Containers\EsiResponse $data
      *
      * @return mixed
      */
-    public function set(string $uri, EsiResponse $data)
+    public function set(string $uri, string $query = '', EsiResponse $data)
     {
     }
 
     /**
      *
      * @param string $uri
+     * @param string $query
      *
      * @return mixed
      */
-    public function get(string $uri)
+    public function get(string $uri, string $query = '')
     {
 
         return false;
@@ -55,20 +57,21 @@ class NullCache implements CacheInterface
 
     /**
      * @param string $uri
+     * @param string $query
      *
      * @return mixed
      */
-    public function forget(string $uri)
+    public function forget(string $uri, string $query = '')
     {
-
     }
 
     /**
      * @param string $uri
+     * @param string $query
      *
-     * @return mixed
+     * @return bool|mixed
      */
-    public function has(string $uri): bool
+    public function has(string $uri, string $query = ''): bool
     {
 
         return false;
