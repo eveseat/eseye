@@ -9,7 +9,7 @@ Using the library should be really simple. Essentially, all you want to do is in
 
 Lets look at a shortened example. For a complete example, have a look at the script included [here](example.php):
 
-```
+```php
 include 'vendor/autoload.php';
 
 use Seat\Eseye\Containers\EsiAuthentication;
