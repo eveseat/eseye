@@ -19,6 +19,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+// If you are reading this, prepare the eye bleach! This is absolutely
+// some of the shittest PHP you will _ever_ read. It is mostly because
+// we want to have everyting in a single file, making it easy to run
+// using the tokenegenerator command. Still, its terrible, and I know.
+
 session_start();
 
 // Helpers
@@ -117,12 +122,12 @@ function new_login()
     echo <<<EOF
       <div class="jumbotron">
         <p>
-          Create a new Application at the EVE Online Developers Site 
-          <a href="https://developers.eveonline.com/applications/create" target="_blank">here</a>.
-          Use the resultant ClientID and secret in the form below.
+          Create a new Application on the
+          <a href="https://developers.eveonline.com/applications/create" target="_blank">EVE Online Developers Site</a>.
+          Use the resultant <b>Client ID</b> and <b>Secret Key</b> in the form below.
         </p>
         <p>
-        The callback url to use is: <pre>$callback</pre>
+        The callback url to use in the application form is: <pre>$callback</pre>
         </p>
       </div>
 
@@ -154,10 +159,11 @@ function new_login()
           <label class="col-md-4 control-label" for="scopes">Scopes</label>
           <div class="col-md-4">
             <select id="scopes" name="scopes[]" class="form-control" multiple="multiple">
+
             <!-- in the tools directory, run: -->
             <!-- php get_endpoints_and_scopes.php | grep "|" | cut -d"|" -f 3 | sort | uniq | grep -v public | awk '{ print "<option value=\"" $1 "\">" $1 "</option>"}' -->
             <!-- done :D -->
-            
+
 <option value="esi-assets.read_assets.v1">esi-assets.read_assets.v1</option>
 <option value="esi-bookmarks.read_character_bookmarks.v1">esi-bookmarks.read_character_bookmarks.v1</option>
 <option value="esi-calendar.read_calendar_events.v1">esi-calendar.read_calendar_events.v1</option>
@@ -214,8 +220,14 @@ function print_sso_url($url)
     echo <<<EOF
       <div class="jumbotron">
         <p>
-        Your SSO Url is ready. Click it <a href="$url">here</a> to login to EVE Online.
-        <pre>$url</pre>
+          Click the button below to login with your EVE Online account.<br>
+          <a href="$url">
+            <img src="https://images.contentful.com/idjq7aai9ylm/18BxKSXCymyqY4QKo8KwKe/c2bdded6118472dd587c8107f24104d7/EVE_SSO_Login_Buttons_Small_White.png?w=195&h=30" />
+          </a>
+        </p>
+        <p>
+          The generated URL is:
+          <pre>$url</pre>
         </p>
       </div>
 EOF;
@@ -230,15 +242,20 @@ EOF;
 function print_tokens($access_token, $refresh_token)
 {
 
+    $start_again_url = $_SERVER['PHP_SELF'] . '?action=new';
+
     echo get_header();
     echo <<<EOF
       <div class="jumbotron">
         <p>
-        Your current access token is: <pre>$access_token</pre> valid for ~20 minutes
+          Your current access token is: <pre>$access_token</pre><br>
+          Valid for ~20 minutes.
         </p>
         <p>
-        Your refresh token is: <pre>$refresh_token</pre> valid until you delete the app from the Developers site.
+          Your refresh token is: <pre>$refresh_token</pre><br>
+          Valid until you delete the app from the Developers site.
         </p>
+        <a class="btn btn-lg btn-success" href="$start_again_url" role="button">Start Again</a>
       </div>
 EOF;
     echo get_footer();
