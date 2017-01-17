@@ -39,6 +39,12 @@ use Seat\Eseye\Log\LogInterface;
  */
 class Eseye
 {
+
+    /**
+     * The Eseye Version.
+     */
+    const VERSION = 0.1;
+
     /**
      * @var \Seat\Eseye\Containers\EsiAuthentication
      */

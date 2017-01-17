@@ -83,8 +83,6 @@ class EseyeFetcher
     {
 
         return $this->httpRequest($method, $uri, [
-            'Accept'        => 'application/json',
-            'Content-Type'  => 'application/json',
             'Authorization' => 'Bearer ' . $this->getToken(),
         ], $body);
     }
@@ -118,6 +116,15 @@ class EseyeFetcher
         string $method, string $uri, array $headers = [], array $body = []): EsiResponse
     {
 
+        // Include some basic headers to those already passed in. Everything
+        // is considered to be Json.
+        array_merge($headers, [
+            'Accept'       => 'application/json',
+            'Content-Type' => 'application/json',
+            'User-Agent'   => 'Eseye/' . Eseye::VERSION . '/' .
+                Configuration::getInstance()->http_user_agent,
+        ]);
+
         // Add some debug logging and start measuring how long the request took.
         $this->logger->debug('Making ' . $method . ' request to ' . $uri);
         $start = microtime(true);
@@ -136,7 +143,7 @@ class EseyeFetcher
                 $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [' .
                 number_format(microtime(true) - $start, 2) . 's]');
 
-            // Raise the exception that should be handled by the calling
+            // Raise the exception that should be handled by the caller
             throw new RequestFailedException($e,
                 $this->makeEsiResponse(
                     (object) json_decode($e->getResponse()->getBody()), 'now',
@@ -145,8 +152,9 @@ class EseyeFetcher
 
         }
 
-        // Log the event.
+        // Log the sucessful request.
         $this->logger->log('[http ' . $response->getStatusCode() . '] ' .
+            '[' . $response->getReasonPhrase() . '] ' .
             $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [' .
             number_format(microtime(true) - $start, 2) . 's]');
 
@@ -216,8 +224,6 @@ class EseyeFetcher
     {
 
         return $this->httpRequest('get', $this->sso_base . '/verify/', [
-            'Accept'        => 'application/json',
-            'Content-Type'  => 'application/json',
             'Authorization' => 'Bearer ' . $this->getToken(),
         ]);
     }
@@ -248,11 +254,8 @@ class EseyeFetcher
         $response = $this->httpRequest('post',
             $this->sso_base . '/token/?grant_type=refresh_token&refresh_token=' .
             $this->authentication->refresh_token, [
-                'Accept'        => 'application/json',
-                'Content-Type'  => 'application/json',
-                'Authorization' => 'Basic ' .
-                    base64_encode($this->authentication->client_id . ':' .
-                        $this->authentication->secret),
+                'Authorization' => 'Basic ' . base64_encode(
+                        $this->authentication->client_id . ':' . $this->authentication->secret),
             ]
         );
 
