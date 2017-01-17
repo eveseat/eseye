@@ -1,5 +1,5 @@
 {
-    "name": "seat/eseye",
+    "name": "eveseat/eseye",
     "description": "A Standalone PHP ESI (EVE Swagger Interface) Client Library",
     "type": "library",
     "require": {
