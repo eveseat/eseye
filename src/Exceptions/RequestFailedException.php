@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,12 +22,11 @@
 
 namespace Seat\Eseye\Exceptions;
 
-
 use Exception;
 use Seat\Eseye\Containers\EsiResponse;
 
 /**
- * Class RequestFailedException
+ * Class RequestFailedException.
  * @package Seat\Eseye\Exceptions
  */
 class RequestFailedException extends Exception
@@ -73,5 +73,4 @@ class RequestFailedException extends Exception
 
         return $this->esi_response;
     }
-
 }
