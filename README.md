@@ -1,40 +1,24 @@
 ![SeAT](http://i.imgur.com/aPPOxSK.png)
 # eseye
 
-## This repository contains Eseye.
-For a usage example, please refer to [example.php](example.php)
+This repository contains Eseye. A Standalone, Dynamic ESI (EVE Swagger Interface) Client Library written in PHP
 
 ## example usage
-Using the library should be really simple. Essentially, all you want to do is instantiate a new `Eseye` instance, provide the authentication information with a `EsiAuthentication` container, and make calls with `invoke`!
-
-Lets look at a shortened example. For a complete example, have a look at the script included [here](example.php):
+Its supposed to be simple!
 
 ```php
-include 'vendor/autoload.php';
+// initialization stuff
 
-use Seat\Eseye\Containers\EsiAuthentication;
-use Seat\Eseye\Eseye;
-
-
-// Prepare an authentication container for ESI
-$authentication = new EsiAuthentication([
-    'client_id'     => 'SSO_CLIENT_ID',
-    'secret'        => 'SSO_SECRET',
-    'refresh_token' => 'CHARACTER_REFRESH_TOKEN',
-]);
-
-// Instantiate a new ESI instance.
-$esi = new Eseye($authentication);
-
-$clones = $esi->invoke('get', '/characters/{character_id}/clones/', [
+// make a call
+$character_info = $esi->invoke('get', '/characters/{character_id}/', [
     'character_id' => 1477919642,
 ]);
 
-echo 'You have the following clones: ' . PHP_EOL;
-foreach ($clones->jump_clones as $jump_clone) {
-
-    echo 'Clone at a ' . $jump_clone->location_type .
-        ' with ' . count($jump_clone->implants) . ' implants' . PHP_EOL;
-}
-
+// get data!
+echo $character_info->name;
 ```
+
+For a more complete usage example, please refer to [example.php](example.php)
+
+## documentation
+For up to date documentation, more examples and more, please check out the [project wiki](https://github.com/eveseat/eseye/wiki)!
