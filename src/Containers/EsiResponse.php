@@ -104,11 +104,20 @@ class EsiResponse extends ArrayObject
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function error(): string
+    public function error()
     {
 
         return $this->error_message;
+    }
+
+    /**
+     * @return int
+     */
+    public function getErrorCode(): int
+    {
+
+        return $this->response_code;
     }
 }

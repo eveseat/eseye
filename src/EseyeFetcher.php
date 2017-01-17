@@ -23,10 +23,13 @@
 namespace Seat\Eseye;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Exceptions\RequestFailedException;
+use stdClass;
 
 /**
  * Class EseyeFetcher.
@@ -109,6 +112,7 @@ class EseyeFetcher
      * @param array  $body
      *
      * @return mixed|\Seat\Eseye\Containers\EsiResponse
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
      */
     public function httpRequest(
         string $method, string $uri, array $headers = [], array $body = []): EsiResponse
@@ -118,9 +122,28 @@ class EseyeFetcher
         $this->logger->debug('Making ' . $method . ' request to ' . $uri);
         $start = microtime(true);
 
-        // Make the _actual_ request to ESI
-        $response = $this->client->send(
-            new Request($method, $uri, $headers, json_encode($body)));
+        try {
+
+            // Make the _actual_ request to ESI
+            $response = $this->client->send(
+                new Request($method, $uri, $headers, json_encode($body)));
+
+        } catch (ClientException $e) {
+
+            // Log the event as failed
+            $this->logger->error('[http ' . $e->getResponse()->getStatusCode() . '] ' .
+                '[' . $e->getResponse()->getReasonPhrase() . '] ' .
+                $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [' .
+                number_format(microtime(true) - $start, 2) . 's]');
+
+            // Raise the exception that should be handled by the calling
+            throw new RequestFailedException($e,
+                $this->makeEsiResponse(
+                    (object) json_decode($e->getResponse()->getBody()), 'now',
+                    $e->getResponse()->getStatusCode())
+            );
+
+        }
 
         // Log the event.
         $this->logger->log('[http ' . $response->getStatusCode() . '] ' .
@@ -128,11 +151,25 @@ class EseyeFetcher
             number_format(microtime(true) - $start, 2) . 's]');
 
         // Return a container response that can be parsed.
-        return new EsiResponse(
+        return $this->makeEsiResponse(
             (object) json_decode($response->getBody()),
             $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : 'now',
             $response->getStatusCode()
         );
+    }
+
+    /**
+     * @param \stdClass $body
+     * @param string    $expires
+     * @param int       $status_code
+     *
+     * @return \Seat\Eseye\Containers\EsiResponse
+     */
+    public function makeEsiResponse(
+        stdClass $body, string $expires, int $status_code): EsiResponse
+    {
+
+        return new EsiResponse($body, $expires, $status_code);
     }
 
     /**

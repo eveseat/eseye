@@ -28,7 +28,6 @@ use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
-use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
@@ -248,7 +247,12 @@ class Eseye
             $method, $uri, $this->getFetcher()->getAuthenticationScopes())
         ) {
 
-            $this->getLogger()->error('Access denied to ' . $uri);
+            // Build the uri so that there is context around what is denied.
+            $uri = $this->buildDataUri($uri, $uri_data);
+
+            // Log the deny.
+            $this->getLogger()->warning('Access denied to ' . $uri . ' due to ' .
+                'missing scopes.');
 
             throw new EsiScopeAccessDeniedException('Access denied to ' . $uri);
         }
