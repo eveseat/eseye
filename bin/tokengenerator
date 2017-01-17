@@ -3,5 +3,16 @@
 # 2017 - Leon Jacobs
 
 # Server the token generator app using PHP's builtin web server.
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Thanks: http://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within?answertab=votes#tab-top
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
 php -S 127.0.0.1:9009 -t $DIR
