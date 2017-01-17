@@ -254,7 +254,8 @@ function print_tokens($access_token, $refresh_token)
         </p>
         <p>
           Your refresh token is: <pre>$refresh_token</pre><br>
-          Valid until you delete the app from the Developers site.
+          Valid until you delete the app from your account
+          <a href="https://community.eveonline.com/support/third-party-applications/">here</a>.
         </p>
         <a class="btn btn-lg btn-success" href="$start_again_url" role="button">Start Again</a>
       </div>
