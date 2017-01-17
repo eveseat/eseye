@@ -1,7 +1,8 @@
 ![SeAT](http://i.imgur.com/aPPOxSK.png)
 # eseye
 
-This repository contains Eseye. A Standalone, Dynamic ESI (EVE Swagger Interface) Client Library written in PHP
+This repository contains Eseye.  
+👾 A Standalone, Dynamic ESI (EVE Swagger Interface) Client Library written in PHP
 
 ## example usage
 Its supposed to be simple!
@@ -21,4 +22,4 @@ echo $character_info->name;
 For a more complete usage example, please refer to [example.php](example.php)
 
 ## documentation
-For up to date documentation, more examples and more, please check out the [project wiki](https://github.com/eveseat/eseye/wiki)!
+For up to date documentation, more examples and other goodies, please check out the [project wiki](https://github.com/eveseat/eseye/wiki)!
