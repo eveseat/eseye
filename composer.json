@@ -23,5 +23,8 @@
         "files": [
             "src/helpers.php"
         ]
-    }
+    },
+    "bin": [
+        "bin/tokengenerator"
+   ]
 }
