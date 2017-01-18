@@ -7,6 +7,7 @@ Its supposed to be simple!
 
 ```php
 // initialization stuff
+$esi = new Eseye();
 
 // make a call
 $character_info = $esi->invoke('get', '/characters/{character_id}/', [
