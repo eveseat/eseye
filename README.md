@@ -1,7 +1,5 @@
 ![SeAT](http://i.imgur.com/aPPOxSK.png)
 # eseye
-
-This repository contains Eseye.  
 👾 A Standalone, Dynamic ESI (EVE Swagger Interface) Client Library written in PHP
 
 ## example usage
