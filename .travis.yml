@@ -13,9 +13,10 @@ notifications:
 
 addons:
   code_climate:
-    repo_token: 5c0e5a1b5e640fa8924af537ed5a45dd1e4a2a3cf192203d4d404fdc98862d73
+    repo_token: $CODE_CLIMATE_TOKEN
 
-script: vendor/bin/phpunit
+script:
+  - vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml
 
 after_success:
   - vendor/bin/test-reporter

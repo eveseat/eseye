@@ -1,4 +1,13 @@
 ![SeAT](http://i.imgur.com/aPPOxSK.png)
+
+[![Build Status](https://travis-ci.org/eveseat/eseye.svg?branch=master)](https://travis-ci.org/eveseat/eseye)
+[![Code Climate](https://codeclimate.com/github/eveseat/eseye/badges/gpa.svg)](https://codeclimate.com/github/eveseat/eseye)
+[![Latest Stable Version](https://poser.pugx.org/eveseat/eseye/v/stable)](https://packagist.org/packages/eveseat/eseye)
+[![Total Downloads](https://poser.pugx.org/eveseat/eseye/downloads)](https://packagist.org/packages/eveseat/eseye)
+[![Latest Unstable Version](https://poser.pugx.org/eveseat/eseye/v/unstable)](https://packagist.org/packages/eveseat/eseye)
+[![License](https://poser.pugx.org/eveseat/eseye/license)](https://packagist.org/packages/eseye/eveapi)
+[![StyleCI](https://styleci.io/repos/78866259/shield?branch=master)](https://styleci.io/repos/78866259)
+
 # eseye
 👾 A Standalone, Dynamic ESI (EVE Swagger Interface) Client Library written in PHP
 
