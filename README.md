@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/eveseat/eseye.svg?branch=master)](https://travis-ci.org/eveseat/eseye)
 [![Code Climate](https://codeclimate.com/github/eveseat/eseye/badges/gpa.svg)](https://codeclimate.com/github/eveseat/eseye)
+[![Test Coverage](https://codeclimate.com/github/eveseat/eseye/badges/coverage.svg)](https://codeclimate.com/github/eveseat/eseye/coverage)
 [![Latest Stable Version](https://poser.pugx.org/eveseat/eseye/v/stable)](https://packagist.org/packages/eveseat/eseye)
 [![Total Downloads](https://poser.pugx.org/eveseat/eseye/downloads)](https://packagist.org/packages/eveseat/eseye)
 [![Latest Unstable Version](https://poser.pugx.org/eveseat/eseye/v/unstable)](https://packagist.org/packages/eveseat/eseye)
