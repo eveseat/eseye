@@ -28,6 +28,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use stdClass;
 
@@ -62,7 +63,7 @@ class EseyeFetcher
      *
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
      */
-    public function __construct(EsiAuthentication $authentication)
+    public function __construct(EsiAuthentication $authentication = null)
     {
 
         $this->authentication = $authentication;
@@ -76,15 +77,22 @@ class EseyeFetcher
      * @param string $method
      * @param string $uri
      * @param array  $body
+     * @param array  $headers
      *
      * @return mixed|\Seat\Eseye\Containers\EsiResponse
      */
-    public function call(string $method, string $uri, array $body): EsiResponse
+    public function call(
+        string $method, string $uri, array $body, array $headers = []): EsiResponse
     {
 
-        return $this->httpRequest($method, $uri, [
-            'Authorization' => 'Bearer ' . $this->getToken(),
-        ], $body);
+        // If we have authentication data, add the
+        // Authorization header.
+        if ($this->getAuthentication())
+            $headers = array_merge($headers, [
+                'Authorization' => 'Bearer ' . $this->getToken(),
+            ]);
+
+        return $this->httpRequest($method, $uri, $headers, $body);
     }
 
     /**
@@ -181,9 +189,9 @@ class EseyeFetcher
     }
 
     /**
-     * @return \Seat\Eseye\Containers\EsiAuthentication
+     * @return \Seat\Eseye\Containers\EsiAuthentication|null
      */
-    public function getAuthentication(): EsiAuthentication
+    public function getAuthentication()
     {
 
         return $this->authentication;
@@ -194,6 +202,11 @@ class EseyeFetcher
      */
     public function getAuthenticationScopes(): array
     {
+
+        // If we dont have any authentication data, then
+        // only public calls can be made.
+        if (is_null($this->getAuthentication()))
+            return ['public'];
 
         // If there are no scopes that we know of, update them.
         // There will always be at least 1 as we add the internal
@@ -230,9 +243,16 @@ class EseyeFetcher
 
     /**
      * @return string
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
      */
     private function getToken(): string
     {
+
+        // Ensure that we have authentication data before we try
+        // and get a token.
+        if (! $this->getAuthentication())
+            throw new InvalidAuthencationException(
+                'Trying to get a token without authentication data.');
 
         // Check the expiry date.
         $expires = carbon($this->getAuthentication()->token_expires);
