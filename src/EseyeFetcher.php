@@ -100,7 +100,7 @@ class EseyeFetcher
      *
      * @return string
      */
-    private function stripRefreshTokenValue(string $uri): string
+    public function stripRefreshTokenValue(string $uri): string
     {
 
         // If we have 'refresh_token' in the URI, strip it.

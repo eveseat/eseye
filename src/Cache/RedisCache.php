@@ -42,14 +42,26 @@ class RedisCache implements CacheInterface
 
     /**
      * RedisCache constructor.
+     *
+     * @param \Predis\Client $redis
      */
-    public function __construct()
+    public function __construct(Client $redis = null)
     {
 
-        $configuration = Configuration::getInstance();
-        $this->redis = new Client($configuration->redis_cache_location, [
-            'prefix' => $configuration->redis_cache_prefix,
-        ]);
+        // If we didnt get a Redis instance in the constructor,
+        // build a new one.
+        if (is_null($redis)) {
+
+            $configuration = Configuration::getInstance();
+
+            $this->redis = new Client($configuration->redis_cache_location, [
+                'prefix' => $configuration->redis_cache_prefix,
+            ]);
+
+            return;
+        }
+
+        $this->redis = $redis;
     }
 
     /**
