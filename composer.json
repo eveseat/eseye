@@ -11,7 +11,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",
-        "mikey179/vfsStream": "~1"
+        "mikey179/vfsStream": "~1",
+        "codeclimate/php-test-reporter": "dev-master"
     },
     "license": "GPL-2.0",
     "authors": [

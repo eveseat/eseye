@@ -4,11 +4,18 @@ php:
   - 7.0
 
 before_script:
-    - travis_retry composer self-update
-    - travis_retry composer install
+  - travis_retry composer self-update
+  - travis_retry composer install
 
 notifications:
-    on_success: never
-    on_failure: always
+  on_success: never
+  on_failure: always
+
+addons:
+  code_climate:
+    repo_token: 5c0e5a1b5e640fa8924af537ed5a45dd1e4a2a3cf192203d4d404fdc98862d73
 
 script: vendor/bin/phpunit
+
+after_success:
+  - vendor/bin/test-reporter
