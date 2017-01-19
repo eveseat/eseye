@@ -23,7 +23,6 @@
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\EseyeFetcher;
-use Seat\Eseye\Exceptions\InvalidAuthencationException;
 
 class EseyeFetcherTest extends PHPUnit_Framework_TestCase
 {
@@ -49,6 +48,15 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $stripped = $this->fetcher->stripRefreshTokenValue($url);
 
         $this->assertEquals('https://esi.url/oauth?type=refresh_token', $stripped);
+    }
+
+    public function testEseyeFetcherStripRefreshTokenFromUrlWithoutRefreshToken()
+    {
+
+        $url = 'https://esi.url/type=refresh_token';
+        $stripped = $this->fetcher->stripRefreshTokenValue($url);
+
+        $this->assertEquals('https://esi.url/type=refresh_token', $stripped);
     }
 
     public function testEseyeFetcherMakeEsiResponseContainer()

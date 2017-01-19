@@ -21,11 +21,14 @@
  */
 
 use Seat\Eseye\Access\CheckAccess;
+use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Eseye;
+use Seat\Eseye\EseyeFetcher;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
+use Seat\Eseye\Exceptions\UriDataMissingException;
 use Seat\Eseye\Log\LogInterface;
 
 class EseyeTest extends PHPUnit_Framework_TestCase
@@ -37,6 +40,23 @@ class EseyeTest extends PHPUnit_Framework_TestCase
     {
 
         $this->esi = new Eseye();
+    }
+
+    /**
+     * Helper method to set private methods public.
+     *
+     * @param $name
+     *
+     * @return \ReflectionMethod
+     */
+    protected static function getMethod($name)
+    {
+
+        $class = new ReflectionClass('Seat\Eseye\Eseye');
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+
+        return $method;
     }
 
     public function testEseyeInstantiation()
@@ -136,10 +156,28 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Eseye::class, $this->esi->setAccessChecker($access));
     }
 
-    public function testEseyeGetAccessCheckere()
+    public function testEseyeGetAccessChecker()
     {
 
         $this->assertInstanceOf(CheckAccess::class, $this->esi->getAccesChecker());
+    }
+
+    public function testEseyeGetsFetcher()
+    {
+
+        $get_fetcher = self::getMethod('getFetcher');
+        $return = $get_fetcher->invokeArgs(new Eseye, []);
+
+        $this->assertInstanceOf(EseyeFetcher::class, $return);
+    }
+
+    public function testEseyeGetsCache()
+    {
+
+        $get_fetcher = self::getMethod('getCache');
+        $return = $get_fetcher->invokeArgs(new Eseye, []);
+
+        $this->assertInstanceOf(CacheInterface::class, $return);
     }
 
     public function testEseyeGetAndSetQueryString()
@@ -160,13 +198,29 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['foo'], $this->esi->getBody());
     }
 
-    public function testEseyeBuildingDataUri()
+    public function testEseyeBuildValidDataUri()
     {
 
         $uri = $this->esi->buildDataUri('/{foo}/', ['foo' => 'bar']);
 
         $this->assertEquals('https://esi.tech.ccp.is/latest/bar/?datasource=test',
             $uri->__toString());
+    }
+
+    public function testEseyeBuildDataUriFailsOnEmptyDataArray()
+    {
+
+        $this->expectException(UriDataMissingException::class);
+
+        $this->esi->buildDataUri('/{foo}/', []);
+    }
+
+    public function testEseyeBuildDataUriFailsOnIncompleteDataArray()
+    {
+
+        $this->expectException(UriDataMissingException::class);
+
+        $this->esi->buildDataUri('/{foo}/', ['bar' => 'baz']);
     }
 
 }

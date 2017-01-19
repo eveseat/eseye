@@ -20,40 +20,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-use Predis\Client;
-use Seat\Eseye\Cache\RedisCache;
+use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Exceptions\RequestFailedException;
 
-class RedisCacheTest extends PHPUnit_Framework_TestCase
+class RequestFailedExceptionTest extends PHPUnit_Framework_TestCase
 {
 
-    protected $redis_cache;
+    protected $exception;
 
     public function setUp()
     {
 
-        $redis = $this->createMock(Client::class);
-
-        // Set the cache
-        $this->redis_cache = new RedisCache($redis);
+        $this->exception = new RequestFailedException(new Exception('Foo'), new EsiResponse(
+            (object) json_decode(json_encode(['error' => 'test'])),
+            'now',
+            500
+        ));
     }
 
-    public function testRedisCacheInstantiates()
+    public function testRequestFailedGetsErrors()
     {
 
-        $this->assertInstanceOf(RedisCache::class, $this->redis_cache);
+        $error = $this->exception->getError();
+
+        $this->assertEquals('test', $error);
     }
 
-    public function testRedisCacheInstantiatesWithoutArgument()
+    public function testRequestFailedGetsEsiResponse()
     {
 
-        $this->assertInstanceOf(RedisCache::class, new RedisCache);
-    }
+        $response = $this->exception->getEsiResponse();
 
-    public function testRedisCacheBuildsCacheKey()
-    {
-
-        $key = $this->redis_cache->buildCacheKey('/test', 'foo=bar');
-        $this->assertEquals('b0f071c288f528954cddef0e1aa24df41de874aa', $key);
+        $this->assertInstanceOf(EsiResponse::class, $response);
     }
 
 }

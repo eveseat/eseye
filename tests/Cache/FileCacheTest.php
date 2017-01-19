@@ -23,6 +23,8 @@
 use org\bovigo\vfs\vfsStream;
 use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Configuration;
+use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Exceptions\CachePathException;
 
 class FileCacheTest extends PHPUnit_Framework_TestCase
 {
@@ -53,12 +55,30 @@ class FileCacheTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->file_cache->checkCacheDirectory());
     }
 
-    public function testFileCacheBuildsRelativePath()
+    public function testFileCacheBuildsRelativePathWithoutQueryString()
     {
 
         $path = $this->file_cache->buildRelativePath('/test');
 
         $this->assertEquals('vfs://cache/test//', $path);
+    }
+
+    public function testFileCacheBuildsRelativePathWithQueryString()
+    {
+
+        $path = $this->file_cache->buildRelativePath('/test', 'foo=bar');
+
+        $this->assertEquals('vfs://cache/test/2fb8f40115dd1e695cbe23d4f97ce5b1fb697eee/', $path);
+    }
+
+    public function testFileCacheFailsCreatingDirectoryOnInvalidPath()
+    {
+
+        $this->expectException(CachePathException::class);
+
+        Configuration::getInstance()
+            ->file_cache_location = '/completely/invalid/path';
+        new FileCache;
     }
 
     /**

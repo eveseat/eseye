@@ -27,20 +27,27 @@ use Seat\Eseye\Log\NullLogger;
 class CheckAccessTest extends PHPUnit_Framework_TestCase
 {
 
+    protected $check_access;
+
+    public function setUp()
+    {
+
+        $this->check_access = new CheckAccess;
+    }
+
     public function testCheckAccessObjectInstantiation()
     {
 
-        $this->assertInstanceOf(CheckAccess::class, new CheckAccess);
+        $this->assertInstanceOf(CheckAccess::class, $this->check_access);
     }
 
     public function testCheckAccessCanShouldGrantAccess()
     {
 
-        $check = new CheckAccess;
         $scopes = [
             'esi-assets.read_assets.v1',
         ];
-        $result = $check->can('get', '/characters/{character_id}/assets/', $scopes);
+        $result = $this->check_access->can('get', '/characters/{character_id}/assets/', $scopes);
 
         $this->assertTrue($result);
     }
@@ -49,13 +56,20 @@ class CheckAccessTest extends PHPUnit_Framework_TestCase
     {
 
 
-        $check = new CheckAccess;
         $scopes = [
             'esi-assets.read_assets.v1',
         ];
-        $result = $check->can('get', '/characters/{character_id}/bookmarks/', $scopes);
+        $result = $this->check_access->can('get', '/characters/{character_id}/bookmarks/', $scopes);
 
         $this->assertFalse($result);
+    }
+
+    public function testCheckAccessCanShouldAllowPublicOnlyCall()
+    {
+
+        $result = $this->check_access->can('get', '/alliances/', []);
+
+        $this->assertTrue($result);
     }
 
     public function testCheckAccessShouldAllowAccessToUnknownUri()
@@ -64,8 +78,7 @@ class CheckAccessTest extends PHPUnit_Framework_TestCase
         // Disable logging.
         Configuration::getInstance()->logger = NullLogger::class;
 
-        $check = new CheckAccess;
-        $result = $check->can('get', '/invalid/uri', []);
+        $result = $this->check_access->can('get', '/invalid/uri', []);
 
         $this->assertTrue($result);
     }

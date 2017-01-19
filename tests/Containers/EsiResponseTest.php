@@ -54,6 +54,15 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->esi_response->expired());
     }
 
+    public function testEsiResponseTestPayloadIsNotExpired()
+    {
+
+        $data = json_encode(['foo' => 'bar']);
+        $esi = new EsiResponse(json_decode($data), '3000-01-01 00:00:00', 200);
+
+        $this->assertFalse($esi->expired());
+    }
+
     public function testEsiResponseDoesNothaveError()
     {
 

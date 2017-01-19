@@ -67,7 +67,7 @@ class FileCache implements CacheInterface
 
         // Ensure the cache path exists
         if (! is_dir($this->cache_path) &&
-            ! mkdir($this->cache_path, 0775, true)
+            ! @mkdir($this->cache_path, 0775, true)
         ) {
             throw new CachePathException(
                 'Unable to create cache directory ' . $this->cache_path);

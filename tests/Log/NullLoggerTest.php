@@ -20,40 +20,42 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-use Predis\Client;
-use Seat\Eseye\Cache\RedisCache;
+use Seat\Eseye\Log\NullLogger;
 
-class RedisCacheTest extends PHPUnit_Framework_TestCase
+class NullLoggerTest extends PHPUnit_Framework_TestCase
 {
 
-    protected $redis_cache;
-
+    protected $logger;
+    
     public function setUp()
     {
 
-        $redis = $this->createMock(Client::class);
-
-        // Set the cache
-        $this->redis_cache = new RedisCache($redis);
+        
+        $this->logger = new NullLogger;
     }
 
-    public function testRedisCacheInstantiates()
+    public function testNullLoggerIgnoresInfo()
     {
 
-        $this->assertInstanceOf(RedisCache::class, $this->redis_cache);
+        $this->assertNull($this->logger->log('foo'));
     }
 
-    public function testRedisCacheInstantiatesWithoutArgument()
+    public function testNullLoggerIgnoresDebug()
     {
 
-        $this->assertInstanceOf(RedisCache::class, new RedisCache);
+        $this->assertNull($this->logger->debug('foo'));
     }
 
-    public function testRedisCacheBuildsCacheKey()
+    public function testNullLoggerIgnoresWarning()
     {
 
-        $key = $this->redis_cache->buildCacheKey('/test', 'foo=bar');
-        $this->assertEquals('b0f071c288f528954cddef0e1aa24df41de874aa', $key);
+        $this->assertNull($this->logger->warning('foo'));
+    }
+
+    public function testNullLoggerIgnoresErro()
+    {
+
+        $this->assertNull($this->logger->error('foo'));
     }
 
 }
