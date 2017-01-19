@@ -13,5 +13,9 @@
         <whitelist>
             <directory suffix=".php">./src/</directory>
         </whitelist>
+        <blacklist>
+            <file>*Interface.php</file>
+            <file>*Exception.php</file>
+        </blacklist>
     </filter>
 </phpunit>
