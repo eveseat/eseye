@@ -59,6 +59,15 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('https://esi.url/type=refresh_token', $stripped);
     }
 
+    public function testEseyeFetcherStripRefreshTokenNoTokenMention()
+    {
+
+        $url = 'https://esi.url/foo=bar';
+        $stripped = $this->fetcher->stripRefreshTokenValue($url);
+
+        $this->assertEquals($url, $stripped);
+    }
+
     public function testEseyeFetcherMakeEsiResponseContainer()
     {
 
