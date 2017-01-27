@@ -275,8 +275,8 @@ class Eseye
         // Call ESI itself and get the EsiResponse
         $result = $this->rawFetch($method, $uri, $this->getBody());
 
-        // Cache the response if it was a get
-        if (strtolower($method) == 'get')
+        // Cache the response if it was a get and is not already expired
+        if (strtolower($method) == 'get' && ! $result->expired())
             $this->getCache()->set($uri->getPath(), $uri->getQuery(), $result);
 
         return $result;
