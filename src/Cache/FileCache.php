@@ -156,7 +156,7 @@ class FileCache implements CacheInterface
         // If the cached entry is expired, remove it.
         if ($file->expired()) {
 
-            $this->forget($uri);
+            $this->forget($uri, $query);
 
             return false;
         }
