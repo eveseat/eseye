@@ -176,7 +176,7 @@ class FileCache implements CacheInterface
         $path = $this->buildRelativePath($uri, $query);
         $cache_file_path = $path . $this->results_filename;
 
-        unlink($cache_file_path);
+        @unlink($cache_file_path);
     }
 
     /**
