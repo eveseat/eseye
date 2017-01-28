@@ -20,17 +20,31 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\EseyeFetcher;
+use Seat\Eseye\Exceptions\RequestFailedException;
+use Seat\Eseye\Log\NullLogger;
 
 class EseyeFetcherTest extends PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var EseyeFetcher
+     */
     protected $fetcher;
 
     public function setUp()
     {
+
+        // Remove logging
+        $configuration = Configuration::getInstance();
+        $configuration->logger = NullLogger::class;
 
         $this->fetcher = new EseyeFetcher;
     }
@@ -96,11 +110,143 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(EsiAuthentication::class, $fetcher->getAuthentication());
     }
 
+    public function testEseyeSetsAuthentication()
+    {
+
+        $this->fetcher->setAuthentication(new EsiAuthentication([
+            'client_id'     => 'foo',
+            'secret'        => 'bar',
+            'access_token'  => '_',
+            'refresh_token' => 'baz',
+            'token_expires' => '1970-01-01 00:00:00',
+            'scopes'        => ['public'],
+        ]));
+
+        $this->assertInstanceOf(EsiAuthentication::class, $this->fetcher->getAuthentication());
+    }
+
     public function testEseyeFetcherGetPublicScopeWithoutAuthentication()
     {
 
         $scopes = $this->fetcher->getAuthenticationScopes();
 
         $this->assertEquals(1, count($scopes));
+    }
+
+    public function testEseyeCallingWithoutAuthentication()
+    {
+
+        $mock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode(['foo' => 'var'])),
+        ]);
+
+        // Update the fetchers client
+        $this->fetcher->setClient(new Client([
+            'handler' => HandlerStack::create($mock),
+        ]));
+
+        $response = $this->fetcher->call('get', '/foo', ['foo' => 'bar']);
+
+        $this->assertInstanceOf(EsiResponse::class, $response);
+    }
+
+    public function testEseyeCallingWithAuthentication()
+    {
+
+        $mock = new MockHandler([
+            // RefreshToken response
+            new Response(200, ['X-Foo' => 'Bar'], json_encode([
+                'access_token' => 'foo', 'expires_in' => 1200, 'refresh_token' => 'bar',
+            ])),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode(['foo' => 'var'])),
+        ]);
+
+        // Update the fetchers client
+        $this->fetcher->setClient(new Client([
+            'handler' => HandlerStack::create($mock),
+        ]));
+
+        // Update the fetchers authentication
+        $this->fetcher->setAuthentication(new EsiAuthentication([
+            'client_id'     => 'foo',
+            'secret'        => 'bar',
+            'access_token'  => '_',
+            'refresh_token' => 'baz',
+            'token_expires' => '1970-01-01 00:00:00',
+            'scopes'        => ['public'],
+        ]));
+
+        $response = $this->fetcher->call('get', '/foo', ['foo' => 'bar']);
+
+        $this->assertInstanceOf(EsiResponse::class, $response);
+    }
+
+    public function testEseyeCallingCatchesRequestAuthenticationFailure()
+    {
+
+        $this->expectException(RequestFailedException::class);
+
+        $mock = new MockHandler([
+            new Response(401),
+        ]);
+
+        // Update the fetchers client
+        $this->fetcher->setClient(new Client([
+            'handler' => HandlerStack::create($mock),
+        ]));
+
+        $this->fetcher->call('get', '/foo', ['foo' => 'bar']);
+    }
+
+    public function testEseyeFetcherMakesHttpRequest()
+    {
+
+        $mock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode(['foo' => 'var'])),
+        ]);
+
+        // Update the fetchers client
+        $this->fetcher->setClient(new Client([
+            'handler' => HandlerStack::create($mock),
+        ]));
+
+        $response = $this->fetcher->httpRequest('get', '/foo');
+
+        $this->assertInstanceOf(EsiResponse::class, $response);
+
+    }
+
+    public function testEseyeSetsAuthenticationScopes()
+    {
+
+        $mock = new MockHandler([
+            // RefreshToken response
+            new Response(200, ['X-Foo' => 'Bar'], json_encode([
+                'access_token' => 'foo', 'expires_in' => 1200, 'refresh_token' => 'bar',
+            ])),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode([
+                'Scopes' => 'foo bar baz',
+            ])),
+        ]);
+
+        // Update the fetchers client
+        $this->fetcher->setClient(new Client([
+            'handler' => HandlerStack::create($mock),
+        ]));
+
+        // Update the fetchers authentication
+        $this->fetcher->setAuthentication(new EsiAuthentication([
+            'client_id'     => 'foo',
+            'secret'        => 'bar',
+            'access_token'  => '_',
+            'refresh_token' => 'baz',
+            'token_expires' => '1970-01-01 00:00:00',
+            'scopes'        => ['public'],
+        ]));
+
+        $this->fetcher->setAuthenticationScopes();
+        $scopes = $this->fetcher->getAuthenticationScopes();
+
+        $this->assertEquals(['foo', 'bar', 'baz', 'public'], $scopes);
     }
 }
