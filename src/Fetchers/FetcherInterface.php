@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -21,16 +22,14 @@
 
 namespace Seat\Eseye\Fetchers;
 
-
 use Seat\Eseye\Containers\EsiResponse;
 
 /**
- * Interface FetcherInterface
+ * Interface FetcherInterface.
  * @package Seat\Eseye\Fetchers
  */
 interface FetcherInterface
 {
-
     /**
      * @param string $method
      * @param string $uri
@@ -40,5 +39,4 @@ interface FetcherInterface
      * @return \Seat\Eseye\Containers\EsiResponse
      */
     public function call(string $method, string $uri, array $body, array $headers = []): EsiResponse;
-
 }
