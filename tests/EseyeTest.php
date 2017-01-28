@@ -249,10 +249,13 @@ class EseyeTest extends PHPUnit_Framework_TestCase
             new Response(200, ['Expires' => 'Sat, 28 Jan 4017 05:46:49 GMT'], json_encode(['foo' => 'bar'])),
         ]);
 
-        // Update the fetchers client
-        $this->esi->setFetcher(new GuzzleFetcher(null, new Client([
+        $fetcher = new GuzzleFetcher;
+        $fetcher->setClient(new Client([
             'handler' => HandlerStack::create($mock),
-        ])));
+        ]));
+
+        // Update the fetchers client
+        $this->esi->setFetcher($fetcher);
 
         $response = $this->esi->invoke('get', '/foo');
 
