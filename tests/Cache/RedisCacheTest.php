@@ -22,11 +22,17 @@
 
 use Predis\Client;
 use Seat\Eseye\Cache\RedisCache;
+use Seat\Eseye\Containers\EsiResponse;
 
 class RedisCacheTest extends PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var RedisCache
+     */
     protected $redis_cache;
+
+    protected $esi_response_object;
 
     public function setUp()
     {
@@ -35,6 +41,7 @@ class RedisCacheTest extends PHPUnit_Framework_TestCase
 
         // Set the cache
         $this->redis_cache = new RedisCache($redis);
+        $this->esi_response_object = new EsiResponse(new stdClass(), 'now', 200);
     }
 
     public function testRedisCacheInstantiates()
@@ -54,6 +61,18 @@ class RedisCacheTest extends PHPUnit_Framework_TestCase
 
         $key = $this->redis_cache->buildCacheKey('/test', 'foo=bar');
         $this->assertEquals('b0f071c288f528954cddef0e1aa24df41de874aa', $key);
+    }
+
+    public function testRedisCacheSetsKey()
+    {
+
+        $this->redis_cache->set('/foo', 'foo=bar', $this->esi_response_object);
+    }
+
+    public function testRedisCacheForgetsKey()
+    {
+
+        $this->redis_cache->forget('/foo', 'foo=bar');
     }
 
 }

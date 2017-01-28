@@ -78,6 +78,15 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Test Error', $esi->error());
     }
 
+    public function testEsiResponseDoesHaveErrorAndDescription()
+    {
+
+        $data = json_encode(['error' => 'Test Error', 'error_description' => 'Test Description']);
+        $esi = new EsiResponse(json_decode($data), 'now', 500);
+
+        $this->assertEquals('Test Error: Test Description', $esi->error());
+    }
+
     public function testEsiResponseCanGetErrorCode()
     {
 

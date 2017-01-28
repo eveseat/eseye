@@ -28,6 +28,7 @@ use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\EseyeFetcher;
+use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use Seat\Eseye\Log\NullLogger;
 
@@ -47,6 +48,23 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $configuration->logger = NullLogger::class;
 
         $this->fetcher = new EseyeFetcher;
+    }
+
+    /**
+     * Helper method to set private methods public.
+     *
+     * @param $name
+     *
+     * @return \ReflectionMethod
+     */
+    protected static function getMethod($name)
+    {
+
+        $class = new ReflectionClass('Seat\Eseye\EseyeFetcher');
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+
+        return $method;
     }
 
     public function testEseyeFetcherInstantiation()
@@ -123,6 +141,25 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         ]));
 
         $this->assertInstanceOf(EsiAuthentication::class, $this->fetcher->getAuthentication());
+    }
+
+    public function testEseyeFailsSettingInvalidAuthentication()
+    {
+
+        $this->expectException(InvalidAuthencationException::class);
+
+        $this->fetcher->setAuthentication(new EsiAuthentication([
+            'client_id' => null,
+        ]));
+    }
+
+    public function testEseyeShouldFailGettingTokenWithoutAuthentication()
+    {
+
+        $this->expectException(InvalidAuthencationException::class);
+
+        $get_token = self::getMethod('getToken');
+        $get_token->invokeArgs(new EseyeFetcher, []);
     }
 
     public function testEseyeFetcherGetPublicScopeWithoutAuthentication()
@@ -216,7 +253,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
 
     }
 
-    public function testEseyeCOnstructsWithClientANdSetsAuthenticationScopes()
+    public function testEseyeConstructsWithClientAndGetsAuthenticationScopes()
     {
 
         $mock = new MockHandler([
@@ -235,7 +272,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         ]);
 
         // Update the fetchers authentication
-        $authencition = new EsiAuthentication([
+        $authentication = new EsiAuthentication([
             'client_id'     => 'foo',
             'secret'        => 'bar',
             'access_token'  => '_',
@@ -243,9 +280,8 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
             'token_expires' => '1970-01-01 00:00:00',
         ]);
 
-        $fetcher = new EseyeFetcher($authencition, $client);
+        $fetcher = new EseyeFetcher($authentication, $client);
 
-        $fetcher->setAuthenticationScopes();
         $scopes = $fetcher->getAuthenticationScopes();
 
         $this->assertEquals(['foo', 'bar', 'baz', 'public'], $scopes);

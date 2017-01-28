@@ -20,12 +20,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
+use Seat\Eseye\Cache\NullCache;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Eseye;
 use Seat\Eseye\EseyeFetcher;
+use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
@@ -34,12 +40,22 @@ use Seat\Eseye\Log\LogInterface;
 class EseyeTest extends PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var Eseye
+     */
     protected $esi;
 
     public function setUp()
     {
 
-        $this->esi = new Eseye();
+        // Remove logging
+        $configuration = Configuration::getInstance();
+        $configuration->logger = NullLogger::class;
+
+        // Remove caching
+        $configuration->cache = NullCache::class;
+
+        $this->esi = new Eseye;
     }
 
     /**
@@ -94,6 +110,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
 
         $authentication = new EsiAuthentication([
             'foo' => 'bar',
+            'baz' => null,
         ]);
         $this->esi->setAuthentication($authentication);
     }
@@ -221,6 +238,61 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $this->expectException(UriDataMissingException::class);
 
         $this->esi->buildDataUri('/{foo}/', ['bar' => 'baz']);
+    }
+
+    public function testEseyeMakesEsiApiCallWithCachedResponse()
+    {
+
+        $mock = new MockHandler([
+            new Response(200, ['Expires' => 'Sat, 28 Jan 4017 05:46:49 GMT'], json_encode(['foo' => 'bar'])),
+        ]);
+
+        // Update the fetchers client
+        $this->esi->setFetcher(new EseyeFetcher(null, new Client([
+            'handler' => HandlerStack::create($mock),
+        ])));
+
+        $response = $this->esi->invoke('get', '/foo');
+
+        $this->assertEquals('bar', $response->foo);
+
+    }
+
+    public function testEseyeMakesEsiApiCallWithoutCachedResponse()
+    {
+
+        $mock = new MockHandler([
+            new Response(200, ['Foo' => 'Bar'], json_encode(['foo' => 'bar'])),
+        ]);
+
+        // Update the fetchers client
+        $this->esi->setFetcher(new EseyeFetcher(null, new Client([
+            'handler' => HandlerStack::create($mock),
+        ])));
+
+        $response = $this->esi->invoke('post', '/foo');
+
+        $this->assertEquals('bar', $response->foo);
+
+    }
+
+    public function testEseyeMakesEsiApiCallToAuthenticatedEndpointWithoutAccess()
+    {
+
+        $this->expectException(EsiScopeAccessDeniedException::class);
+
+        $mock = new MockHandler([
+            new Response(401),
+        ]);
+
+        // Update the fetchers client
+        $this->esi->setFetcher(new EseyeFetcher(null, new Client([
+            'handler' => HandlerStack::create($mock),
+        ])));
+
+        $this->esi->invoke('get', '/characters/{character_id}/assets/', [
+            'character_id' => 123,
+        ]);
     }
 
 }
