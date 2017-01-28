@@ -38,6 +38,11 @@ class RequestFailedException extends Exception
     private $esi_response;
 
     /**
+     * @var \Exception
+     */
+    private $original_exception;
+
+    /**
      * RequestFailedException constructor.
      *
      * @param \Exception                         $exception
@@ -47,6 +52,7 @@ class RequestFailedException extends Exception
     {
 
         $this->esi_response = $esi_response;
+        $this->original_exception = $exception;
 
         // Finish constructing the exception
         parent::__construct(
@@ -72,5 +78,14 @@ class RequestFailedException extends Exception
     {
 
         return $this->esi_response;
+    }
+
+    /**
+     * @return \Exception
+     */
+    public function getOriginalException(): Exception
+    {
+
+        return $this->original_exception;
     }
 }

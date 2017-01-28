@@ -26,6 +26,9 @@ use Seat\Eseye\Exceptions\RequestFailedException;
 class RequestFailedExceptionTest extends PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var RequestFailedException
+     */
     protected $exception;
 
     public function setUp()
@@ -52,6 +55,14 @@ class RequestFailedExceptionTest extends PHPUnit_Framework_TestCase
         $response = $this->exception->getEsiResponse();
 
         $this->assertInstanceOf(EsiResponse::class, $response);
+    }
+
+    public function testRequestFailedGetsOriginalException()
+    {
+
+        $response = $this->exception->getOriginalException();
+
+        $this->assertInstanceOf(Exception::class, $response);
     }
 
 }
