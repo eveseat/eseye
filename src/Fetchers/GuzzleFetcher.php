@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of SeAT
  *
@@ -34,7 +35,7 @@ use Seat\Eseye\Exceptions\RequestFailedException;
 use stdClass;
 
 /**
- * Class GuzzleFetcher
+ * Class GuzzleFetcher.
  * @package Seat\Eseye\Fetchers
  */
 class GuzzleFetcher implements FetcherInterface
@@ -327,5 +328,4 @@ class GuzzleFetcher implements FetcherInterface
         // ... and update the container
         $this->authentication = $authentication;
     }
-
 }
