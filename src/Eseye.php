@@ -28,6 +28,7 @@ use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
@@ -157,6 +158,15 @@ class Eseye
             $this->fetcher = new EseyeFetcher($this->authentication);
 
         return $this->fetcher;
+    }
+
+    /**
+     * @param \Seat\Eseye\EseyeFetcher $fetcher
+     */
+    public function setFetcher(EseyeFetcher $fetcher)
+    {
+
+        $this->fetcher = $fetcher;
     }
 
     /**
