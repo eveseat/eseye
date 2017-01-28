@@ -41,7 +41,7 @@ class EsiConfiguration extends AbstractArrayAccess
      * @var array
      */
     protected $data = [
-        'http_user_agent'      => 'Eseye Library',
+        'http_user_agent'      => 'Eseye Default Library',
         'datasource'           => 'tranquility',
 
         // Logging

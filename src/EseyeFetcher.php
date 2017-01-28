@@ -126,7 +126,7 @@ class EseyeFetcher
 
         // Include some basic headers to those already passed in. Everything
         // is considered to be Json.
-        array_merge($headers, [
+        $headers = array_merge($headers, [
             'Accept'       => 'application/json',
             'Content-Type' => 'application/json',
             'User-Agent'   => 'Eseye/' . Eseye::VERSION . '/' .
