@@ -32,6 +32,7 @@ use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
+use Seat\Eseye\Fetchers\FetcherInterface;
 use Seat\Eseye\Log\LogInterface;
 
 /**
@@ -149,21 +150,25 @@ class Eseye
     }
 
     /**
-     * @return \Seat\Eseye\EseyeFetcher
+     * @return \Seat\Eseye\Fetchers\FetcherInterface
      */
-    private function getFetcher(): EseyeFetcher
+    private function getFetcher(): FetcherInterface
     {
 
-        if (! $this->fetcher)
-            $this->fetcher = new EseyeFetcher($this->authentication);
+        if (! $this->fetcher) {
+
+            $fetcher_class = $this->getConfiguration()->fetcher;
+            $this->fetcher = new $fetcher_class(...[$this->authentication]);
+
+        }
 
         return $this->fetcher;
     }
 
     /**
-     * @param \Seat\Eseye\EseyeFetcher $fetcher
+     * @param \Seat\Eseye\Fetchers\FetcherInterface $fetcher
      */
-    public function setFetcher(EseyeFetcher $fetcher)
+    public function setFetcher(FetcherInterface $fetcher)
     {
 
         $this->fetcher = $fetcher;

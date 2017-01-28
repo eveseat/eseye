@@ -24,6 +24,7 @@ namespace Seat\Eseye\Containers;
 
 use Monolog\Logger;
 use Seat\Eseye\Cache\FileCache;
+use Seat\Eseye\Fetchers\GuzzleFetcher;
 use Seat\Eseye\Log\FileLogger;
 use Seat\Eseye\Traits\ConstructsContainers;
 use Seat\Eseye\Traits\ValidatesContainers;
@@ -43,6 +44,9 @@ class EsiConfiguration extends AbstractArrayAccess
     protected $data = [
         'http_user_agent'      => 'Eseye Default Library',
         'datasource'           => 'tranquility',
+
+        // Fetcher
+        'fetcher'              => GuzzleFetcher::class,
 
         // Logging
         'logger'               => FileLogger::class,

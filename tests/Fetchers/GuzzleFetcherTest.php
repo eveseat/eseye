@@ -30,13 +30,14 @@ use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\EseyeFetcher;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
+use Seat\Eseye\Fetchers\GuzzleFetcher;
 use Seat\Eseye\Log\NullLogger;
 
-class EseyeFetcherTest extends PHPUnit_Framework_TestCase
+class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var EseyeFetcher
+     * @var GuzzleFetcher
      */
     protected $fetcher;
 
@@ -47,7 +48,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $configuration = Configuration::getInstance();
         $configuration->logger = NullLogger::class;
 
-        $this->fetcher = new EseyeFetcher;
+        $this->fetcher = new GuzzleFetcher;
     }
 
     /**
@@ -60,20 +61,29 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
     protected static function getMethod($name)
     {
 
-        $class = new ReflectionClass('Seat\Eseye\EseyeFetcher');
+        $class = new ReflectionClass('Seat\Eseye\Fetchers\GuzzleFetcher');
         $method = $class->getMethod($name);
         $method->setAccessible(true);
 
         return $method;
     }
 
-    public function testEseyeFetcherInstantiation()
+    public function testGuzzleFetcherInstantiation()
     {
 
-        $this->assertInstanceOf(EseyeFetcher::class, $this->fetcher);
+        $this->assertInstanceOf(GuzzleFetcher::class, $this->fetcher);
     }
 
-    public function testEseyeFetcherStripRefreshTokenFromUrl()
+    public function testGuzzleGetsClientIfNoneSet()
+    {
+
+        $fetcher = new GuzzleFetcher;
+        $client = $fetcher->getClient();
+
+        $this->assertInstanceOf(Client::class, $client);
+    }
+
+    public function testGuzzleFetcherStripRefreshTokenFromUrl()
     {
 
         $url = 'https://esi.url/oauth?type=refresh_token&refresh_token=foo';
@@ -82,7 +92,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('https://esi.url/oauth?type=refresh_token', $stripped);
     }
 
-    public function testEseyeFetcherStripRefreshTokenFromUrlWithoutRefreshToken()
+    public function testGuzzleFetcherStripRefreshTokenFromUrlWithoutRefreshToken()
     {
 
         $url = 'https://esi.url/type=refresh_token';
@@ -91,7 +101,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('https://esi.url/type=refresh_token', $stripped);
     }
 
-    public function testEseyeFetcherStripRefreshTokenNoTokenMention()
+    public function testGuzzleFetcherStripRefreshTokenNoTokenMention()
     {
 
         $url = 'https://esi.url/foo=bar';
@@ -100,7 +110,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($url, $stripped);
     }
 
-    public function testEseyeFetcherMakeEsiResponseContainer()
+    public function testGuzzleFetcherMakeEsiResponseContainer()
     {
 
         $response = json_decode(json_encode(['response' => 'ok']));
@@ -110,7 +120,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(EsiResponse::class, $container);
     }
 
-    public function testEseyeFetcherGetAuthenticationWhenNoneSet()
+    public function testGuzzleFetcherGetAuthenticationWhenNoneSet()
     {
 
         $authentication = $this->fetcher->getAuthentication();
@@ -118,17 +128,17 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertNull($authentication);
     }
 
-    public function testEseyeFetcherGetAuthenticationWhenSettingAuthentication()
+    public function testGuzzleFetcherGetAuthenticationWhenSettingAuthentication()
     {
 
-        $fetcher = new EseyeFetcher(new EsiAuthentication([
+        $fetcher = new GuzzleFetcher(new EsiAuthentication([
             'client_id' => 'foo',
         ]));
 
         $this->assertInstanceOf(EsiAuthentication::class, $fetcher->getAuthentication());
     }
 
-    public function testEseyeSetsAuthentication()
+    public function testGuzzleSetsAuthentication()
     {
 
         $this->fetcher->setAuthentication(new EsiAuthentication([
@@ -143,7 +153,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(EsiAuthentication::class, $this->fetcher->getAuthentication());
     }
 
-    public function testEseyeFailsSettingInvalidAuthentication()
+    public function testGuzzleFailsSettingInvalidAuthentication()
     {
 
         $this->expectException(InvalidAuthencationException::class);
@@ -153,16 +163,16 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         ]));
     }
 
-    public function testEseyeShouldFailGettingTokenWithoutAuthentication()
+    public function testGuzzleShouldFailGettingTokenWithoutAuthentication()
     {
 
         $this->expectException(InvalidAuthencationException::class);
 
         $get_token = self::getMethod('getToken');
-        $get_token->invokeArgs(new EseyeFetcher, []);
+        $get_token->invokeArgs(new GuzzleFetcher, []);
     }
 
-    public function testEseyeFetcherGetPublicScopeWithoutAuthentication()
+    public function testGuzzleFetcherGetPublicScopeWithoutAuthentication()
     {
 
         $scopes = $this->fetcher->getAuthenticationScopes();
@@ -170,7 +180,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($scopes));
     }
 
-    public function testEseyeCallingWithoutAuthentication()
+    public function testGuzzleCallingWithoutAuthentication()
     {
 
         $mock = new MockHandler([
@@ -187,7 +197,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(EsiResponse::class, $response);
     }
 
-    public function testEseyeCallingWithAuthentication()
+    public function testGuzzleCallingWithAuthentication()
     {
 
         $mock = new MockHandler([
@@ -218,7 +228,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(EsiResponse::class, $response);
     }
 
-    public function testEseyeCallingCatchesRequestAuthenticationFailure()
+    public function testGuzzleCallingCatchesRequestAuthenticationFailure()
     {
 
         $this->expectException(RequestFailedException::class);
@@ -235,7 +245,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         $this->fetcher->call('get', '/foo', ['foo' => 'bar']);
     }
 
-    public function testEseyeFetcherMakesHttpRequest()
+    public function testGuzzleFetcherMakesHttpRequest()
     {
 
         $mock = new MockHandler([
@@ -253,7 +263,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
 
     }
 
-    public function testEseyeConstructsWithClientAndGetsAuthenticationScopes()
+    public function testGuzzleConstructsWithClientAndGetsAuthenticationScopes()
     {
 
         $mock = new MockHandler([
@@ -280,7 +290,8 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
             'token_expires' => '1970-01-01 00:00:00',
         ]);
 
-        $fetcher = new EseyeFetcher($authentication, $client);
+        $fetcher = new GuzzleFetcher($authentication);
+        $fetcher->setClient($client);
 
         $scopes = $fetcher->getAuthenticationScopes();
 

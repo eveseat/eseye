@@ -35,6 +35,8 @@ use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
+use Seat\Eseye\Fetchers\FetcherInterface;
+use Seat\Eseye\Fetchers\GuzzleFetcher;
 use Seat\Eseye\Log\LogInterface;
 
 class EseyeTest extends PHPUnit_Framework_TestCase
@@ -185,7 +187,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $get_fetcher = self::getMethod('getFetcher');
         $return = $get_fetcher->invokeArgs(new Eseye, []);
 
-        $this->assertInstanceOf(EseyeFetcher::class, $return);
+        $this->assertInstanceOf(FetcherInterface::class, $return);
     }
 
     public function testEseyeGetsCache()
@@ -248,7 +250,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         ]);
 
         // Update the fetchers client
-        $this->esi->setFetcher(new EseyeFetcher(null, new Client([
+        $this->esi->setFetcher(new GuzzleFetcher(null, new Client([
             'handler' => HandlerStack::create($mock),
         ])));
 
@@ -265,10 +267,13 @@ class EseyeTest extends PHPUnit_Framework_TestCase
             new Response(200, ['Foo' => 'Bar'], json_encode(['foo' => 'bar'])),
         ]);
 
-        // Update the fetchers client
-        $this->esi->setFetcher(new EseyeFetcher(null, new Client([
+        $fetcher = new GuzzleFetcher;
+        $fetcher->setClient(new Client([
             'handler' => HandlerStack::create($mock),
-        ])));
+        ]));
+
+        // Update the fetchers client
+        $this->esi->setFetcher($fetcher);
 
         $response = $this->esi->invoke('post', '/foo');
 
@@ -286,7 +291,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         ]);
 
         // Update the fetchers client
-        $this->esi->setFetcher(new EseyeFetcher(null, new Client([
+        $this->esi->setFetcher(new GuzzleFetcher(null, new Client([
             'handler' => HandlerStack::create($mock),
         ])));
 

@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of SeAT
  *
@@ -20,24 +19,27 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Eseye;
+namespace Seat\Eseye\Fetchers;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
+use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Eseye;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use stdClass;
 
 /**
- * Class EseyeFetcher.
- * @package Seat\Eseye
+ * Class GuzzleFetcher
+ * @package Seat\Eseye\Fetchers
  */
-class EseyeFetcher
+class GuzzleFetcher implements FetcherInterface
 {
+
     /**
      * @var string
      */
@@ -62,22 +64,26 @@ class EseyeFetcher
      * EseyeFetcher constructor.
      *
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
-     * @param \GuzzleHttp\Client                       $client
      */
-    public function __construct(EsiAuthentication $authentication = null,
-                                Client $client = null)
+    public function __construct(EsiAuthentication $authentication = null)
     {
 
         $this->authentication = $authentication;
 
-        // Use the client we got if its set, else setup a new one.
-        if (! is_null($client))
-            $this->client = $client;
-        else
-            $this->client = new Client;
-
         // Setup the logger
         $this->logger = Configuration::getInstance()->getLogger();
+    }
+
+    /**
+     * @return \GuzzleHttp\Client
+     */
+    public function getClient(): Client
+    {
+
+        if (! $this->client)
+            $this->client = new Client;
+
+        return $this->client;
     }
 
     /**
@@ -156,7 +162,7 @@ class EseyeFetcher
         try {
 
             // Make the _actual_ request to ESI
-            $response = $this->client->send(
+            $response = $this->getClient()->send(
                 new Request($method, $uri, $headers, json_encode($body)));
 
         } catch (ClientException $e) {
@@ -321,4 +327,5 @@ class EseyeFetcher
         // ... and update the container
         $this->authentication = $authentication;
     }
+
 }
