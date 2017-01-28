@@ -216,7 +216,7 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
 
     }
 
-    public function testEseyeSetsAuthenticationScopes()
+    public function testEseyeCOnstructsWithClientANdSetsAuthenticationScopes()
     {
 
         $mock = new MockHandler([
@@ -230,22 +230,23 @@ class EseyeFetcherTest extends PHPUnit_Framework_TestCase
         ]);
 
         // Update the fetchers client
-        $this->fetcher->setClient(new Client([
+        $client = new Client([
             'handler' => HandlerStack::create($mock),
-        ]));
+        ]);
 
         // Update the fetchers authentication
-        $this->fetcher->setAuthentication(new EsiAuthentication([
+        $authencition = new EsiAuthentication([
             'client_id'     => 'foo',
             'secret'        => 'bar',
             'access_token'  => '_',
             'refresh_token' => 'baz',
             'token_expires' => '1970-01-01 00:00:00',
-            'scopes'        => ['public'],
-        ]));
+        ]);
 
-        $this->fetcher->setAuthenticationScopes();
-        $scopes = $this->fetcher->getAuthenticationScopes();
+        $fetcher = new EseyeFetcher($authencition, $client);
+
+        $fetcher->setAuthenticationScopes();
+        $scopes = $fetcher->getAuthenticationScopes();
 
         $this->assertEquals(['foo', 'bar', 'baz', 'public'], $scopes);
     }
