@@ -67,6 +67,10 @@ class EsiResponse extends ArrayObject
         if (property_exists($data, 'error'))
             $this->error_message = $data->error;
 
+        // If there is an error description, set that.
+        if (property_exists($data, 'error_description'))
+            $this->error_message .= ': ' . $data->error_description;
+
         // Run the parent constructor
         parent::__construct($data, ArrayObject::ARRAY_AS_PROPS);
     }
