@@ -62,15 +62,31 @@ class EseyeFetcher
      * EseyeFetcher constructor.
      *
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
+     * @param \GuzzleHttp\Client                       $client
      */
-    public function __construct(EsiAuthentication $authentication = null)
+    public function __construct(EsiAuthentication $authentication = null,
+                                Client $client = null)
     {
 
         $this->authentication = $authentication;
-        $this->client = new Client();
+
+        // Use the client we got if its set, else setup a new one.
+        if (! is_null($client))
+            $this->client = $client;
+        else
+            $this->client = new Client;
 
         // Setup the logger
         $this->logger = Configuration::getInstance()->getLogger();
+    }
+
+    /**
+     * @param \GuzzleHttp\Client $client
+     */
+    public function setClient(Client $client)
+    {
+
+        $this->client = $client;
     }
 
     /**
@@ -195,6 +211,20 @@ class EseyeFetcher
     {
 
         return $this->authentication;
+    }
+
+    /**
+     * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
+     *
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     */
+    public function setAuthentication(EsiAuthentication $authentication)
+    {
+
+        if (! $authentication->valid())
+            throw new InvalidAuthencationException('Authentication data invalid/empty');
+
+        $this->authentication = $authentication;
     }
 
     /**
