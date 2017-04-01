@@ -217,6 +217,23 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['foo'], $this->esi->getBody());
     }
 
+    public function testEseyeGetDefaultVersionString()
+    {
+
+        $version = $this->esi->getVersion();
+
+        $this->assertEquals('/latest', $version);
+    }
+
+    public function testEseyeSetIncompleteVersionStringAndGetsCompleteVersionString()
+    {
+
+        $this->esi->setVersion('v1');
+
+        $this->assertEquals('/v1', $this->esi->getVersion());
+
+    }
+
     public function testEseyeBuildValidDataUri()
     {
 

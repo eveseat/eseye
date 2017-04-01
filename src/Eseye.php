@@ -83,8 +83,12 @@ class Eseye
     protected $esi = [
         'scheme' => 'https',
         'host'   => 'esi.tech.ccp.is',
-        'path'   => '/latest',
     ];
+
+    /**
+     * @var string
+     */
+    protected $version = '/latest';
 
     /**
      * Eseye constructor.
@@ -253,6 +257,31 @@ class Eseye
     }
 
     /**
+     * Set the version of the API endpoints base URI
+     *
+     * @param string $version
+     */
+    public function setVersion(string $version)
+    {
+
+        if (substr($version, 0, 1) !== '/')
+            $version = '/' . $version;
+
+        $this->version = $version;
+    }
+
+    /**
+     * Get the versioned baseURI to use.
+     *
+     * @return string
+     */
+    public function getVersion(): string
+    {
+
+        return $this->version;
+    }
+
+    /**
      * @param string $method
      * @param string $uri
      * @param array  $uri_data
@@ -315,7 +344,7 @@ class Eseye
         return Uri::fromParts([
             'scheme' => $this->esi['scheme'],
             'host'   => $this->esi['host'],
-            'path'   => rtrim($this->esi['path'], '/') .
+            'path'   => rtrim($this->getVersion(), '/') .
                 $this->mapDataToUri($uri, $data),
             'query'  => http_build_query($query_params),
         ]);
