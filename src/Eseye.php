@@ -257,7 +257,7 @@ class Eseye
     }
 
     /**
-     * Set the version of the API endpoints base URI
+     * Set the version of the API endpoints base URI.
      *
      * @param string $version
      */
