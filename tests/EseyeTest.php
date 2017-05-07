@@ -231,7 +231,14 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $this->esi->setVersion('v1');
 
         $this->assertEquals('/v1', $this->esi->getVersion());
+    }
 
+    public function testEseyeReturnsEseyeAfterSettingEsiApiVersion()
+    {
+
+        $esi = $this->esi->setVersion('v4');
+
+        $this->assertInstanceOf(Eseye::class, $esi);
     }
 
     public function testEseyeBuildValidDataUri()

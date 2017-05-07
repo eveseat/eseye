@@ -260,6 +260,8 @@ class Eseye
      * Set the version of the API endpoints base URI.
      *
      * @param string $version
+     *
+     * @return \Seat\Eseye\Eseye
      */
     public function setVersion(string $version)
     {
@@ -268,6 +270,8 @@ class Eseye
             $version = '/' . $version;
 
         $this->version = $version;
+
+        return $this;
     }
 
     /**
