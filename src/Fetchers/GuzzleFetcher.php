@@ -160,11 +160,18 @@ class GuzzleFetcher implements FetcherInterface
         $this->logger->debug('Making ' . $method . ' request to ' . $uri);
         $start = microtime(true);
 
+
+        // Json encode the body if it has data, else just null it
+        if (count($body) > 0)
+            $body = json_encode($body);
+        else
+            $body = null;
+
         try {
 
             // Make the _actual_ request to ESI
             $response = $this->getClient()->send(
-                new Request($method, $uri, $headers, json_encode($body)));
+                new Request($method, $uri, $headers, $body));
 
         } catch (ClientException $e) {
 
