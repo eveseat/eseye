@@ -124,7 +124,7 @@ class FileCache implements CacheInterface
     public function set(string $uri, string $query, EsiResponse $data)
     {
 
-        $path = $this->safePath($this->buildRelativePath($uri, $query));
+        $path = $this->buildRelativePath($this->safePath($uri), $query);
 
         // Create the subpath if that does not already exist
         if (! file_exists($path))
@@ -143,7 +143,7 @@ class FileCache implements CacheInterface
     public function get(string $uri, string $query = '')
     {
 
-        $path = $this->safePath($this->buildRelativePath($uri, $query));
+        $path = $this->buildRelativePath($this->safePath($uri), $query);
         $cache_file_path = $path . $this->results_filename;
 
         // If we cant read from the cache, then just return false.
