@@ -1,5 +1,5 @@
 {
-    "name": "evex-space/eseye",
+    "name": "eveseat/eseye",
     "description": "A Standalone PHP ESI (EVE Swagger Interface) Client Library",
     "type": "library",
     "require": {
@@ -19,10 +19,6 @@
         {
             "name": "Leon Jacobs",
             "email": "leonja511@gmail.com"
-        },
-        {
-            "name": "HgAlexx",
-            "email": "mzhg@13fr.com"
         }
     ],
     "autoload": {
