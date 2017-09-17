@@ -90,7 +90,7 @@ class MemcachedCache implements CacheInterface
     public function set(string $uri, string $query, EsiResponse $data)
     {
         if ($this->is_memcached)
-            $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data),0);
+            $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), 0);
         else
             $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), $this->flags, 0);
     }
@@ -137,6 +137,6 @@ class MemcachedCache implements CacheInterface
      */
     public function has(string $uri, string $query = ''): bool
     {
-        return ($this->memcached->get($this->buildCacheKey($uri, $query)) !== false);
+        return $this->memcached->get($this->buildCacheKey($uri, $query)) !== false;
     }
 }
