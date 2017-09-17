@@ -112,6 +112,7 @@ class MemcachedCache implements CacheInterface
         if ($data->expired())
         {
             $this->forget($uri, $query);
+
             return false;
         }
 
