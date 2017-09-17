@@ -37,9 +37,9 @@ class MemcachedCacheTest extends PHPUnit_Framework_TestCase
     {
         $is_memcached = class_exists('Memcached', false);
         if ($is_memcached)
-            $instance = $this->createMock(Memcached::class);
+            $instance = $this->createMock(\Memcached::class);
         else
-            $instance = $this->createMock(Memcache::class);
+            $instance = $this->createMock(\Memcache::class);
 
         // Set the cache
         $this->memcached_cache = new MemcachedCache($instance);
