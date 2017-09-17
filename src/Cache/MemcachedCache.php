@@ -4,7 +4,6 @@
  * This file is part of SeAT
  *
  * Copyright (C) 2015, 2016, 2017  Leon Jacobs
- * Copyright (C) 2017  HgAlexx
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,40 +26,44 @@ use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
 
 /**
- * Class RedisCache.
+ * Class MemcachedCache.
  * @package Seat\Eseye\Cache
  */
 class MemcachedCache implements CacheInterface
 {
     use HashesStrings;
 
+    protected $prefix;
     protected $is_memcached;
 
     protected $memcached;
     protected $flags;
 
-    public function __construct()
+    public function __construct($instance = null)
     {
+        if ($instance != null)
+            $this->memcached = $instance;
+
         $this->is_memcached = class_exists('Memcached', false);
+
+        $configuration = Configuration::getInstance();
+        $this->prefix = $configuration->memcached_cache_prefix;
 
         if (is_null($this->memcached))
         {
-            $configuration = Configuration::getInstance();
-
             if ($this->is_memcached)
                 $this->memcached = new \Memcached();
             else
                 $this->memcached = new \Memcache();
 
-            $this->memcached->addServer($configuration->memcached_host, $configuration->memcached_port, 0);
+            $this->memcached->addServer($configuration->memcached_cache_host, $configuration->memcached_cache_port, 0);
 
             if ($this->is_memcached)
-                $this->memcached->setOption(Memcached::OPT_COMPRESSION, ($configuration->memcached_compressed));
+                $this->memcached->setOption(Memcached::OPT_COMPRESSION, ($configuration->memcached_cache_compressed));
             else
-                $this->flags = ($configuration->memcached_compressed) ? MEMCACHE_COMPRESSED : 0;
+                $this->flags = ($configuration->memcached_cache_compressed) ? MEMCACHE_COMPRESSED : 0;
         }
 
-        return;
     }
 
     /**
@@ -74,7 +77,7 @@ class MemcachedCache implements CacheInterface
         if ($query != '')
             $query = $this->hashString($query);
 
-        return $this->hashString($uri . $query);
+        return $this->prefix . $this->hashString($uri . $query);
     }
 
     /**

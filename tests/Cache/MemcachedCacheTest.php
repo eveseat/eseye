@@ -4,7 +4,6 @@
  * This file is part of SeAT
  *
  * Copyright (C) 2015, 2016, 2017  Leon Jacobs
- * Copyright (C) 2017 HgAlexx
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,14 +35,14 @@ class MemcachedCacheTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        // Memcached: change config for test if needed
-        //$configuration = Seat\Eseye\Configuration::getInstance();
-        //$configuration->memcached_host = '192.168.0.151';
-        //$configuration->memcached_port = 11211;
-        //$configuration->memcached_compressed = true;
+        $is_memcached = class_exists('Memcached', false);
+        if ($is_memcached)
+            $instance = $this->createMock(Memcached::class);
+        else
+            $instance = $this->createMock(Memcache::class);
 
         // Set the cache
-        $this->memcached_cache = new MemcachedCache();
+        $this->memcached_cache = new MemcachedCache($instance);
 
         $this->esi_response_object = new EsiResponse(new stdClass(), 'now', 200);
     }
@@ -56,7 +55,7 @@ class MemcachedCacheTest extends PHPUnit_Framework_TestCase
     public function testMemcachedCacheBuildsCacheKey()
     {
         $key = $this->memcached_cache->buildCacheKey('/test', 'foo=bar');
-        $this->assertEquals('b0f071c288f528954cddef0e1aa24df41de874aa', $key);
+        $this->assertEquals('eseye:b0f071c288f528954cddef0e1aa24df41de874aa', $key);
     }
 
     public function testMemcachedCacheSetsKey()

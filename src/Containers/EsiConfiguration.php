@@ -64,9 +64,10 @@ class EsiConfiguration extends AbstractArrayAccess
         'redis_cache_prefix'   => 'eseye:',
 
         // Memcached Cache
-        'memcached_host' => '127.0.0.1',
-        'memcached_port' => '11211',
-        'memcached_compressed' => true,
+        'memcached_cache_host' => '127.0.0.1',
+        'memcached_cache_port' => '11211',
+        'memcached_cache_prefix' => 'eseye:',
+        'memcached_cache_compressed' => false,
     ];
 
 }
