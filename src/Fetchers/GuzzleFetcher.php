@@ -197,7 +197,6 @@ class GuzzleFetcher implements FetcherInterface
         $this->logger->debug('Making ' . $method . ' request to ' . $uri);
         $start = microtime(true);
 
-
         // Json encode the body if it has data, else just null it
         if (count($body) > 0)
             $body = json_encode($body);
