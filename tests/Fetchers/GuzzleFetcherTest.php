@@ -51,23 +51,6 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
         $this->fetcher = new GuzzleFetcher;
     }
 
-    /**
-     * Helper method to set private methods public.
-     *
-     * @param $name
-     *
-     * @return \ReflectionMethod
-     */
-    protected static function getMethod($name)
-    {
-
-        $class = new ReflectionClass('Seat\Eseye\Fetchers\GuzzleFetcher');
-        $method = $class->getMethod($name);
-        $method->setAccessible(true);
-
-        return $method;
-    }
-
     public function testGuzzleFetcherInstantiation()
     {
 
@@ -170,6 +153,23 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
 
         $get_token = self::getMethod('getToken');
         $get_token->invokeArgs(new GuzzleFetcher, []);
+    }
+
+    /**
+     * Helper method to set private methods public.
+     *
+     * @param $name
+     *
+     * @return \ReflectionMethod
+     */
+    protected static function getMethod($name)
+    {
+
+        $class = new ReflectionClass('Seat\Eseye\Fetchers\GuzzleFetcher');
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+
+        return $method;
     }
 
     public function testGuzzleFetcherGetPublicScopeWithoutAuthentication()

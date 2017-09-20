@@ -106,6 +106,19 @@ class Eseye
     }
 
     /**
+     * @return \Seat\Eseye\Containers\EsiAuthentication
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     */
+    public function getAuthentication(): EsiAuthentication
+    {
+
+        if (is_null($this->authentication))
+            throw new InvalidAuthencationException('Authentication data not set.');
+
+        return $this->authentication;
+    }
+
+    /**
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
      *
      * @return \Seat\Eseye\Eseye
@@ -123,68 +136,12 @@ class Eseye
     }
 
     /**
-     * @return \Seat\Eseye\Containers\EsiAuthentication
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
-     */
-    public function getAuthentication(): EsiAuthentication
-    {
-
-        if (is_null($this->authentication))
-            throw new InvalidAuthencationException('Authentication data not set.');
-
-        return $this->authentication;
-    }
-
-    /**
-     * @return \Seat\Eseye\Configuration
-     */
-    public function getConfiguration(): Configuration
-    {
-
-        return Configuration::getInstance();
-    }
-
-    /**
-     * @return \Seat\Eseye\Log\LogInterface
-     */
-    public function getLogger(): LogInterface
-    {
-
-        return $this->getConfiguration()->getLogger();
-    }
-
-    /**
-     * @return \Seat\Eseye\Fetchers\FetcherInterface
-     */
-    private function getFetcher(): FetcherInterface
-    {
-
-        if (! $this->fetcher) {
-
-            $fetcher_class = $this->getConfiguration()->fetcher;
-            $this->fetcher = new $fetcher_class(...[$this->authentication]);
-
-        }
-
-        return $this->fetcher;
-    }
-
-    /**
      * @param \Seat\Eseye\Fetchers\FetcherInterface $fetcher
      */
     public function setFetcher(FetcherInterface $fetcher)
     {
 
         $this->fetcher = $fetcher;
-    }
-
-    /**
-     * @return \Seat\Eseye\Cache\CacheInterface
-     */
-    private function getCache(): CacheInterface
-    {
-
-        return $this->getConfiguration()->getCache();
     }
 
     /**
@@ -201,40 +158,6 @@ class Eseye
     }
 
     /**
-     * @return \Seat\Eseye\Access\CheckAccess
-     */
-    public function getAccesChecker()
-    {
-
-        if (! $this->access_checker)
-            $this->access_checker = new CheckAccess;
-
-        return $this->access_checker;
-    }
-
-    /**
-     * @param array $query
-     *
-     * @return \Seat\Eseye\Eseye
-     */
-    public function setQueryString(array $query): self
-    {
-
-        $this->query_string = $query;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getQueryString(): array
-    {
-
-        return $this->query_string;
-    }
-
-    /**
      * @param array $body
      *
      * @return \Seat\Eseye\Eseye
@@ -245,44 +168,6 @@ class Eseye
         $this->request_body = $body;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getBody(): array
-    {
-
-        return $this->request_body;
-    }
-
-    /**
-     * Set the version of the API endpoints base URI.
-     *
-     * @param string $version
-     *
-     * @return \Seat\Eseye\Eseye
-     */
-    public function setVersion(string $version)
-    {
-
-        if (substr($version, 0, 1) !== '/')
-            $version = '/' . $version;
-
-        $this->version = $version;
-
-        return $this;
-    }
-
-    /**
-     * Get the versioned baseURI to use.
-     *
-     * @return string
-     */
-    public function getVersion(): string
-    {
-
-        return $this->version;
     }
 
     /**
@@ -331,6 +216,43 @@ class Eseye
     }
 
     /**
+     * @return \Seat\Eseye\Access\CheckAccess
+     */
+    public function getAccesChecker()
+    {
+
+        if (! $this->access_checker)
+            $this->access_checker = new CheckAccess;
+
+        return $this->access_checker;
+    }
+
+    /**
+     * @return \Seat\Eseye\Fetchers\FetcherInterface
+     */
+    private function getFetcher(): FetcherInterface
+    {
+
+        if (! $this->fetcher) {
+
+            $fetcher_class = $this->getConfiguration()->fetcher;
+            $this->fetcher = new $fetcher_class(...[$this->authentication]);
+
+        }
+
+        return $this->fetcher;
+    }
+
+    /**
+     * @return \Seat\Eseye\Configuration
+     */
+    public function getConfiguration(): Configuration
+    {
+
+        return Configuration::getInstance();
+    }
+
+    /**
      * @param string $uri
      * @param array  $data
      *
@@ -355,16 +277,54 @@ class Eseye
     }
 
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array  $body
-     *
-     * @return mixed
+     * @return array
      */
-    public function rawFetch(string $method, string $uri, array $body)
+    public function getQueryString(): array
     {
 
-        return $this->getFetcher()->call($method, $uri, $body);
+        return $this->query_string;
+    }
+
+    /**
+     * @param array $query
+     *
+     * @return \Seat\Eseye\Eseye
+     */
+    public function setQueryString(array $query): self
+    {
+
+        $this->query_string = $query;
+
+        return $this;
+    }
+
+    /**
+     * Get the versioned baseURI to use.
+     *
+     * @return string
+     */
+    public function getVersion(): string
+    {
+
+        return $this->version;
+    }
+
+    /**
+     * Set the version of the API endpoints base URI.
+     *
+     * @param string $version
+     *
+     * @return \Seat\Eseye\Eseye
+     */
+    public function setVersion(string $version)
+    {
+
+        if (substr($version, 0, 1) !== '/')
+            $version = '/' . $version;
+
+        $this->version = $version;
+
+        return $this;
     }
 
     /**
@@ -397,5 +357,45 @@ class Eseye
         }
 
         return $uri;
+    }
+
+    /**
+     * @return \Seat\Eseye\Log\LogInterface
+     */
+    public function getLogger(): LogInterface
+    {
+
+        return $this->getConfiguration()->getLogger();
+    }
+
+    /**
+     * @return \Seat\Eseye\Cache\CacheInterface
+     */
+    private function getCache(): CacheInterface
+    {
+
+        return $this->getConfiguration()->getCache();
+    }
+
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array  $body
+     *
+     * @return mixed
+     */
+    public function rawFetch(string $method, string $uri, array $body)
+    {
+
+        return $this->getFetcher()->call($method, $uri, $body);
+    }
+
+    /**
+     * @return array
+     */
+    public function getBody(): array
+    {
+
+        return $this->request_body;
     }
 }

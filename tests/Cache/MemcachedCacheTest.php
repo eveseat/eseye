@@ -30,11 +30,12 @@ class MemcachedCacheTest extends PHPUnit_Framework_TestCase
      * @var MemcachedCache
      */
     protected $memcached_cache;
-    
+
     protected $esi_response_object;
 
     public function setUp()
     {
+
         $is_memcached = class_exists('Memcached', false);
         if ($is_memcached)
             $instance = $this->createMock(\Memcached::class);
@@ -49,22 +50,26 @@ class MemcachedCacheTest extends PHPUnit_Framework_TestCase
 
     public function testMemcachedCacheInstantiates()
     {
+
         $this->assertInstanceOf(MemcachedCache::class, $this->memcached_cache);
     }
 
     public function testMemcachedCacheBuildsCacheKey()
     {
+
         $key = $this->memcached_cache->buildCacheKey('/test', 'foo=bar');
         $this->assertEquals('eseye:b0f071c288f528954cddef0e1aa24df41de874aa', $key);
     }
 
     public function testMemcachedCacheSetsKey()
     {
+
         $this->memcached_cache->set('/foo', 'foo=bar', $this->esi_response_object);
     }
 
     public function testMemcachedCacheForgetsKey()
     {
+
         $this->memcached_cache->forget('/foo', 'foo=bar');
     }
 }

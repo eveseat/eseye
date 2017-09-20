@@ -23,7 +23,6 @@
 use org\bovigo\vfs\vfsStream;
 use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Configuration;
-use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\CachePathException;
 
 class FileCacheTest extends PHPUnit_Framework_TestCase

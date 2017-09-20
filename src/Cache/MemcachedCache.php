@@ -34,13 +34,16 @@ class MemcachedCache implements CacheInterface
     use HashesStrings;
 
     protected $prefix;
+
     protected $is_memcached;
 
     protected $memcached;
+
     protected $flags;
 
     public function __construct($instance = null)
     {
+
         if ($instance != null)
             $this->memcached = $instance;
 
@@ -49,8 +52,7 @@ class MemcachedCache implements CacheInterface
         $configuration = Configuration::getInstance();
         $this->prefix = $configuration->memcached_cache_prefix;
 
-        if (is_null($this->memcached))
-        {
+        if (is_null($this->memcached)) {
             if ($this->is_memcached)
                 $this->memcached = new \Memcached();
             else
@@ -67,20 +69,6 @@ class MemcachedCache implements CacheInterface
     }
 
     /**
-     * @param string $uri
-     * @param string $query
-     *
-     * @return string
-     */
-    public function buildCacheKey(string $uri, string $query = ''): string
-    {
-        if ($query != '')
-            $query = $this->hashString($query);
-
-        return $this->prefix . $this->hashString($uri . $query);
-    }
-
-    /**
      * @param string                             $uri
      * @param string                             $query
      * @param \Seat\Eseye\Containers\EsiResponse $data
@@ -89,6 +77,7 @@ class MemcachedCache implements CacheInterface
      */
     public function set(string $uri, string $query, EsiResponse $data)
     {
+
         if ($this->is_memcached)
             $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), 0);
         else
@@ -99,18 +88,33 @@ class MemcachedCache implements CacheInterface
      * @param string $uri
      * @param string $query
      *
+     * @return string
+     */
+    public function buildCacheKey(string $uri, string $query = ''): string
+    {
+
+        if ($query != '')
+            $query = $this->hashString($query);
+
+        return $this->prefix . $this->hashString($uri . $query);
+    }
+
+    /**
+     * @param string $uri
+     * @param string $query
+     *
      * @return mixed
      */
     public function get(string $uri, string $query = '')
     {
+
         $value = $this->memcached->get($this->buildCacheKey($uri, $query));
         if ($value === false)
             return false;
 
         $data = unserialize($value);
 
-        if ($data->expired())
-        {
+        if ($data->expired()) {
             $this->forget($uri, $query);
 
             return false;
@@ -127,6 +131,7 @@ class MemcachedCache implements CacheInterface
      */
     public function forget(string $uri, string $query = '')
     {
+
         return $this->memcached->delete($this->buildCacheKey($uri, $query));
     }
 
@@ -138,6 +143,7 @@ class MemcachedCache implements CacheInterface
      */
     public function has(string $uri, string $query = ''): bool
     {
+
         return $this->memcached->get($this->buildCacheKey($uri, $query)) !== false;
     }
 }

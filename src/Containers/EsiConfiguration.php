@@ -42,31 +42,31 @@ class EsiConfiguration extends AbstractArrayAccess
      * @var array
      */
     protected $data = [
-        'http_user_agent'      => 'Eseye Default Library',
-        'datasource'           => 'tranquility',
+        'http_user_agent'            => 'Eseye Default Library',
+        'datasource'                 => 'tranquility',
 
         // Fetcher
-        'fetcher'              => GuzzleFetcher::class,
+        'fetcher'                    => GuzzleFetcher::class,
 
         // Logging
-        'logger'               => FileLogger::class,
-        'logger_level'         => Logger::INFO,
-        'logfile_location'     => 'logs/eseye.log',
+        'logger'                     => FileLogger::class,
+        'logger_level'               => Logger::INFO,
+        'logfile_location'           => 'logs/eseye.log',
 
         // Cache
-        'cache'                => FileCache::class,
+        'cache'                      => FileCache::class,
 
         // File Cache
-        'file_cache_location'  => 'cache/',
+        'file_cache_location'        => 'cache/',
 
         // Redis Cache
-        'redis_cache_location' => 'tcp://127.0.0.1',
-        'redis_cache_prefix'   => 'eseye:',
+        'redis_cache_location'       => 'tcp://127.0.0.1',
+        'redis_cache_prefix'         => 'eseye:',
 
         // Memcached Cache
-        'memcached_cache_host' => '127.0.0.1',
-        'memcached_cache_port' => '11211',
-        'memcached_cache_prefix' => 'eseye:',
+        'memcached_cache_host'       => '127.0.0.1',
+        'memcached_cache_port'       => '11211',
+        'memcached_cache_prefix'     => 'eseye:',
         'memcached_cache_compressed' => false,
     ];
 

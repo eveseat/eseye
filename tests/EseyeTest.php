@@ -60,23 +60,6 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $this->esi = new Eseye;
     }
 
-    /**
-     * Helper method to set private methods public.
-     *
-     * @param $name
-     *
-     * @return \ReflectionMethod
-     */
-    protected static function getMethod($name)
-    {
-
-        $class = new ReflectionClass('Seat\Eseye\Eseye');
-        $method = $class->getMethod($name);
-        $method->setAccessible(true);
-
-        return $method;
-    }
-
     public function testEseyeInstantiation()
     {
 
@@ -188,6 +171,23 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $return = $get_fetcher->invokeArgs(new Eseye, []);
 
         $this->assertInstanceOf(FetcherInterface::class, $return);
+    }
+
+    /**
+     * Helper method to set private methods public.
+     *
+     * @param $name
+     *
+     * @return \ReflectionMethod
+     */
+    protected static function getMethod($name)
+    {
+
+        $class = new ReflectionClass('Seat\Eseye\Eseye');
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+
+        return $method;
     }
 
     public function testEseyeGetsCache()

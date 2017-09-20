@@ -76,27 +76,6 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
-     * @return \GuzzleHttp\Client
-     */
-    public function getClient(): Client
-    {
-
-        if (! $this->client)
-            $this->client = new Client;
-
-        return $this->client;
-    }
-
-    /**
-     * @param \GuzzleHttp\Client $client
-     */
-    public function setClient(Client $client)
-    {
-
-        $this->client = $client;
-    }
-
-    /**
      * @param string $method
      * @param string $uri
      * @param array  $body
@@ -119,19 +98,77 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
-     * @param string $uri
-     *
-     * @return string
+     * @return \Seat\Eseye\Containers\EsiAuthentication|null
      */
-    public function stripRefreshTokenValue(string $uri): string
+    public function getAuthentication()
     {
 
-        // If we have 'refresh_token' in the URI, strip it.
-        if (strpos($uri, 'refresh_token'))
-            return Uri::withoutQueryValue((new Uri($uri)), 'refresh_token')
-                ->__toString();
+        return $this->authentication;
+    }
 
-        return $uri;
+    /**
+     * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
+     *
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     */
+    public function setAuthentication(EsiAuthentication $authentication)
+    {
+
+        if (! $authentication->valid())
+            throw new InvalidAuthencationException('Authentication data invalid/empty');
+
+        $this->authentication = $authentication;
+    }
+
+    /**
+     * @return string
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     */
+    private function getToken(): string
+    {
+
+        // Ensure that we have authentication data before we try
+        // and get a token.
+        if (! $this->getAuthentication())
+            throw new InvalidAuthencationException(
+                'Trying to get a token without authentication data.');
+
+        // Check the expiry date.
+        $expires = carbon($this->getAuthentication()->token_expires);
+
+        // If the token expires in the next 5 minues, refresh it.
+        if ($expires <= carbon('now')->addMinute(5))
+            $this->refreshToken();
+
+        return $this->getAuthentication()->access_token;
+    }
+
+    /**
+     * Refresh the Access token that we have in the EsiAccess container.
+     */
+    private function refreshToken()
+    {
+
+        // Make the post request for a new access_token
+        $response = $this->httpRequest('post',
+            $this->sso_base . '/token/?grant_type=refresh_token&refresh_token=' .
+            $this->authentication->refresh_token, [
+                'Authorization' => 'Basic ' . base64_encode(
+                        $this->authentication->client_id . ':' . $this->authentication->secret),
+            ]
+        );
+
+        // Get the current EsiAuth container
+        $authentication = $this->getAuthentication();
+
+        // Set the new authentication values from the request
+        $authentication->access_token = $response->access_token;
+        $authentication->refresh_token = $response->refresh_token;
+        $authentication->token_expires = carbon('now')
+            ->addSeconds($response->expires_in);
+
+        // ... and update the container
+        $this->authentication = $authentication;
     }
 
     /**
@@ -205,6 +242,43 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
+     * @return \GuzzleHttp\Client
+     */
+    public function getClient(): Client
+    {
+
+        if (! $this->client)
+            $this->client = new Client;
+
+        return $this->client;
+    }
+
+    /**
+     * @param \GuzzleHttp\Client $client
+     */
+    public function setClient(Client $client)
+    {
+
+        $this->client = $client;
+    }
+
+    /**
+     * @param string $uri
+     *
+     * @return string
+     */
+    public function stripRefreshTokenValue(string $uri): string
+    {
+
+        // If we have 'refresh_token' in the URI, strip it.
+        if (strpos($uri, 'refresh_token'))
+            return Uri::withoutQueryValue((new Uri($uri)), 'refresh_token')
+                ->__toString();
+
+        return $uri;
+    }
+
+    /**
      * @param \stdClass $body
      * @param string    $expires
      * @param int       $status_code
@@ -216,29 +290,6 @@ class GuzzleFetcher implements FetcherInterface
     {
 
         return new EsiResponse($body, $expires, $status_code);
-    }
-
-    /**
-     * @return \Seat\Eseye\Containers\EsiAuthentication|null
-     */
-    public function getAuthentication()
-    {
-
-        return $this->authentication;
-    }
-
-    /**
-     * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
-     *
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
-     */
-    public function setAuthentication(EsiAuthentication $authentication)
-    {
-
-        if (! $authentication->valid())
-            throw new InvalidAuthencationException('Authentication data invalid/empty');
-
-        $this->authentication = $authentication;
     }
 
     /**
@@ -283,56 +334,5 @@ class GuzzleFetcher implements FetcherInterface
         return $this->httpRequest('get', $this->sso_base . '/verify/', [
             'Authorization' => 'Bearer ' . $this->getToken(),
         ]);
-    }
-
-    /**
-     * @return string
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
-     */
-    private function getToken(): string
-    {
-
-        // Ensure that we have authentication data before we try
-        // and get a token.
-        if (! $this->getAuthentication())
-            throw new InvalidAuthencationException(
-                'Trying to get a token without authentication data.');
-
-        // Check the expiry date.
-        $expires = carbon($this->getAuthentication()->token_expires);
-
-        // If the token expires in the next 5 minues, refresh it.
-        if ($expires <= carbon('now')->addMinute(5))
-            $this->refreshToken();
-
-        return $this->getAuthentication()->access_token;
-    }
-
-    /**
-     * Refresh the Access token that we have in the EsiAccess container.
-     */
-    private function refreshToken()
-    {
-
-        // Make the post request for a new access_token
-        $response = $this->httpRequest('post',
-            $this->sso_base . '/token/?grant_type=refresh_token&refresh_token=' .
-            $this->authentication->refresh_token, [
-                'Authorization' => 'Basic ' . base64_encode(
-                        $this->authentication->client_id . ':' . $this->authentication->secret),
-            ]
-        );
-
-        // Get the current EsiAuth container
-        $authentication = $this->getAuthentication();
-
-        // Set the new authentication values from the request
-        $authentication->access_token = $response->access_token;
-        $authentication->refresh_token = $response->refresh_token;
-        $authentication->token_expires = carbon('now')
-            ->addSeconds($response->expires_in);
-
-        // ... and update the container
-        $this->authentication = $authentication;
     }
 }

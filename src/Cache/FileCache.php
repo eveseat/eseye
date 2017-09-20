@@ -87,6 +87,26 @@ class FileCache implements CacheInterface
     }
 
     /**
+     * @param string                             $uri
+     * @param string                             $query
+     * @param \Seat\Eseye\Containers\EsiResponse $data
+     *
+     * @return mixed|void
+     */
+    public function set(string $uri, string $query, EsiResponse $data)
+    {
+
+        $path = $this->buildRelativePath($this->safePath($uri), $query);
+
+        // Create the subpath if that does not already exist
+        if (! file_exists($path))
+            mkdir($path, 0775, true);
+
+        // Dump the contents to file
+        file_put_contents($path . $this->results_filename, serialize($data));
+    }
+
+    /**
      * @param string $path
      * @param string $query
      *
@@ -115,23 +135,18 @@ class FileCache implements CacheInterface
     }
 
     /**
-     * @param string                             $uri
-     * @param string                             $query
-     * @param \Seat\Eseye\Containers\EsiResponse $data
+     * @param string $uri
+     * @param string $query
      *
-     * @return mixed|void
+     * @return bool|mixed
      */
-    public function set(string $uri, string $query, EsiResponse $data)
+    public function has(string $uri, string $query = ''): bool
     {
 
-        $path = $this->buildRelativePath($this->safePath($uri), $query);
+        if ($status = $this->get($uri, $query))
+            return true;
 
-        // Create the subpath if that does not already exist
-        if (! file_exists($path))
-            mkdir($path, 0775, true);
-
-        // Dump the contents to file
-        file_put_contents($path . $this->results_filename, serialize($data));
+        return false;
     }
 
     /**
@@ -177,20 +192,5 @@ class FileCache implements CacheInterface
         $cache_file_path = $path . $this->results_filename;
 
         @unlink($cache_file_path);
-    }
-
-    /**
-     * @param string $uri
-     * @param string $query
-     *
-     * @return bool|mixed
-     */
-    public function has(string $uri, string $query = ''): bool
-    {
-
-        if ($status = $this->get($uri, $query))
-            return true;
-
-        return false;
     }
 }

@@ -51,8 +51,8 @@ class EsiResponse extends ArrayObject
      * EsiResponse constructor.
      *
      * @param stdClass $data
-     * @param string    $expires
-     * @param int       $response_code
+     * @param string   $expires
+     * @param int      $response_code
      */
     public function __construct(
         stdClass $data, string $expires, int $response_code)
@@ -76,15 +76,6 @@ class EsiResponse extends ArrayObject
     }
 
     /**
-     * @return \Carbon\Carbon
-     */
-    public function expires(): Carbon
-    {
-
-        return carbon($this->expires_at);
-    }
-
-    /**
      * Determine if this containers data should be considered
      * expired.
      *
@@ -105,6 +96,15 @@ class EsiResponse extends ArrayObject
             return true;
 
         return false;
+    }
+
+    /**
+     * @return \Carbon\Carbon
+     */
+    public function expires(): Carbon
+    {
+
+        return carbon($this->expires_at);
     }
 
     /**

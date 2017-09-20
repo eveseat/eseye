@@ -26,11 +26,11 @@ class NullLoggerTest extends PHPUnit_Framework_TestCase
 {
 
     protected $logger;
-    
+
     public function setUp()
     {
 
-        
+
         $this->logger = new NullLogger;
     }
 
