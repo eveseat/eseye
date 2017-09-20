@@ -76,9 +76,14 @@ class FileCacheTest extends PHPUnit_Framework_TestCase
 
         $this->expectException(CachePathException::class);
 
+        if (substr(PHP_OS, 0, 3) == 'WIN')
+            $invalid_path = '/completely:invalid?path';
+        else
+            $invalid_path = '/completely/invalid/path';
+
         Configuration::getInstance()
-            ->file_cache_location = '/completely/invalid/path';
-        new FileCache;
+            ->file_cache_location = $invalid_path;
+        new FileCache();
     }
 
     /**
