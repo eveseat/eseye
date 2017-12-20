@@ -66,7 +66,7 @@ class Configuration
     /**
      * @return \Seat\Eseye\Configuration
      */
-    public static function getInstance(): Configuration
+    public static function getInstance(): self
     {
 
         if (is_null(self::$instance))
