@@ -48,7 +48,7 @@ class RedisCache implements CacheInterface
     public function __construct(Client $redis = null)
     {
 
-        // If we didnt get a Redis instance in the constructor,
+        // If we didn't get a Redis instance in the constructor,
         // build a new one.
         if (is_null($redis)) {
 
@@ -65,16 +65,16 @@ class RedisCache implements CacheInterface
     }
 
     /**
-     * @param string                             $uri
-     * @param string                             $query
-     * @param \Seat\Eseye\Containers\EsiResponse $data
+     * @param string      $uri
+     * @param string      $query
+     * @param EsiResponse $data
      *
      * @return mixed
      */
     public function set(string $uri, string $query, EsiResponse $data)
     {
 
-        $this->redis->set($this->buildCacheKey($uri, $query), serialize($data));
+        return $this->redis->set($this->buildCacheKey($uri, $query), serialize($data));
     }
 
     /**
