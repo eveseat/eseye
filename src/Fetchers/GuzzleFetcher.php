@@ -30,7 +30,7 @@ use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Eseye;
-use Seat\Eseye\Exceptions\InvalidAuthencationException;
+use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use stdClass;
 
@@ -78,10 +78,12 @@ class GuzzleFetcher implements FetcherInterface
     /**
      * @param string $method
      * @param string $uri
-     * @param array  $body
-     * @param array  $headers
+     * @param array $body
+     * @param array $headers
      *
-     * @return mixed|\Seat\Eseye\Containers\EsiResponse
+     * @return EsiResponse
+     * @throws InvalidAuthenticationException
+     * @throws RequestFailedException
      */
     public function call(
         string $method, string $uri, array $body, array $headers = []): EsiResponse
@@ -109,20 +111,21 @@ class GuzzleFetcher implements FetcherInterface
     /**
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
      *
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      */
     public function setAuthentication(EsiAuthentication $authentication)
     {
 
         if (! $authentication->valid())
-            throw new InvalidAuthencationException('Authentication data invalid/empty');
+            throw new InvalidAuthenticationException('Authentication data invalid/empty');
 
         $this->authentication = $authentication;
     }
 
     /**
      * @return string
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws InvalidAuthenticationException
+     * @throws RequestFailedException
      */
     private function getToken(): string
     {
@@ -130,13 +133,13 @@ class GuzzleFetcher implements FetcherInterface
         // Ensure that we have authentication data before we try
         // and get a token.
         if (! $this->getAuthentication())
-            throw new InvalidAuthencationException(
+            throw new InvalidAuthenticationException(
                 'Trying to get a token without authentication data.');
 
         // Check the expiry date.
         $expires = carbon($this->getAuthentication()->token_expires);
 
-        // If the token expires in the next 5 minues, refresh it.
+        // If the token expires in the next 5 minutes, refresh it.
         if ($expires <= carbon('now')->addMinute(5))
             $this->refreshToken();
 
@@ -145,6 +148,7 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * Refresh the Access token that we have in the EsiAccess container.
+     * @throws RequestFailedException
      */
     private function refreshToken()
     {
@@ -226,7 +230,7 @@ class GuzzleFetcher implements FetcherInterface
 
         }
 
-        // Log the sucessful request.
+        // Log the successful request.
         $this->logger->log('[http ' . $response->getStatusCode() . '] ' .
             '[' . $response->getReasonPhrase() . '] ' .
             $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [' .
@@ -297,7 +301,7 @@ class GuzzleFetcher implements FetcherInterface
     public function getAuthenticationScopes(): array
     {
 
-        // If we dont have any authentication data, then
+        // If we don't have any authentication data, then
         // only public calls can be made.
         if (is_null($this->getAuthentication()))
             return ['public'];
@@ -313,6 +317,9 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * Verify a token and set the Authentication scopes.
+     *
+     * @throws InvalidAuthenticationException
+     * @throws RequestFailedException
      */
     public function setAuthenticationScopes()
     {
@@ -326,6 +333,10 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * Verify that an access_token is still valid.
+     *
+     * @return mixed|EsiResponse
+     * @throws InvalidAuthenticationException
+     * @throws RequestFailedException
      */
     private function verifyToken()
     {

@@ -69,9 +69,9 @@ class MemcachedCache implements CacheInterface
     }
 
     /**
-     * @param string                             $uri
-     * @param string                             $query
-     * @param \Seat\Eseye\Containers\EsiResponse $data
+     * @param string      $uri
+     * @param string      $query
+     * @param EsiResponse $data
      *
      * @return mixed
      */
@@ -79,9 +79,9 @@ class MemcachedCache implements CacheInterface
     {
 
         if ($this->is_memcached)
-            $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), 0);
-        else
-            $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), $this->flags, 0);
+            return $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), 0);
+
+        return $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), $this->flags, 0);
     }
 
     /**
@@ -127,7 +127,7 @@ class MemcachedCache implements CacheInterface
      * @param string $uri
      * @param string $query
      *
-     * @return mixed
+     * @return bool|mixed
      */
     public function forget(string $uri, string $query = '')
     {

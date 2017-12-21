@@ -47,6 +47,7 @@ class FileCache implements CacheInterface
 
     /**
      * FileCache constructor.
+     * @throws CachePathException
      */
     public function __construct()
     {
@@ -80,7 +81,7 @@ class FileCache implements CacheInterface
 
             if (! chmod($this->getCachePath(), 0775))
                 throw new CachePathException(
-                    $this->cache_path . ' must be readable and writeable');
+                    $this->cache_path . ' must be readable and writable');
         }
 
         return true;
@@ -183,7 +184,7 @@ class FileCache implements CacheInterface
      * @param string $uri
      * @param string $query
      *
-     * @return mixed
+     * @return bool
      */
     public function forget(string $uri, string $query = '')
     {
@@ -191,6 +192,6 @@ class FileCache implements CacheInterface
         $path = $this->buildRelativePath($uri, $query);
         $cache_file_path = $path . $this->results_filename;
 
-        @unlink($cache_file_path);
+        return @unlink($cache_file_path);
     }
 }

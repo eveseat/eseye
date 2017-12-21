@@ -23,13 +23,14 @@
 namespace Seat\Eseye;
 
 use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
 use Seat\Eseye\Access\AccessInterface;
 use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
-use Seat\Eseye\Exceptions\InvalidAuthencationException;
+use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
 use Seat\Eseye\Fetchers\FetcherInterface;
@@ -78,7 +79,7 @@ class Eseye
     protected $request_body = [];
 
     /**
-     * @var string
+     * @var array
      */
     protected $esi = [
         'scheme' => 'https',
@@ -107,13 +108,13 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Containers\EsiAuthentication
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      */
     public function getAuthentication(): EsiAuthentication
     {
 
         if (is_null($this->authentication))
-            throw new InvalidAuthencationException('Authentication data not set.');
+            throw new InvalidAuthenticationException('Authentication data not set.');
 
         return $this->authentication;
     }
@@ -175,8 +176,10 @@ class Eseye
      * @param string $uri
      * @param array  $uri_data
      *
-     * @return \Seat\Eseye\Containers\EsiResponse
-     * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
+     * @return EsiResponse
+     * @throws EsiScopeAccessDeniedException
+     * @throws Exceptions\RequestFailedException
+     * @throws UriDataMissingException
      */
     public function invoke(string $method, string $uri, array $uri_data = []): EsiResponse
     {
@@ -212,13 +215,20 @@ class Eseye
         if (strtolower($method) == 'get' && ! $result->expired())
             $this->getCache()->set($uri->getPath(), $uri->getQuery(), $result);
 
+        // Reset body after sending it
+        if (strtolower($method) != 'get')
+            $this->setBody([]);
+
+        // Reset query string after call
+        $this->setQueryString([]);
+
         return $result;
     }
 
     /**
      * @return \Seat\Eseye\Access\CheckAccess
      */
-    public function getAccesChecker()
+    public function getAccesChecker() : CheckAccess
     {
 
         if (! $this->access_checker)
@@ -254,11 +264,12 @@ class Eseye
 
     /**
      * @param string $uri
-     * @param array  $data
+     * @param array $data
      *
-     * @return \GuzzleHttp\Psr7\Uri
+     * @return UriInterface
+     * @throws UriDataMissingException
      */
-    public function buildDataUri(string $uri, array $data): Uri
+    public function buildDataUri(string $uri, array $data): UriInterface
     {
 
         // Create a query string for the URI. We automatically
@@ -380,11 +391,12 @@ class Eseye
     /**
      * @param string $method
      * @param string $uri
-     * @param array  $body
+     * @param array $body
      *
-     * @return mixed
+     * @return EsiResponse
+     * @throws Exceptions\RequestFailedException
      */
-    public function rawFetch(string $method, string $uri, array $body)
+    public function rawFetch(string $method, string $uri, array $body) : EsiResponse
     {
 
         return $this->getFetcher()->call($method, $uri, $body);

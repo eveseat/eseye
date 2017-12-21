@@ -59,7 +59,7 @@ interface CacheInterface
      * @param string $uri
      * @param string $query
      *
-     * @return bool|mixed
+     * @return bool
      */
     public function has(string $uri, string $query = ''): bool;
 }

@@ -31,14 +31,15 @@ use Seat\Eseye\Containers\EsiResponse;
 class NullCache implements CacheInterface
 {
     /**
-     * @param string                             $uri
-     * @param string                             $query
-     * @param \Seat\Eseye\Containers\EsiResponse $data
+     * @param string      $uri
+     * @param string      $query
+     * @param EsiResponse $data
      *
      * @return mixed
      */
     public function set(string $uri, string $query, EsiResponse $data)
     {
+        return null;
     }
 
     /**
@@ -61,13 +62,14 @@ class NullCache implements CacheInterface
      */
     public function forget(string $uri, string $query = '')
     {
+        return null;
     }
 
     /**
      * @param string $uri
      * @param string $query
      *
-     * @return bool|mixed
+     * @return bool
      */
     public function has(string $uri, string $query = ''): bool
     {

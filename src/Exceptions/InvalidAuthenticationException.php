@@ -25,10 +25,10 @@ namespace Seat\Eseye\Exceptions;
 use Exception;
 
 /**
- * Class InvalidAuthencationException.
+ * Class InvalidAuthenticationException.
  * @package Seat\Eseye\Exceptions
  */
-class InvalidAuthencationException extends Exception
+class InvalidAuthenticationException extends Exception
 {
 
 }
