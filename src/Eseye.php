@@ -177,6 +177,7 @@ class Eseye
      *
      * @return \Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
+     * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
     public function invoke(string $method, string $uri, array $uri_data = []): EsiResponse
     {
@@ -257,6 +258,7 @@ class Eseye
      * @param array  $data
      *
      * @return \GuzzleHttp\Psr7\Uri
+     * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
     public function buildDataUri(string $uri, array $data): Uri
     {

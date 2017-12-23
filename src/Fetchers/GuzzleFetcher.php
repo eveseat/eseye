@@ -82,6 +82,8 @@ class GuzzleFetcher implements FetcherInterface
      * @param array  $headers
      *
      * @return mixed|\Seat\Eseye\Containers\EsiResponse
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
      */
     public function call(
         string $method, string $uri, array $body, array $headers = []): EsiResponse
@@ -145,6 +147,8 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * Refresh the Access token that we have in the EsiAccess container.
+     *
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
      */
     private function refreshToken()
     {
