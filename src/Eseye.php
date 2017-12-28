@@ -96,6 +96,13 @@ class Eseye
     protected $version = '/latest';
 
     /**
+     * HTTP verbs that could have their responses cached.
+     *
+     * @var array
+     */
+    protected $cachable_verb = ['get', 'post'];
+
+    /**
      * Eseye constructor.
      *
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
@@ -227,7 +234,7 @@ class Eseye
         $uri = $this->buildDataUri($uri, $uri_data);
 
         // Check if there is a cached response we can return
-        if (strtolower($method) == 'get' &&
+        if (in_array(strtolower($method), $this->cachable_verb) &&
             $cached = $this->getCache()->get($uri->getPath(), $uri->getQuery())
         )
             return $cached;
@@ -236,7 +243,7 @@ class Eseye
         $result = $this->rawFetch($method, $uri, $this->getBody());
 
         // Cache the response if it was a get and is not already expired
-        if (strtolower($method) == 'get' && ! $result->expired())
+        if (in_array(strtolower($method), $this->cachable_verb) && ! $result->expired())
             $this->getCache()->set($uri->getPath(), $uri->getQuery(), $result);
 
         return $result;
