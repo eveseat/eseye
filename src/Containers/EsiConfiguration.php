@@ -44,6 +44,7 @@ class EsiConfiguration extends AbstractArrayAccess
     protected $data = [
         'http_user_agent'            => 'Eseye Default Library',
         'datasource'                 => 'tranquility',
+        'verify_ssl_client'          => true,
 
         // Fetcher
         'fetcher'                    => GuzzleFetcher::class,
