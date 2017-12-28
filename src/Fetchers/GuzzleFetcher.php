@@ -211,7 +211,8 @@ class GuzzleFetcher implements FetcherInterface
 
             // Make the _actual_ request to ESI
             $response = $this->getClient()->send(
-                new Request($method, $uri, $headers, $body));
+                new Request($method, $uri, $headers, $body),
+                ['verify' => Configuration::getInstance()->verify_ssl_client]);
 
         } catch (ClientException $e) {
 
