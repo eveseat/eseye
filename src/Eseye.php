@@ -246,6 +246,11 @@ class Eseye
         if (in_array(strtolower($method), $this->cachable_verb) && ! $result->expired())
             $this->getCache()->set($uri->getPath(), $uri->getQuery(), $result);
 
+        // In preperation for the next request, perform some
+        // self cleanups of this objects request data such as
+        // query string parameters and post bodies.
+        $this->cleanupRequestData();
+
         return $result;
     }
 
@@ -414,5 +419,39 @@ class Eseye
     {
 
         return $this->request_body;
+    }
+
+    /**
+     * @return \Seat\Eseye\Eseye
+     */
+    public function cleanupRequestData(): self
+    {
+
+        $this->unsetBody();
+        $this->unsetQueryString();
+
+        return $this;
+    }
+
+    /**
+     * @return \Seat\Eseye\Eseye
+     */
+    public function unsetBody(): self
+    {
+
+        $this->request_body = [];
+
+        return $this;
+    }
+
+    /**
+     * @return \Seat\Eseye\Eseye
+     */
+    public function unsetQueryString(): self
+    {
+
+        $this->query_string = [];
+
+        return $this;
     }
 }
