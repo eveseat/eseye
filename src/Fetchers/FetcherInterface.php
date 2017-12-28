@@ -39,4 +39,9 @@ interface FetcherInterface
      * @return \Seat\Eseye\Containers\EsiResponse
      */
     public function call(string $method, string $uri, array $body, array $headers = []): EsiResponse;
+
+    /**
+     * @return array
+     */
+    public function getAuthenticationScopes(): array;
 }
