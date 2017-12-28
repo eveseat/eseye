@@ -125,6 +125,7 @@ class GuzzleFetcher implements FetcherInterface
     /**
      * @return string
      * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
      */
     private function getToken(): string
     {
@@ -138,8 +139,8 @@ class GuzzleFetcher implements FetcherInterface
         // Check the expiry date.
         $expires = carbon($this->getAuthentication()->token_expires);
 
-        // If the token expires in the next 5 minues, refresh it.
-        if ($expires <= carbon('now')->addMinute(5))
+        // If the token expires in the next minute, refresh it.
+        if ($expires->lte(carbon('now')->addMinute(1)))
             $this->refreshToken();
 
         return $this->getAuthentication()->access_token;
