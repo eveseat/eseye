@@ -63,6 +63,11 @@ class Eseye
     protected $cache;
 
     /**
+     * @var \Seat\Eseye\Log\LogInterface
+     */
+    protected $logger;
+
+    /**
      * @var
      */
     protected $access_checker;
@@ -102,7 +107,28 @@ class Eseye
         if (! is_null($authentication))
             $this->authentication = $authentication;
 
+        // Setup the logger
+        $this->logger = $this->getLogger();
+
         return $this;
+    }
+
+    /**
+     * @return \Seat\Eseye\Log\LogInterface
+     */
+    public function getLogger(): LogInterface
+    {
+
+        return $this->getConfiguration()->getLogger();
+    }
+
+    /**
+     * @return \Seat\Eseye\Configuration
+     */
+    public function getConfiguration(): Configuration
+    {
+
+        return Configuration::getInstance();
     }
 
     /**
@@ -191,7 +217,7 @@ class Eseye
             $uri = $this->buildDataUri($uri, $uri_data);
 
             // Log the deny.
-            $this->getLogger()->warning('Access denied to ' . $uri . ' due to ' .
+            $this->logger->warning('Access denied to ' . $uri . ' due to ' .
                 'missing scopes.');
 
             throw new EsiScopeAccessDeniedException('Access denied to ' . $uri);
@@ -242,15 +268,6 @@ class Eseye
         }
 
         return $this->fetcher;
-    }
-
-    /**
-     * @return \Seat\Eseye\Configuration
-     */
-    public function getConfiguration(): Configuration
-    {
-
-        return Configuration::getInstance();
     }
 
     /**
@@ -359,15 +376,6 @@ class Eseye
         }
 
         return $uri;
-    }
-
-    /**
-     * @return \Seat\Eseye\Log\LogInterface
-     */
-    public function getLogger(): LogInterface
-    {
-
-        return $this->getConfiguration()->getLogger();
     }
 
     /**
