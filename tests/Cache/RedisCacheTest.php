@@ -41,7 +41,7 @@ class RedisCacheTest extends PHPUnit_Framework_TestCase
 
         // Set the cache
         $this->redis_cache = new RedisCache($redis);
-        $this->esi_response_object = new EsiResponse(new stdClass(), 'now', 200);
+        $this->esi_response_object = new EsiResponse('', 'now', 200);
     }
 
     public function testRedisCacheInstantiates()

@@ -39,7 +39,7 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
             ],
         ]);
 
-        $this->esi_response = new EsiResponse(json_decode($data), 'now', 200);
+        $this->esi_response = new EsiResponse($data, 'now', 200);
     }
 
     public function testEsiResponeInstantiation()
@@ -58,7 +58,7 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
     {
 
         $data = json_encode(['foo' => 'bar']);
-        $esi = new EsiResponse(json_decode($data), '3000-01-01 00:00:00', 200);
+        $esi = new EsiResponse($data, '3000-01-01 00:00:00', 200);
 
         $this->assertFalse($esi->expired());
     }
@@ -73,7 +73,7 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
     {
 
         $data = json_encode(['error' => 'Test Error']);
-        $esi = new EsiResponse(json_decode($data), 'now', 500);
+        $esi = new EsiResponse($data, 'now', 500);
 
         $this->assertEquals('Test Error', $esi->error());
     }
@@ -82,7 +82,7 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
     {
 
         $data = json_encode(['error' => 'Test Error', 'error_description' => 'Test Description']);
-        $esi = new EsiResponse(json_decode($data), 'now', 500);
+        $esi = new EsiResponse($data, 'now', 500);
 
         $this->assertEquals('Test Error: Test Description', $esi->error());
     }
