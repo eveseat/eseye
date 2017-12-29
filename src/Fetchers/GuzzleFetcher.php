@@ -149,6 +149,7 @@ class GuzzleFetcher implements FetcherInterface
      * Refresh the Access token that we have in the EsiAccess container.
      *
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
      */
     private function refreshToken()
     {
@@ -172,7 +173,7 @@ class GuzzleFetcher implements FetcherInterface
             ->addSeconds($response->expires_in);
 
         // ... and update the container
-        $this->authentication = $authentication;
+        $this->setAuthentication($authentication);
     }
 
     /**
