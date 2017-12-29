@@ -105,4 +105,10 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('yes', $this->esi_response->details->human);
     }
 
+    public function testEsiResponseCanGetRawDataFromContainer()
+    {
+
+        $this->assertEquals('{"name":"Foo","details":{"age":40,"human":"yes"}}',
+            $this->esi_response->raw);
+    }
 }
