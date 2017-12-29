@@ -24,7 +24,6 @@ namespace Seat\Eseye\Containers;
 
 use ArrayObject;
 use Carbon\Carbon;
-use stdClass;
 
 /**
  * Class EsiResponse.
@@ -32,6 +31,12 @@ use stdClass;
  */
 class EsiResponse extends ArrayObject
 {
+
+    /**
+     * @var string
+     */
+    public $raw;
+
     /**
      * @var array
      */
@@ -50,13 +55,19 @@ class EsiResponse extends ArrayObject
     /**
      * EsiResponse constructor.
      *
-     * @param stdClass $data
-     * @param string   $expires
-     * @param int      $response_code
+     * @param string $data
+     * @param string $expires
+     * @param int    $response_code
      */
     public function __construct(
-        stdClass $data, string $expires, int $response_code)
+        string $data, string $expires, int $response_code)
     {
+
+        // set the raw data to the raw property
+        $this->raw = $data;
+
+        // decode and create an object from the data
+        $data = (object) json_decode($data);
 
         // Ensure that the value for 'expires' is longer than
         // 2 character. The shortest expected value is 'now'

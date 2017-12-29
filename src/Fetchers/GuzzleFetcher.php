@@ -32,7 +32,6 @@ use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Eseye;
 use Seat\Eseye\Exceptions\InvalidAuthencationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
-use stdClass;
 
 /**
  * Class GuzzleFetcher.
@@ -225,10 +224,9 @@ class GuzzleFetcher implements FetcherInterface
             // Raise the exception that should be handled by the caller
             throw new RequestFailedException($e,
                 $this->makeEsiResponse(
-                    (object) json_decode($e->getResponse()->getBody()), 'now',
+                    $e->getResponse()->getBody()->getContents(), 'now',
                     $e->getResponse()->getStatusCode())
             );
-
         }
 
         // Log the sucessful request.
@@ -239,7 +237,7 @@ class GuzzleFetcher implements FetcherInterface
 
         // Return a container response that can be parsed.
         return $this->makeEsiResponse(
-            (object) json_decode($response->getBody()),
+            $response->getBody()->getContents(),
             $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : 'now',
             $response->getStatusCode()
         );
@@ -283,14 +281,14 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
-     * @param \stdClass $body
-     * @param string    $expires
-     * @param int       $status_code
+     * @param string $body
+     * @param string $expires
+     * @param int    $status_code
      *
      * @return \Seat\Eseye\Containers\EsiResponse
      */
     public function makeEsiResponse(
-        stdClass $body, string $expires, int $status_code): EsiResponse
+        string $body, string $expires, int $status_code): EsiResponse
     {
 
         return new EsiResponse($body, $expires, $status_code);
