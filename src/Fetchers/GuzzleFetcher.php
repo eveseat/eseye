@@ -217,10 +217,12 @@ class GuzzleFetcher implements FetcherInterface
         } catch (ClientException $e) {
 
             // Log the event as failed
-            $this->logger->error('[http ' . $e->getResponse()->getStatusCode() . '] ' .
-                '[' . $e->getResponse()->getReasonPhrase() . '] ' .
-                $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [' .
-                number_format(microtime(true) - $start, 2) . 's]');
+            $this->logger->error('[http ' . $e->getResponse()->getStatusCode() . ', ' .
+                strtolower($e->getResponse()->getReasonPhrase()) . '] ' .
+                $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [t/e: ' .
+                number_format(microtime(true) - $start, 2) . 's/' .
+                implode(' ', $e->getResponse()->getHeader('X-Esi-Error-Limit-Remain')) . ']'
+            );
 
             // Raise the exception that should be handled by the caller
             throw new RequestFailedException($e,
@@ -231,10 +233,12 @@ class GuzzleFetcher implements FetcherInterface
         }
 
         // Log the sucessful request.
-        $this->logger->log('[http ' . $response->getStatusCode() . '] ' .
-            '[' . $response->getReasonPhrase() . '] ' .
-            $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [' .
-            number_format(microtime(true) - $start, 2) . 's]');
+        $this->logger->log('[http ' . $response->getStatusCode() . ', ' .
+            strtolower($response->getReasonPhrase()) . '] ' .
+            $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [t/e: ' .
+            number_format(microtime(true) - $start, 2) . 's/' .
+            implode(' ', $response->getHeader('X-Esi-Error-Limit-Remain')) . ']'
+        );
 
         // Return a container response that can be parsed.
         return $this->makeEsiResponse(
