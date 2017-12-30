@@ -36,6 +36,7 @@ class RequestFailedExceptionTest extends PHPUnit_Framework_TestCase
 
         $this->exception = new RequestFailedException(new Exception('Foo'), new EsiResponse(
             json_encode(['error' => 'test']),
+            [],
             'now',
             500
         ));

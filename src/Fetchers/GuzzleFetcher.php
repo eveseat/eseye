@@ -227,7 +227,9 @@ class GuzzleFetcher implements FetcherInterface
             // Raise the exception that should be handled by the caller
             throw new RequestFailedException($e,
                 $this->makeEsiResponse(
-                    $e->getResponse()->getBody()->getContents(), 'now',
+                    $e->getResponse()->getBody()->getContents(),
+                    $e->getResponse()->getHeaders(),
+                    'now',
                     $e->getResponse()->getStatusCode())
             );
         }
@@ -243,6 +245,7 @@ class GuzzleFetcher implements FetcherInterface
         // Return a container response that can be parsed.
         return $this->makeEsiResponse(
             $response->getBody()->getContents(),
+            $response->getHeaders(),
             $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : 'now',
             $response->getStatusCode()
         );
@@ -287,16 +290,17 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * @param string $body
+     * @param array  $headers
      * @param string $expires
      * @param int    $status_code
      *
      * @return \Seat\Eseye\Containers\EsiResponse
      */
     public function makeEsiResponse(
-        string $body, string $expires, int $status_code): EsiResponse
+        string $body, array $headers, string $expires, int $status_code): EsiResponse
     {
 
-        return new EsiResponse($body, $expires, $status_code);
+        return new EsiResponse($body, $headers, $expires, $status_code);
     }
 
     /**

@@ -45,7 +45,7 @@ class MemcachedCacheTest extends PHPUnit_Framework_TestCase
         // Set the cache
         $this->memcached_cache = new MemcachedCache($instance);
 
-        $this->esi_response_object = new EsiResponse('', 'now', 200);
+        $this->esi_response_object = new EsiResponse('', [], 'now', 200);
     }
 
     public function testMemcachedCacheInstantiates()

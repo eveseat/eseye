@@ -27,6 +27,8 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
 
     protected $esi_response;
 
+    protected $headers;
+
     public function setUp()
     {
 
@@ -39,7 +41,39 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
             ],
         ]);
 
-        $this->esi_response = new EsiResponse($data, 'now', 200);
+        // Sample response headers
+        $this->headers = $headers = [
+            "Access-Control-Allow-Credentials" => [
+                0 => "true",
+            ],
+            "Access-Control-Allow-Headers"     => [
+                0 => "Content-Type,Authorization,X-User-Agent",
+            ],
+            "Content-Type"                     => [
+                0 => "application/json",
+            ],
+            "Expires"                          => [
+                0 => "Sat, 30 Dec 2017 09:00:32 GMT",
+            ],
+
+            "Strict-Transport-Security" => [
+                0 => "max-age=31536000",
+            ],
+            "X-Esi-Error-Limit-Remain"  => [
+                0 => "64",
+            ],
+            "X-Esi-Error-Limit-Reset"   => [
+                0 => "52",
+            ],
+            "X-Pages"                   => [
+                0 => "4",
+            ],
+            "Date"                      => [
+                0 => "Sat, 30 Dec 2017 08:23:08 GMT",
+            ],
+        ];
+
+        $this->esi_response = new EsiResponse($data, $headers, 'now', 200);
     }
 
     public function testEsiResponeInstantiation()
@@ -58,7 +92,7 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
     {
 
         $data = json_encode(['foo' => 'bar']);
-        $esi = new EsiResponse($data, '3000-01-01 00:00:00', 200);
+        $esi = new EsiResponse($data, [], '3000-01-01 00:00:00', 200);
 
         $this->assertFalse($esi->expired());
     }
@@ -73,7 +107,7 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
     {
 
         $data = json_encode(['error' => 'Test Error']);
-        $esi = new EsiResponse($data, 'now', 500);
+        $esi = new EsiResponse($data, [], 'now', 500);
 
         $this->assertEquals('Test Error', $esi->error());
     }
@@ -82,7 +116,7 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
     {
 
         $data = json_encode(['error' => 'Test Error', 'error_description' => 'Test Description']);
-        $esi = new EsiResponse($data, 'now', 500);
+        $esi = new EsiResponse($data, [], 'now', 500);
 
         $this->assertEquals('Test Error: Test Description', $esi->error());
     }
@@ -110,5 +144,30 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('{"name":"Foo","details":{"age":40,"human":"yes"}}',
             $this->esi_response->raw);
+    }
+
+    public function testEsiResponseCanGetRawResponseHeaders()
+    {
+
+        $this->assertEquals($this->headers, $this->esi_response->raw_headers);
+    }
+
+    public function testEsiResponseCanGetParseHeaderValue()
+    {
+
+        $this->assertEquals('Content-Type,Authorization,X-User-Agent',
+            $this->esi_response->headers['Access-Control-Allow-Headers']);
+    }
+
+    public function testEsiResponseCanGetParsedPagesFromHeaders()
+    {
+
+        $this->assertEquals(4, $this->esi_response->pages);
+    }
+
+    public function testEsiResponseCanGetParsedErrorLomitFromHeaders()
+    {
+
+        $this->assertEquals(64, $this->esi_response->error_limit);
     }
 }
