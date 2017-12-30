@@ -45,7 +45,7 @@ class Eseye
     /**
      * The Eseye Version.
      */
-    const VERSION = '0.0.10';
+    const VERSION = '0.0.11';
 
     /**
      * @var \Seat\Eseye\Containers\EsiAuthentication
