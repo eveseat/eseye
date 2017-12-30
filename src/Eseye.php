@@ -324,7 +324,7 @@ class Eseye
     public function setQueryString(array $query): self
     {
 
-        $this->query_string = $query;
+        $this->query_string = array_merge($this->query_string, $query);
 
         return $this;
     }
@@ -451,6 +451,21 @@ class Eseye
     {
 
         $this->query_string = [];
+
+        return $this;
+    }
+
+    /**
+     * A helper method to specify the page to retreive.
+     *
+     * @param int $page
+     *
+     * @return \Seat\Eseye\Eseye
+     */
+    public function page(int $page): self
+    {
+
+        $this->setQueryString(['page' => $page]);
 
         return $this;
     }

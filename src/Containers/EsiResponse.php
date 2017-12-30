@@ -38,12 +38,12 @@ class EsiResponse extends ArrayObject
     public $raw;
 
     /**
-     * @var
+     * @var array
      */
     public $headers;
 
     /**
-     * @var
+     * @var array
      */
     public $raw_headers;
 
