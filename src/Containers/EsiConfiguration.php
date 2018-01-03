@@ -53,6 +53,9 @@ class EsiConfiguration extends AbstractArrayAccess
         'logger_level'               => Logger::INFO,
         'logfile_location'           => 'logs/eseye.log',
 
+        // Default empty return value for the optional() helper.
+        'empty_return_value'         => null,
+
         // Cache
         'cache'                      => FileCache::class,
 
