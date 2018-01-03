@@ -24,7 +24,6 @@ namespace Seat\Eseye\Containers;
 
 use ArrayObject;
 use Carbon\Carbon;
-use Seat\Eseye\Configuration;
 
 /**
  * Class EsiResponse.
@@ -113,9 +112,6 @@ class EsiResponse extends ArrayObject
         if (property_exists($data, 'error_description'))
             $this->error_message .= ': ' . $data->error_description;
 
-        // Set the return value desired if a key does not exist
-        $this->optional_return = Configuration::getInstance()->empty_return_value;
-
         // Run the parent constructor
         parent::__construct($data, ArrayObject::ARRAY_AS_PROPS);
     }
@@ -169,7 +165,7 @@ class EsiResponse extends ArrayObject
     {
 
         if (! $this->offsetExists($index))
-            return $this->optional_return;
+            return null;
 
         return $this->$index;
     }
