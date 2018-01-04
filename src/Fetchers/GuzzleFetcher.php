@@ -24,6 +24,7 @@ namespace Seat\Eseye\Fetchers;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Seat\Eseye\Configuration;
@@ -214,7 +215,7 @@ class GuzzleFetcher implements FetcherInterface
             $response = $this->getClient()->send(
                 new Request($method, $uri, $headers, $body));
 
-        } catch (ClientException $e) {
+        } catch (ClientException | ServerException $e) {
 
             // Log the event as failed
             $this->logger->error('[http ' . $e->getResponse()->getStatusCode() . ', ' .
