@@ -210,7 +210,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Eseye::class, $object);
         $this->assertEquals([
             'foo' => 'bar',
-            'foobar' => ['foo,bar'],
+            'foobar' => ['foo', 'bar'],
         ], $this->esi->getQueryString());
     }
 
