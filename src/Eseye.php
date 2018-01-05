@@ -325,7 +325,7 @@ class Eseye
     {
         foreach ($query as $key => $value) {
             if (is_array($value)) {
-                $query[$key] = implode(",", $value);
+                $query[$key] = implode(',', $value);
             }
         }
 
