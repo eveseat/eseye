@@ -202,10 +202,16 @@ class EseyeTest extends PHPUnit_Framework_TestCase
     public function testEseyeGetAndSetQueryString()
     {
 
-        $object = $this->esi->setQueryString(['foo' => 'bar']);
+        $object = $this->esi->setQueryString([
+            'foo' => 'bar',
+            'foobar' => ['foo', 'bar'],
+        ]);
 
         $this->assertInstanceOf(Eseye::class, $object);
-        $this->assertEquals(['foo' => 'bar'], $this->esi->getQueryString());
+        $this->assertEquals([
+            'foo' => 'bar',
+            'foobar' => 'foo,bar',
+        ], $this->esi->getQueryString());
     }
 
     public function testEseyeGetAndSetBody()

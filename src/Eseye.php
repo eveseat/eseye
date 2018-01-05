@@ -323,6 +323,11 @@ class Eseye
      */
     public function setQueryString(array $query): self
     {
+        foreach ($query as $key => $value) {
+            if (is_array($value)) {
+                $query[$key] = implode(',', $value);
+            }
+        }
 
         $this->query_string = array_merge($this->query_string, $query);
 
