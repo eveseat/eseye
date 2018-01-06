@@ -100,7 +100,7 @@ class Eseye
      *
      * @var array
      */
-    protected $cachable_verb = ['get', 'post'];
+    protected $cachable_verb = ['get'];
 
     /**
      * Eseye constructor.
