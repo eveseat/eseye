@@ -168,7 +168,7 @@ class Eseye
         return $this;
     }
 
-    public function setRefreshToken(String $refreshToken)
+    public function setRefreshToken(String $refreshToken): self
     {
         $this->authentication = $this->authentication->setRefreshToken($refreshToken);
         return $this;
