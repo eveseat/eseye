@@ -78,6 +78,11 @@ class EsiResponse extends ArrayObject
     protected $optional_return;
 
     /**
+     * @var bool
+     */
+    protected $from_cache;
+
+    /**
      * EsiResponse constructor.
      *
      * @param string $data
@@ -218,5 +223,13 @@ class EsiResponse extends ArrayObject
     {
 
         return $this->response_code;
+    }
+
+    /**
+     * @return bool
+     */
+    public function setFromCache($from_cache): bool
+    {
+        return $this->from_cache = $from_cache;
     }
 }

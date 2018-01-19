@@ -244,7 +244,11 @@ class Eseye
 
         // Cache the response if it was a get and is not already expired
         if (in_array(strtolower($method), $this->cachable_verb) && ! $result->expired())
-            $this->getCache()->set($uri->getPath(), $uri->getQuery(), $result);
+            $cachedResult = $result;
+            $cachedResult->setFromCache(true);
+            $this->getCache()->set($uri->getPath(), $uri->getQuery(), $cachedResult);
+
+        $result->setFromCache(false);
 
         // In preperation for the next request, perform some
         // self cleanups of this objects request data such as
