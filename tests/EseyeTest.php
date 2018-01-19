@@ -333,4 +333,22 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         ]);
     }
 
+    public function testEseyeSetRefreshToken()
+    {
+
+        $authentication = new EsiAuthentication([
+            'client_id'     => 'SSO_CLIENT_ID',
+            'secret'        => 'SSO_SECRET',
+            'access_token'  => 'ACCESS_TOKEN',
+            'refresh_token' => 'CHARACTER_REFRESH_TOKEN',
+            'token_expires' => '1970-01-01 00:00:00',
+            'scopes'        => ['public'],
+        ]);
+        $this->esi->setAuthentication($authentication);
+
+        $this->esi->setRefreshToken('ALTERNATE_REFRESH_TOKEN');
+
+        $this->assertEquals('ALTERNATE_REFRESH_TOKEN', $this->esi->getAuthentication()->refresh_token);
+    }
+
 }

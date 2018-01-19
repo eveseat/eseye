@@ -127,4 +127,13 @@ class EsiAuthenticationTest extends PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testEsiAuthenticationContainerSetRefreshToken()
+    {
+
+        $authentication = new EsiAuthentication;
+        $authentication->setRefreshToken('test');
+
+        $this->assertEquals('test', $authentication->refresh_token);
+    }
+
 }

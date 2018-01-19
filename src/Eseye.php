@@ -168,6 +168,12 @@ class Eseye
         return $this;
     }
 
+    public function setRefreshToken(String $refreshToken)
+    {
+        $this->authentication = $this->authentication->setRefreshToken($refreshToken);
+        return $this;
+    }
+
     /**
      * @param \Seat\Eseye\Fetchers\FetcherInterface $fetcher
      */
