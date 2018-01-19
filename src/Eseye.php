@@ -216,7 +216,7 @@ class Eseye
     {
 
         // Check the Access Requirement
-        if (! $this->getAccesChecker()->can(
+        if (! $this->getAccessChecker()->can(
             $method, $uri, $this->getFetcher()->getAuthenticationScopes())
         ) {
 
@@ -257,7 +257,7 @@ class Eseye
     /**
      * @return \Seat\Eseye\Access\CheckAccess
      */
-    public function getAccesChecker()
+    public function getAccessChecker()
     {
 
         if (! $this->access_checker)
