@@ -4,3 +4,4 @@ composer.lock
 /logs/
 /cache/
 /build/
+.DS_Store
