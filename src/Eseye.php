@@ -168,6 +168,11 @@ class Eseye
         return $this;
     }
 
+    /**
+     * @param String $refreshToken
+     *
+     * @return \Seat\Eseye\Eseye
+     */
     public function setRefreshToken(String $refreshToken): self
     {
         $this->authentication = $this->authentication->setRefreshToken($refreshToken);
