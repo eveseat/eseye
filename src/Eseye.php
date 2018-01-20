@@ -236,19 +236,17 @@ class Eseye
         // Check if there is a cached response we can return
         if (in_array(strtolower($method), $this->cachable_verb) &&
             $cached = $this->getCache()->get($uri->getPath(), $uri->getQuery())
-        )
+        ) {
+            $cached->setLoadedFromCache(true);
             return $cached;
+        }
 
         // Call ESI itself and get the EsiResponse
         $result = $this->rawFetch($method, $uri, $this->getBody());
 
         // Cache the response if it was a get and is not already expired
         if (in_array(strtolower($method), $this->cachable_verb) && ! $result->expired())
-            $cachedResult = $result;
-            $cachedResult->setFromCache(true);
-            $this->getCache()->set($uri->getPath(), $uri->getQuery(), $cachedResult);
-
-        $result->setFromCache(false);
+            $this->getCache()->set($uri->getPath(), $uri->getQuery(), $result);
 
         // In preperation for the next request, perform some
         // self cleanups of this objects request data such as
