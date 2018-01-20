@@ -237,7 +237,8 @@ class Eseye
         if (in_array(strtolower($method), $this->cachable_verb) &&
             $cached = $this->getCache()->get($uri->getPath(), $uri->getQuery())
         ) {
-            $cached->setLoadedFromCache(true);
+            $cached->setLoadedFromCache();
+
             return $cached;
         }
 

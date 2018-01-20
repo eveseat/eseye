@@ -228,8 +228,8 @@ class EsiResponse extends ArrayObject
     /**
      * @return bool
      */
-    public function setLoadedFromCache($loaded_from_cache): bool
+    public function setLoadedFromCache(): bool
     {
-        return $this->loaded_from_cache = $loaded_from_cache;
+        return $this->loaded_from_cache = true;
     }
 }
