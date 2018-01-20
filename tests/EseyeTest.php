@@ -161,7 +161,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
     public function testEseyeGetAccessChecker()
     {
 
-        $this->assertInstanceOf(CheckAccess::class, $this->esi->getAccesChecker());
+        $this->assertInstanceOf(CheckAccess::class, $this->esi->getAccessChecker());
     }
 
     public function testEseyeGetsFetcher()
