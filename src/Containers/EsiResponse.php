@@ -80,7 +80,7 @@ class EsiResponse extends ArrayObject
     /**
      * @var bool
      */
-    protected $loaded_from_cache = false;
+    protected $cached_load = false;
 
     /**
      * EsiResponse constructor.
@@ -228,8 +228,18 @@ class EsiResponse extends ArrayObject
     /**
      * @return bool
      */
-    public function setLoadedFromCache(): bool
+    public function setIsCachedload(): bool
     {
-        return $this->loaded_from_cache = true;
+
+        return $this->cached_load = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCachedLoad(): bool
+    {
+
+        return $this->cached_load;
     }
 }

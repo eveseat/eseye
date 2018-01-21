@@ -175,7 +175,9 @@ class Eseye
      */
     public function setRefreshToken(String $refreshToken): self
     {
+
         $this->authentication = $this->authentication->setRefreshToken($refreshToken);
+
         return $this;
     }
 
@@ -186,19 +188,6 @@ class Eseye
     {
 
         $this->fetcher = $fetcher;
-    }
-
-    /**
-     * @param \Seat\Eseye\Access\AccessInterface $checker
-     *
-     * @return \Seat\Eseye\Eseye
-     */
-    public function setAccessChecker(AccessInterface $checker): self
-    {
-
-        $this->access_checker = $checker;
-
-        return $this;
     }
 
     /**
@@ -248,7 +237,9 @@ class Eseye
         if (in_array(strtolower($method), $this->cachable_verb) &&
             $cached = $this->getCache()->get($uri->getPath(), $uri->getQuery())
         ) {
-            $cached->setLoadedFromCache();
+
+            // Mark the response as one that was loaded from the cache
+            $cached->setIsCachedload();
 
             return $cached;
         }
@@ -278,6 +269,19 @@ class Eseye
             $this->access_checker = new CheckAccess;
 
         return $this->access_checker;
+    }
+
+    /**
+     * @param \Seat\Eseye\Access\AccessInterface $checker
+     *
+     * @return \Seat\Eseye\Eseye
+     */
+    public function setAccessChecker(AccessInterface $checker): self
+    {
+
+        $this->access_checker = $checker;
+
+        return $this;
     }
 
     /**

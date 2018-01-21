@@ -170,4 +170,17 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(64, $this->esi_response->error_limit);
     }
+
+    public function testEsiResponseIsNotCachedByDefault()
+    {
+
+        $this->assertFalse($this->esi_response->isCachedLoad());
+    }
+
+    public function testEsiResponseMarksResponseAsCached()
+    {
+
+        $this->esi_response->setIsCachedload();
+        $this->assertTrue($this->esi_response->isCachedLoad());
+    }
 }
