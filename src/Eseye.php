@@ -169,7 +169,7 @@ class Eseye
     }
 
     /**
-     * @param String $refreshToken
+     * @param string $refreshToken
      *
      * @return \Seat\Eseye\Eseye
      */
