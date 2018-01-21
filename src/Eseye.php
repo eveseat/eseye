@@ -247,8 +247,11 @@ class Eseye
         // Check if there is a cached response we can return
         if (in_array(strtolower($method), $this->cachable_verb) &&
             $cached = $this->getCache()->get($uri->getPath(), $uri->getQuery())
-        )
+        ) {
+            $cached->setLoadedFromCache();
+
             return $cached;
+        }
 
         // Call ESI itself and get the EsiResponse
         $result = $this->rawFetch($method, $uri, $this->getBody());
