@@ -252,7 +252,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
 
         $uri = $this->esi->buildDataUri('/{foo}/', ['foo' => 'bar']);
 
-        $this->assertEquals('https://esi.tech.ccp.is/latest/bar/?datasource=test',
+        $this->assertEquals('https://esi.evetech.net/latest/bar/?datasource=test',
             $uri->__toString());
     }
 
