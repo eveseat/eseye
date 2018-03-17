@@ -32,7 +32,7 @@ use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Eseye;
 use Seat\Eseye\EseyeFetcher;
 use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
-use Seat\Eseye\Exceptions\InvalidAuthencationException;
+use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
 use Seat\Eseye\Fetchers\FetcherInterface;
@@ -117,7 +117,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
     public function testEseyeGetAuthenticationBeforeSet()
     {
 
-        $this->expectException(InvalidAuthencationException::class);
+        $this->expectException(InvalidAuthenticationException::class);
 
         $this->esi->getAuthentication();
     }

@@ -28,7 +28,7 @@ use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\EseyeFetcher;
-use Seat\Eseye\Exceptions\InvalidAuthencationException;
+use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use Seat\Eseye\Fetchers\GuzzleFetcher;
 use Seat\Eseye\Log\NullLogger;
@@ -139,7 +139,7 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
     public function testGuzzleFailsSettingInvalidAuthentication()
     {
 
-        $this->expectException(InvalidAuthencationException::class);
+        $this->expectException(InvalidAuthenticationException::class);
 
         $this->fetcher->setAuthentication(new EsiAuthentication([
             'client_id' => null,
@@ -149,7 +149,7 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
     public function testGuzzleShouldFailGettingTokenWithoutAuthentication()
     {
 
-        $this->expectException(InvalidAuthencationException::class);
+        $this->expectException(InvalidAuthenticationException::class);
 
         $get_token = self::getMethod('getToken');
         $get_token->invokeArgs(new GuzzleFetcher, []);

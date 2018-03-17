@@ -56,6 +56,7 @@ class Configuration
 
     /**
      * Configuration constructor.
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function __construct()
     {
@@ -65,6 +66,7 @@ class Configuration
 
     /**
      * @return \Seat\Eseye\Configuration
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public static function getInstance(): self
     {

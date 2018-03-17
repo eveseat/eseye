@@ -31,7 +31,7 @@ use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Eseye;
-use Seat\Eseye\Exceptions\InvalidAuthencationException;
+use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
 
 /**
@@ -82,7 +82,7 @@ class GuzzleFetcher implements FetcherInterface
      * @param array  $headers
      *
      * @return mixed|\Seat\Eseye\Containers\EsiResponse
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      */
     public function call(
@@ -111,20 +111,20 @@ class GuzzleFetcher implements FetcherInterface
     /**
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
      *
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      */
     public function setAuthentication(EsiAuthentication $authentication)
     {
 
         if (! $authentication->valid())
-            throw new InvalidAuthencationException('Authentication data invalid/empty');
+            throw new InvalidAuthenticationException('Authentication data invalid/empty');
 
         $this->authentication = $authentication;
     }
 
     /**
      * @return string
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      */
     private function getToken(): string
@@ -133,7 +133,7 @@ class GuzzleFetcher implements FetcherInterface
         // Ensure that we have authentication data before we try
         // and get a token.
         if (! $this->getAuthentication())
-            throw new InvalidAuthencationException(
+            throw new InvalidAuthenticationException(
                 'Trying to get a token without authentication data.');
 
         // Check the expiry date.
@@ -150,7 +150,7 @@ class GuzzleFetcher implements FetcherInterface
      * Refresh the Access token that we have in the EsiAccess container.
      *
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      */
     private function refreshToken()
     {
@@ -235,7 +235,7 @@ class GuzzleFetcher implements FetcherInterface
             );
         }
 
-        // Log the sucessful request.
+        // Log the successful request.
         $this->logger->log('[http ' . $response->getStatusCode() . ', ' .
             strtolower($response->getReasonPhrase()) . '] ' .
             $method . ' -> ' . $this->stripRefreshTokenValue($uri) . ' [t/e: ' .
@@ -339,6 +339,8 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * Verify that an access_token is still valid.
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      */
     private function verifyToken()
     {

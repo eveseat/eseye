@@ -76,13 +76,13 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
         $this->esi_response = new EsiResponse($data, $headers, 'now', 200);
     }
 
-    public function testEsiResponeInstantiation()
+    public function testEsiResponseInstantiation()
     {
 
         $this->assertInstanceOf(EsiResponse::class, $this->esi_response);
     }
 
-    public function testEsiReponseTestPayloadIsExpired()
+    public function testEsiResponseTestPayloadIsExpired()
     {
 
         $this->assertTrue($this->esi_response->expired());
@@ -97,7 +97,7 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($esi->expired());
     }
 
-    public function testEsiResponseDoesNothaveError()
+    public function testEsiResponseDoesNotHaveError()
     {
 
         $this->assertNull($this->esi_response->error());

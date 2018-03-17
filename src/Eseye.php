@@ -29,7 +29,7 @@ use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
-use Seat\Eseye\Exceptions\InvalidAuthencationException;
+use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
 use Seat\Eseye\Fetchers\FetcherInterface;
@@ -140,13 +140,13 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Containers\EsiAuthentication
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthencationException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      */
     public function getAuthentication(): EsiAuthentication
     {
 
         if (is_null($this->authentication))
-            throw new InvalidAuthencationException('Authentication data not set.');
+            throw new InvalidAuthenticationException('Authentication data not set.');
 
         return $this->authentication;
     }
@@ -251,7 +251,7 @@ class Eseye
         if (in_array(strtolower($method), $this->cachable_verb) && ! $result->expired())
             $this->getCache()->set($uri->getPath(), $uri->getQuery(), $result);
 
-        // In preperation for the next request, perform some
+        // In preparation for the next request, perform some
         // self cleanups of this objects request data such as
         // query string parameters and post bodies.
         $this->cleanupRequestData();
@@ -480,7 +480,7 @@ class Eseye
     }
 
     /**
-     * A helper method to specify the page to retreive.
+     * A helper method to specify the page to retrieve.
      *
      * @param int $page
      *

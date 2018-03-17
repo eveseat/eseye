@@ -39,6 +39,8 @@ class NullCache implements CacheInterface
      */
     public function set(string $uri, string $query, EsiResponse $data)
     {
+
+        return;
     }
 
     /**
@@ -61,6 +63,8 @@ class NullCache implements CacheInterface
      */
     public function forget(string $uri, string $query = '')
     {
+
+        return;
     }
 
     /**

@@ -47,6 +47,8 @@ class FileCache implements CacheInterface
 
     /**
      * FileCache constructor.
+     * @throws \Seat\Eseye\Exceptions\CachePathException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function __construct()
     {
@@ -191,7 +193,7 @@ class FileCache implements CacheInterface
      * @param string $uri
      * @param string $query
      *
-     * @return mixed
+     * @return void
      */
     public function forget(string $uri, string $query = '')
     {

@@ -69,7 +69,7 @@ class RedisCache implements CacheInterface
      * @param string                             $query
      * @param \Seat\Eseye\Containers\EsiResponse $data
      *
-     * @return mixed
+     * @return void
      */
     public function set(string $uri, string $query, EsiResponse $data)
     {

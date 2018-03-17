@@ -41,6 +41,7 @@ class FileLogger implements LogInterface
 
     /**
      * FileLogger constructor.
+     * @throws \Exception
      */
     public function __construct()
     {
