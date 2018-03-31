@@ -36,7 +36,6 @@ class NullLogger implements LogInterface
     public function log(string $message)
     {
 
-        return;
     }
 
     /**
@@ -47,7 +46,6 @@ class NullLogger implements LogInterface
     public function debug(string $message)
     {
 
-        return;
     }
 
     /**
@@ -58,7 +56,6 @@ class NullLogger implements LogInterface
     public function warning(string $message)
     {
 
-        return;
     }
 
     /**
@@ -69,6 +66,5 @@ class NullLogger implements LogInterface
     public function error(string $message)
     {
 
-        return;
     }
 }
