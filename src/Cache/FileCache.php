@@ -61,14 +61,6 @@ class FileCache implements CacheInterface
     }
 
     /**
-     * @return string
-     */
-    public function getCachePath() : string
-    {
-        return $this->cache_path;
-    }
-
-    /**
      * @return bool
      * @throws \Seat\Eseye\Exceptions\CachePathException
      */
@@ -94,6 +86,15 @@ class FileCache implements CacheInterface
         }
 
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCachePath(): string
+    {
+
+        return $this->cache_path;
     }
 
     /**

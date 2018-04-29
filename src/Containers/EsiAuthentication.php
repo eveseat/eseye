@@ -48,6 +48,7 @@ class EsiAuthentication extends AbstractArrayAccess
 
     public function setRefreshToken(String $refreshToken): self
     {
+
         $this->data['refresh_token'] = $refreshToken;
 
         return $this;
