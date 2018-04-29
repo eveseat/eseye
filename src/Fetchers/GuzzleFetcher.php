@@ -334,7 +334,6 @@ class GuzzleFetcher implements FetcherInterface
         return $this->getAuthentication()->scopes;
     }
 
-
     /**
      * Query the eveseat/resources repository for SDE
      * related information.
