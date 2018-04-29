@@ -90,7 +90,7 @@ class FileCache implements CacheInterface
 
             if (! chmod($this->getCachePath(), 0775))
                 throw new CachePathException(
-                    $this->cache_path . ' must be readable and writeable');
+                    $this->cache_path . ' must be readable and writable');
         }
 
         return true;

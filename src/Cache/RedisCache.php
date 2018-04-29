@@ -44,11 +44,13 @@ class RedisCache implements CacheInterface
      * RedisCache constructor.
      *
      * @param \Predis\Client $redis
+     *
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function __construct(Client $redis = null)
     {
 
-        // If we didnt get a Redis instance in the constructor,
+        // If we didn't get a Redis instance in the constructor,
         // build a new one.
         if (is_null($redis)) {
 

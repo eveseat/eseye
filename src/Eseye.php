@@ -106,6 +106,8 @@ class Eseye
      * Eseye constructor.
      *
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
+     *
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function __construct(
         EsiAuthentication $authentication = null)
@@ -122,6 +124,7 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Log\LogInterface
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function getLogger(): LogInterface
     {
@@ -131,6 +134,7 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Configuration
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function getConfiguration(): Configuration
     {
@@ -211,6 +215,7 @@ class Eseye
      * @return \Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function invoke(string $method, string $uri, array $uri_data = []): EsiResponse
     {
@@ -286,6 +291,7 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Fetchers\FetcherInterface
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     private function getFetcher(): FetcherInterface
     {
@@ -306,6 +312,7 @@ class Eseye
      *
      * @return \GuzzleHttp\Psr7\Uri
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function buildDataUri(string $uri, array $data): Uri
     {
@@ -416,6 +423,7 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Cache\CacheInterface
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     private function getCache(): CacheInterface
     {
@@ -429,6 +437,7 @@ class Eseye
      * @param array  $body
      *
      * @return mixed
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function rawFetch(string $method, string $uri, array $body)
     {

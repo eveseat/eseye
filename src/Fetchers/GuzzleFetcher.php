@@ -65,6 +65,8 @@ class GuzzleFetcher implements FetcherInterface
      * EseyeFetcher constructor.
      *
      * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
+     *
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function __construct(EsiAuthentication $authentication = null)
     {
@@ -84,6 +86,7 @@ class GuzzleFetcher implements FetcherInterface
      * @return mixed|\Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function call(
         string $method, string $uri, array $body, array $headers = []): EsiResponse
@@ -126,6 +129,7 @@ class GuzzleFetcher implements FetcherInterface
      * @return string
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     private function getToken(): string
     {
@@ -151,6 +155,7 @@ class GuzzleFetcher implements FetcherInterface
      *
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     private function refreshToken()
     {
@@ -185,6 +190,7 @@ class GuzzleFetcher implements FetcherInterface
      *
      * @return mixed|\Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function httpRequest(
         string $method, string $uri, array $headers = [], array $body = []): EsiResponse
@@ -306,11 +312,15 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * @return array
+     *
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
      */
     public function getAuthenticationScopes(): array
     {
 
-        // If we dont have any authentication data, then
+        // If we don't have any authentication data, then
         // only public calls can be made.
         if (is_null($this->getAuthentication()))
             return ['public'];
@@ -324,8 +334,14 @@ class GuzzleFetcher implements FetcherInterface
         return $this->getAuthentication()->scopes;
     }
 
+
     /**
-     * Verify a token and set the Authentication scopes.
+     * Query the eveseat/resources repository for SDE
+     * related information.
+     *
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
      */
     public function setAuthenticationScopes()
     {
@@ -339,8 +355,10 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * Verify that an access_token is still valid.
+     *
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     private function verifyToken()
     {

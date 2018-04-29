@@ -261,6 +261,7 @@ class CheckAccess implements AccessInterface
      * @param array  $scopes
      *
      * @return bool|mixed
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function can(string $method, string $uri, array $scopes): bool
     {

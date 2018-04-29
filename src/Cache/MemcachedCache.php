@@ -33,14 +33,33 @@ class MemcachedCache implements CacheInterface
 {
     use HashesStrings;
 
+    /**
+     * @var mixed
+     */
     protected $prefix;
 
+    /**
+     * @var bool
+     */
     protected $is_memcached;
 
+    /**
+     * @var \Memcache
+     */
     protected $memcached;
 
+    /**
+     * @var int
+     */
     protected $flags;
 
+    /**
+     * MemcachedCache constructor.
+     *
+     * @param null $instance
+     *
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     */
     public function __construct($instance = null)
     {
 
