@@ -37,7 +37,7 @@ class CheckAccess implements AccessInterface
     protected $scope_map = [
         'get'    => [
 
-            // 'meta' URI's. see: https://esi.tech.ccp.is/ui/?version=meta
+            // 'meta' URI's. see: https://esi.evetech.net/ui/?version=meta
             '/ping'                                                           => 'public',
 
             // Generated using tools: php get_endpoints_and_scopes.php

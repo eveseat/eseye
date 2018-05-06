@@ -87,7 +87,7 @@ class Eseye
      */
     protected $esi = [
         'scheme' => 'https',
-        'host'   => 'esi.tech.ccp.is',
+        'host'   => 'esi.evetech.net',
     ];
 
     /**
