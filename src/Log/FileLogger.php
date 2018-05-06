@@ -51,7 +51,7 @@ class FileLogger implements LogInterface
 
         $formatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n");
         $stream = new StreamHandler(
-            $configuration->logfile_location,
+            rtrim($configuration->logfile_location, '/') . '/eseye.log',
             $configuration->logger_level
         );
         $stream->setFormatter($formatter);

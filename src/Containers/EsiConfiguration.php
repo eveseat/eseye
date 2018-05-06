@@ -51,7 +51,7 @@ class EsiConfiguration extends AbstractArrayAccess
         // Logging
         'logger'                     => RotatingFileLogger::class,
         'logger_level'               => Logger::INFO,
-        'logfile_location'           => 'logs/eseye.log',
+        'logfile_location'           => 'logs/',
 
         // Rotating Logger Details
         'log_max_files'              => 10,

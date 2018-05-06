@@ -50,7 +50,7 @@ class RotatingFileLogger implements LogInterface
 
         $formatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n");
         $stream = new RotatingFileHandler(
-            $configuration->logfile_location,
+            rtrim($configuration->logfile_location, '/') . '/',
             $configuration->log_max_files,
             $configuration->logger_level
         );
