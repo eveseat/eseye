@@ -25,7 +25,7 @@ namespace Seat\Eseye\Containers;
 use Monolog\Logger;
 use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Fetchers\GuzzleFetcher;
-use Seat\Eseye\Log\FileLogger;
+use Seat\Eseye\Log\RotatingFileLogger;
 use Seat\Eseye\Traits\ConstructsContainers;
 use Seat\Eseye\Traits\ValidatesContainers;
 
@@ -49,9 +49,12 @@ class EsiConfiguration extends AbstractArrayAccess
         'fetcher'                    => GuzzleFetcher::class,
 
         // Logging
-        'logger'                     => FileLogger::class,
+        'logger'                     => RotatingFileLogger::class,
         'logger_level'               => Logger::INFO,
         'logfile_location'           => 'logs/eseye.log',
+
+        // Rotating Logger Details
+        'log_max_files'              => 10,
 
         // Cache
         'cache'                      => FileCache::class,
