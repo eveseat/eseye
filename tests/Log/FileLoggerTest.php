@@ -37,7 +37,7 @@ class FileLoggerTest extends PHPUnit_Framework_TestCase
 
         // Set the file cache path in the config singleton
         $this->root = vfsStream::setup('logs/');
-        Configuration::getInstance()->logfile_location = vfsStream::url('logs/') . 'eseye.log';
+        Configuration::getInstance()->logfile_location = vfsStream::url('logs/');
 
         $this->logger = new FileLogger;
     }
