@@ -246,6 +246,9 @@ class Eseye
             // Mark the response as one that was loaded from the cache
             $cached->setIsCachedload();
 
+            // Perform some debug logging
+            $this->getLogger()->debug('Loaded cached response for ' . $method . ' -> ' . $uri);
+
             return $cached;
         }
 

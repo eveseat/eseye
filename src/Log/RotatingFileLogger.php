@@ -22,7 +22,6 @@
 
 namespace Seat\Eseye\Log;
 
-
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
