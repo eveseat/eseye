@@ -253,12 +253,7 @@ class Eseye
             // Sending a request with the stored ETag in header - if we have a 304 response, data has not been altered.
             if ($cached->hasHeader('ETag') && $cached->expired()) {
 
-                $this->getLogger()->debug('Cached response got an ETag, ensuring data are still up to date.');
-
                 $result = $this->rawFetch($method, $uri, $this->getBody(), ['If-None-Match' => $cached->getHeader('ETag')]);
-
-                $this->getLogger()->debug(sprintf('Initial ETag %s, returned ETag %s, response %d',
-                    $cached->getHeader('ETag'), $result->getHeader('ETag'), $result->getErrorCode()));
 
                 if ($result->getErrorCode() == 304)
                     $cached->setIsCachedLoad();
