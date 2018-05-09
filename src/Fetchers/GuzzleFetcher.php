@@ -231,14 +231,17 @@ class GuzzleFetcher implements FetcherInterface
                 implode(' ', $e->getResponse()->getHeader('X-Esi-Error-Limit-Remain')) . ']'
             );
 
+            // since getBody is a stream reader, we store the content at first call which we will forward to other method
+            $responseBody = $e->getResponse()->getBody()->getContents();
+
             // For debugging purposes, log the response body
             $this->logger->debug('Request for ' . $method . ' -> ' . $uri . ' failed. Response body was: ' .
-                $e->getResponse()->getBody()->getContents());
+                $responseBody);
 
             // Raise the exception that should be handled by the caller
             throw new RequestFailedException($e,
                 $this->makeEsiResponse(
-                    $e->getResponse()->getBody()->getContents(),
+                    $responseBody,
                     $e->getResponse()->getHeaders(),
                     'now',
                     $e->getResponse()->getStatusCode())
