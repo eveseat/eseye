@@ -133,7 +133,8 @@ class MemcachedCache implements CacheInterface
 
         $data = unserialize($value);
 
-        if ($data->expired()) {
+        // If the cached entry is expired and does not have any ETag, remove it.
+        if ($data->expired() && ! $data->hasHeader('ETag')) {
             $this->forget($uri, $query);
 
             return false;

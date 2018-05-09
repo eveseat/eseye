@@ -37,6 +37,9 @@ interface FetcherInterface
      * @param array  $headers
      *
      * @return \Seat\Eseye\Containers\EsiResponse
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function call(string $method, string $uri, array $body, array $headers = []): EsiResponse;
 

@@ -109,7 +109,7 @@ class EsiResponse extends ArrayObject
         $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
         $this->response_code = $response_code;
 
-        // If there is an error, set that
+        // If there is an error, set that.
         if (property_exists($data, 'error'))
             $this->error_message = $data->error;
 
@@ -152,10 +152,10 @@ class EsiResponse extends ArrayObject
         // Check for some header values that might be interesting
         // such as the current error limit and number of pages
         // available.
-        array_key_exists('X-Esi-Error-Limit-Remain', $headers) ?
-            $this->error_limit = (int) $headers['X-Esi-Error-Limit-Remain'] : null;
+        $this->hasHeader('X-Esi-Error-Limit-Remain') ?
+            $this->error_limit = (int) $this->getHeader('X-Esi-Error-Limit-Remain') : null;
 
-        array_key_exists('X-Pages', $headers) ? $this->pages = (int) $headers['X-Pages'] : null;
+        $this->hasHeader('X-Pages') ? $this->pages = (int) $this->getHeader('X-Pages') : null;
     }
 
     /**
@@ -241,5 +241,37 @@ class EsiResponse extends ArrayObject
     {
 
         return $this->cached_load;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasHeader(string $name)
+    {
+        // turn headers into case insensitive array
+        $key_map = array_change_key_case($this->headers, CASE_LOWER);
+
+        // track for the requested header name
+        return array_key_exists(strtolower($name), $key_map);
+    }
+
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getHeader(string $name)
+    {
+        // turn header name into case insensitive
+        $insensitive_key = strtolower($name);
+
+        // turn headers into case insensitive array
+        $key_map = array_change_key_case($this->headers, CASE_LOWER);
+
+        // track for the requested header name and return its value if exists
+        if (array_key_exists($insensitive_key, $key_map))
+            return $key_map[$insensitive_key];
+
+        return null;
     }
 }

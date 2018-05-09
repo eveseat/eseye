@@ -109,7 +109,8 @@ class RedisCache implements CacheInterface
         $data = unserialize($this->redis
             ->get($this->buildCacheKey($uri, $query)));
 
-        if ($data->expired()) {
+        // If the cached entry is expired and does not have any ETag, remove it.
+        if ($data->expired() && ! $data->hasHeader('ETag')) {
 
             $this->forget($uri, $query);
 
