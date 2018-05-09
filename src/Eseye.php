@@ -247,15 +247,18 @@ class Eseye
 
             // Mark the response as one that was loaded from the cache in case no ETag exists
             if (! $cached->hasHeader('ETag'))
-                $cached->setIsCachedload();
+                $cached->setIsCachedLoad();
 
             // Handling ETag marked response specifically (ignoring the expired time)
             // Sending a request with the stored ETag in header - if we have a 304 response, data has not been altered.
             if ($cached->hasHeader('ETag') && $cached->expired()) {
-                $result = $this->rawFetch($method, $uri, $this->getBody(), ['If-None-Match', $cached->getHeaderValue('ETag')]);
 
-                $this->getLogger()->debug(sprintf('Cached response got an ETag, ensuring data are still up to date. Initial ETag %s, returned ETag %s, response %d',
-                    $cached->getHeaderValue('ETag'), $result->getHeaderValue('ETag'), $result->getErrorCode()));
+                $this->getLogger()->debug('Cached response got an ETag, ensuring data are still up to date.');
+
+                $result = $this->rawFetch($method, $uri, $this->getBody(), ['If-None-Match' => $cached->getHeader('ETag')]);
+
+                $this->getLogger()->debug(sprintf('Initial ETag %s, returned ETag %s, response %d',
+                    $cached->getHeader('ETag'), $result->getHeader('ETag'), $result->getErrorCode()));
 
                 if ($result->getErrorCode() == 304)
                     $cached->setIsCachedLoad();
@@ -268,8 +271,8 @@ class Eseye
                 // Perform some debug logging
                 $logging_msg = 'Loaded cached response for ' . $method . ' -> ' . $uri;
 
-                if (! is_null($cached->etag))
-                    $logging_msg = sprintf('%s [%s]', $logging_msg, $cached->etag);
+                if ($cached->hasHeader('ETag'))
+                    $logging_msg = sprintf('%s [%s]', $logging_msg, $cached->getHeader('ETag'));
 
                 $this->getLogger()->debug($logging_msg);
 

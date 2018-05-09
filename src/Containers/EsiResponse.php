@@ -228,7 +228,7 @@ class EsiResponse extends ArrayObject
     /**
      * @return bool
      */
-    public function setIsCachedload(): bool
+    public function setIsCachedLoad(): bool
     {
 
         return $this->cached_load = true;
