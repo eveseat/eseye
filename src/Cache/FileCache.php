@@ -111,7 +111,7 @@ class FileCache implements CacheInterface
 
         // Create the subpath if that does not already exist
         if (! file_exists($path))
-            mkdir($path, 0775, true);
+            @mkdir($path, 0775, true);
 
         // Dump the contents to file
         file_put_contents($path . $this->results_filename, serialize($data));
