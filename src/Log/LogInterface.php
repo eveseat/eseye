@@ -22,8 +22,6 @@
 
 namespace Seat\Eseye\Log;
 
-use Seat\Eseye\Configuration;
-
 /**
  * Interface LogInterface.
  * @package Seat\Eseye\Log

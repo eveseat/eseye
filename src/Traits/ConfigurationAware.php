@@ -22,7 +22,6 @@
 
 namespace Seat\Eseye\Traits;
 
-use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Configuration;
 
 /**

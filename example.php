@@ -26,7 +26,6 @@ use Seat\Eseye\Cache\NullCache;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Eseye;
-use Seat\Eseye\Exceptions\InvalidContainerDataException;
 
 // Disable all caching by setting the NullCache as the
 // preferred cache handler. By default, Eseye will use the
