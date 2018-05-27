@@ -37,15 +37,16 @@ class FileCacheTest extends PHPUnit_Framework_TestCase
 
         // Set the file cache path in the config singleton
         $this->root = vfsStream::setup('cache');
-        Configuration::getInstance()->file_cache_location = vfsStream::url('cache');
+        $configuration = new Configuration();
+        $configuration->file_cache_location = vfsStream::url('cache');
 
-        $this->file_cache = new FileCache;
+        $this->file_cache = new FileCache($configuration);
     }
 
     public function testFileCacheCanInstantiate()
     {
 
-        $this->assertInstanceOf(FileCache::class, new FileCache);
+        $this->assertInstanceOf(FileCache::class, new FileCache(new Configuration()));
     }
 
     public function testFileCacheCheckCacheDirectory()
@@ -80,9 +81,9 @@ class FileCacheTest extends PHPUnit_Framework_TestCase
         else
             $invalid_path = '/completely/invalid/path';
 
-        Configuration::getInstance()
-            ->file_cache_location = $invalid_path;
-        new FileCache();
+        $configuration = new Configuration();
+        $configuration->file_cache_location = $invalid_path;
+        new FileCache($configuration);
     }
 
     /**

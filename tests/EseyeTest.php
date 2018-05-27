@@ -38,6 +38,7 @@ use Seat\Eseye\Exceptions\UriDataMissingException;
 use Seat\Eseye\Fetchers\FetcherInterface;
 use Seat\Eseye\Fetchers\GuzzleFetcher;
 use Seat\Eseye\Log\LogInterface;
+use Seat\Eseye\Log\NullLogger;
 
 class EseyeTest extends PHPUnit_Framework_TestCase
 {
@@ -51,13 +52,13 @@ class EseyeTest extends PHPUnit_Framework_TestCase
     {
 
         // Remove logging
-        $configuration = Configuration::getInstance();
+        $configuration = new Configuration();
         $configuration->logger = NullLogger::class;
 
         // Remove caching
         $configuration->cache = NullCache::class;
-
-        $this->esi = new Eseye;
+        $configuration->datasource = 'test';
+        $this->esi = new Eseye($configuration);
     }
 
     public function testEseyeInstantiation()
@@ -74,7 +75,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $authentication = new EsiAuthentication([
             'foo' => 'bar',
         ]);
-        new Eseye($authentication);
+        new Eseye(new Configuration(), $authentication);
     }
 
     public function testEseyeInstantiateWithValidAuthenticationData()
@@ -85,7 +86,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
             'secret'        => 'SSO_SECRET',
             'refresh_token' => 'CHARACTER_REFRESH_TOKEN',
         ]);
-        new Eseye($authentication);
+        new Eseye(new Configuration(), $authentication);
     }
 
     public function testEseyeSetNewInvalidAuthenticationData()
@@ -168,7 +169,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
     {
 
         $get_fetcher = self::getMethod('getFetcher');
-        $return = $get_fetcher->invokeArgs(new Eseye, []);
+        $return = $get_fetcher->invokeArgs(new Eseye(new Configuration()), []);
 
         $this->assertInstanceOf(FetcherInterface::class, $return);
     }
@@ -194,7 +195,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
     {
 
         $get_fetcher = self::getMethod('getCache');
-        $return = $get_fetcher->invokeArgs(new Eseye, []);
+        $return = $get_fetcher->invokeArgs(new Eseye(new Configuration()), []);
 
         $this->assertInstanceOf(CacheInterface::class, $return);
     }
@@ -279,7 +280,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
             new Response(200, ['Expires' => 'Sat, 28 Jan 4017 05:46:49 GMT'], json_encode(['foo' => 'bar'])),
         ]);
 
-        $fetcher = new GuzzleFetcher;
+        $fetcher = new GuzzleFetcher(new Configuration());
         $fetcher->setClient(new Client([
             'handler' => HandlerStack::create($mock),
         ]));
@@ -300,7 +301,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
             new Response(200, ['Foo' => 'Bar'], json_encode(['foo' => 'bar'])),
         ]);
 
-        $fetcher = new GuzzleFetcher;
+        $fetcher = new GuzzleFetcher(new Configuration());
         $fetcher->setClient(new Client([
             'handler' => HandlerStack::create($mock),
         ]));
@@ -324,9 +325,11 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         ]);
 
         // Update the fetchers client
-        $this->esi->setFetcher(new GuzzleFetcher(null, new Client([
+        $fetcher = new GuzzleFetcher(new Configuration());
+        $fetcher->setClient(new Client([
             'handler' => HandlerStack::create($mock),
-        ])));
+        ]));
+        $this->esi->setFetcher($fetcher);
 
         $this->esi->invoke('get', '/characters/{character_id}/assets/', [
             'character_id' => 123,

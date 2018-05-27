@@ -21,6 +21,7 @@
  */
 
 use Seat\Eseye\Cache\MemcachedCache;
+use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
 
 
@@ -43,7 +44,7 @@ class MemcachedCacheTest extends PHPUnit_Framework_TestCase
             $instance = $this->createMock(\Memcache::class);
 
         // Set the cache
-        $this->memcached_cache = new MemcachedCache($instance);
+        $this->memcached_cache = new MemcachedCache(new Configuration(), $instance);
 
         $this->esi_response_object = new EsiResponse('', [], 'now', 200);
     }

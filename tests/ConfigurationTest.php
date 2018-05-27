@@ -32,14 +32,14 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     public function testConfigurationInstantiation()
     {
 
-        $this->assertInstanceOf(Configuration::class, Configuration::getInstance());
+        $this->assertInstanceOf(Configuration::class, new Configuration());
     }
 
     public function testConfigurationSingleton()
     {
 
-        $instance1 = Configuration::getInstance();
-        $instance2 = Configuration::getInstance();
+        $instance1 = new Configuration();
+        $instance2 = new Configuration();
 
         $instance1->setConfiguration(new EsiConfiguration([
             'datasource' => 'test',
@@ -51,8 +51,8 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testConfigurationGetConfigurationValuesContainer()
     {
-
-        $this->assertInstanceOf(EsiConfiguration::class, Configuration::getInstance()->getConfiguration());
+        $configuration = new Configuration();
+        $this->assertInstanceOf(EsiConfiguration::class, $configuration->getConfiguration());
     }
 
     public function testConfigurationSetsNewConfigurationContainerWithValidData()
@@ -71,29 +71,28 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testConfigurationSetsNewConfigurationContainerWithNullData()
     {
-
         $this->expectException(InvalidContainerDataException::class);
         new EsiConfiguration(['value' => null]);
     }
 
     public function testConfigurationGetsLogger()
     {
-
-        $logger = Configuration::getInstance()->getLogger();
+        $configuration = new Configuration();
+        $logger = $configuration->getLogger();
         $this->assertInstanceOf(LogInterface::class, $logger);
     }
 
     public function testConfigurationGetsCache()
     {
-
-        $cache = Configuration::getInstance()->getCache();
+        $configuration = new Configuration();
+        $cache = $configuration->getCache();
         $this->assertInstanceOf(CacheInterface::class, $cache);
     }
 
     public function testConfigurationSetsNewValue()
     {
 
-        $configuration = Configuration::getInstance();
+        $configuration = new Configuration();
         $configuration->test = 'test';
 
         $this->assertEquals('test', $configuration->test);

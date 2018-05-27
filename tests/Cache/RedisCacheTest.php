@@ -22,6 +22,7 @@
 
 use Predis\Client;
 use Seat\Eseye\Cache\RedisCache;
+use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
 
 class RedisCacheTest extends PHPUnit_Framework_TestCase
@@ -40,7 +41,7 @@ class RedisCacheTest extends PHPUnit_Framework_TestCase
         $redis = $this->createMock(Client::class);
 
         // Set the cache
-        $this->redis_cache = new RedisCache($redis);
+        $this->redis_cache = new RedisCache(new Configuration(), $redis);
         $this->esi_response_object = new EsiResponse('', [], 'now', 200);
     }
 
@@ -53,7 +54,7 @@ class RedisCacheTest extends PHPUnit_Framework_TestCase
     public function testRedisCacheInstantiatesWithoutArgument()
     {
 
-        $this->assertInstanceOf(RedisCache::class, new RedisCache);
+        $this->assertInstanceOf(RedisCache::class, new RedisCache(new Configuration()));
     }
 
     public function testRedisCacheBuildsCacheKey()

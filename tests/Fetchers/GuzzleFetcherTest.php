@@ -45,10 +45,10 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
     {
 
         // Remove logging
-        $configuration = Configuration::getInstance();
+        $configuration = new Configuration();
         $configuration->logger = NullLogger::class;
 
-        $this->fetcher = new GuzzleFetcher;
+        $this->fetcher = new GuzzleFetcher($configuration);
     }
 
     public function testGuzzleFetcherInstantiation()
@@ -60,7 +60,7 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
     public function testGuzzleGetsClientIfNoneSet()
     {
 
-        $fetcher = new GuzzleFetcher;
+        $fetcher = new GuzzleFetcher(new Configuration());
         $client = $fetcher->getClient();
 
         $this->assertInstanceOf(Client::class, $client);
@@ -114,7 +114,7 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
     public function testGuzzleFetcherGetAuthenticationWhenSettingAuthentication()
     {
 
-        $fetcher = new GuzzleFetcher(new EsiAuthentication([
+        $fetcher = new GuzzleFetcher(new Configuration(), new EsiAuthentication([
             'client_id' => 'foo',
         ]));
 
@@ -152,7 +152,7 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
         $this->expectException(InvalidAuthenticationException::class);
 
         $get_token = self::getMethod('getToken');
-        $get_token->invokeArgs(new GuzzleFetcher, []);
+        $get_token->invokeArgs(new GuzzleFetcher(new Configuration()), []);
     }
 
     /**
@@ -290,7 +290,7 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
             'token_expires' => '1970-01-01 00:00:00',
         ]);
 
-        $fetcher = new GuzzleFetcher($authentication);
+        $fetcher = new GuzzleFetcher(new Configuration(), $authentication);
         $fetcher->setClient($client);
 
         $scopes = $fetcher->getAuthenticationScopes();

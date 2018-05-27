@@ -32,7 +32,7 @@ class CheckAccessTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
 
-        $this->check_access = new CheckAccess;
+        $this->check_access = new CheckAccess(new Configuration());
     }
 
     public function testCheckAccessObjectInstantiation()
@@ -76,7 +76,8 @@ class CheckAccessTest extends PHPUnit_Framework_TestCase
     {
 
         // Disable logging.
-        Configuration::getInstance()->logger = NullLogger::class;
+        $configuration = new Configuration();
+        $configuration->logger = NullLogger::class;
 
         $result = $this->check_access->can('get', '/invalid/uri', []);
 

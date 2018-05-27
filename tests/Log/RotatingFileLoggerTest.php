@@ -39,10 +39,11 @@ class RotatingFileLoggerTest extends PHPUnit_Framework_TestCase
 
         // Set the file cache path in the config singleton
         $this->root = vfsStream::setup('logs');
-        Configuration::getInstance()->logfile_location = $this->root->url();
-        Configuration::getInstance()->logger_level = 'info';
+        $configuration = new Configuration();
+        $configuration->logfile_location = $this->root->url();
+        $configuration->logger_level = 'info';
 
-        $this->logger = new RotatingFileLogger;
+        $this->logger = new RotatingFileLogger($configuration);
 
         # Shitty hack to get the filename to expect. Format: eseye-2018-05-06.log
         $this->logfile_name = 'eseye-' . date('Y-m-d') . '.log';
@@ -69,10 +70,12 @@ class RotatingFileLoggerTest extends PHPUnit_Framework_TestCase
     public function testFileLoggerWritesLogDebug()
     {
 
-        Configuration::getInstance()->logger_level = Logger::DEBUG;
+        $configuration = new Configuration();
+        $configuration->logfile_location = $this->root->url();
+        $configuration->logger_level = Logger::DEBUG;
 
         // Init a new logger with the updated config
-        $logger = new RotatingFileLogger;
+        $logger = new RotatingFileLogger($configuration);
 
         $logger->debug('foo');
         $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
