@@ -26,6 +26,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Seat\Eseye\Configuration;
+use Seat\Eseye\Traits\ConfigurationAware;
 
 /**
  * Class RotatingFileLogger.
@@ -33,6 +34,8 @@ use Seat\Eseye\Configuration;
  */
 class RotatingFileLogger implements LogInterface
 {
+    use ConfigurationAware;
+
     /**
      * @var \Monolog\Logger
      */
@@ -42,11 +45,10 @@ class RotatingFileLogger implements LogInterface
      * FileLogger constructor.
      * @throws \Exception
      */
-    public function __construct()
+    public function __construct(Configuration $configuration)
     {
 
-        // Get the configuration values
-        $configuration = Configuration::getInstance();
+        $this->setConfiguration($configuration);
 
         $formatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n");
         $stream = new RotatingFileHandler(

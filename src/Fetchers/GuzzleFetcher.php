@@ -33,6 +33,7 @@ use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Eseye;
 use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
+use Seat\Eseye\Traits\ConfigurationAware;
 
 /**
  * Class GuzzleFetcher.
@@ -40,6 +41,8 @@ use Seat\Eseye\Exceptions\RequestFailedException;
  */
 class GuzzleFetcher implements FetcherInterface
 {
+
+    use ConfigurationAware;
 
     /**
      * @var string
@@ -68,13 +71,14 @@ class GuzzleFetcher implements FetcherInterface
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function __construct(EsiAuthentication $authentication = null)
+    public function __construct(Configuration $configuration, EsiAuthentication $authentication = null)
     {
 
+        $this->setConfiguration($configuration);
         $this->authentication = $authentication;
 
         // Setup the logger
-        $this->logger = Configuration::getInstance()->getLogger();
+        $this->logger = $configuration->getLogger();
     }
 
     /**
@@ -202,7 +206,7 @@ class GuzzleFetcher implements FetcherInterface
             'Accept'       => 'application/json',
             'Content-Type' => 'application/json',
             'User-Agent'   => 'Eseye/' . Eseye::VERSION . '/' .
-                Configuration::getInstance()->http_user_agent,
+                $this->getConfiguration()->http_user_agent,
         ]);
 
         // Add some debug logging and start measuring how long the request took.

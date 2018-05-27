@@ -26,6 +26,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Seat\Eseye\Configuration;
+use Seat\Eseye\Traits\ConfigurationAware;
 
 /**
  * Class FileLogger.
@@ -33,6 +34,7 @@ use Seat\Eseye\Configuration;
  */
 class FileLogger implements LogInterface
 {
+    use ConfigurationAware;
 
     /**
      * @var \Monolog\Logger
@@ -43,11 +45,10 @@ class FileLogger implements LogInterface
      * FileLogger constructor.
      * @throws \Exception
      */
-    public function __construct()
+    public function __construct(Configuration $configuration)
     {
 
-        // Get the configuration values
-        $configuration = Configuration::getInstance();
+        $this->setConfiguration($configuration);
 
         $formatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n");
         $stream = new StreamHandler(

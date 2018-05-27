@@ -23,6 +23,7 @@
 namespace Seat\Eseye\Access;
 
 use Seat\Eseye\Configuration;
+use Seat\Eseye\Traits\ConfigurationAware;
 
 /**
  * Class CheckAccess.
@@ -30,6 +31,12 @@ use Seat\Eseye\Configuration;
  */
 class CheckAccess implements AccessInterface
 {
+    use ConfigurationAware;
+
+    public function __construct(Configuration $configuration)
+    {
+        $this->setConfiguration($configuration);
+    }
 
     /**
      * @var array
@@ -268,7 +275,7 @@ class CheckAccess implements AccessInterface
 
         if (! array_key_exists($uri, $this->scope_map[$method])) {
 
-            Configuration::getInstance()->getLogger()
+            $this->getConfiguration()->getLogger()
                 ->warning('An unknown URI was called. Allowing ' . $uri);
 
             return true;

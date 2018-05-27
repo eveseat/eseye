@@ -25,6 +25,7 @@ namespace Seat\Eseye\Cache;
 use Predis\Client;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Traits\ConfigurationAware;
 
 /**
  * Class RedisCache.
@@ -33,7 +34,7 @@ use Seat\Eseye\Containers\EsiResponse;
 class RedisCache implements CacheInterface
 {
 
-    use HashesStrings;
+    use HashesStrings, ConfigurationAware;
 
     /**
      * @var \Predis\Client
@@ -47,14 +48,14 @@ class RedisCache implements CacheInterface
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function __construct(Client $redis = null)
+    public function __construct(Configuration $configuration, Client $redis = null)
     {
 
         // If we didn't get a Redis instance in the constructor,
         // build a new one.
         if (is_null($redis)) {
 
-            $configuration = Configuration::getInstance();
+            $this->setConfiguration($configuration);
 
             $this->redis = new Client($configuration->redis_cache_location, [
                 'prefix' => $configuration->redis_cache_prefix,

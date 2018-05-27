@@ -20,41 +20,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Eseye\Log;
+namespace Seat\Eseye\Traits;
 
+use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Configuration;
 
 /**
- * Interface LogInterface.
- * @package Seat\Eseye\Log
+ * Class ConfigurationAware.
+ * @package Seat\Eseye\Traits
  */
-interface LogInterface
+trait ConfigurationAware
 {
     /**
-     * @param string $message
-     *
-     * @return mixed
+     * @var Configuration
      */
-    public function log(string $message);
+    private $configuration;
 
     /**
-     * @param string $message
-     *
-     * @return mixed
+     * @return Configuration
      */
-    public function debug(string $message);
+    public function getConfiguration()
+    {
+        return $this->configuration;
+    }
 
     /**
-     * @param string $message
-     *
-     * @return mixed
+     * @param Configuration $configuration
      */
-    public function warning(string $message);
-
-    /**
-     * @param string $message
-     *
-     * @return mixed
-     */
-    public function error(string $message);
+    public function setConfiguration(Configuration $configuration): void
+    {
+        $this->configuration = $configuration;
+    }
 }

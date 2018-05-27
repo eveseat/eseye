@@ -17,7 +17,8 @@ Its supposed to be simple!
 
 ```php
 // initialization stuff
-$esi = new Eseye();
+$configuration = new Configuration();
+$esi = new Eseye($configuration);
 
 // Optionally, set the ESI endpoint version to use.
 // If you dont set this, Eseye will use /latest

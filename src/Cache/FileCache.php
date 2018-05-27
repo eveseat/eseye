@@ -25,6 +25,7 @@ namespace Seat\Eseye\Cache;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\CachePathException;
+use Seat\Eseye\Traits\ConfigurationAware;
 
 /**
  * Class FileCache.
@@ -33,7 +34,7 @@ use Seat\Eseye\Exceptions\CachePathException;
 class FileCache implements CacheInterface
 {
 
-    use HashesStrings;
+    use HashesStrings, ConfigurationAware;
 
     /**
      * @var string
@@ -47,13 +48,14 @@ class FileCache implements CacheInterface
 
     /**
      * FileCache constructor.
+     * @param Configuration $configuration
      * @throws \Seat\Eseye\Exceptions\CachePathException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function __construct()
+    public function __construct(Configuration $configuration)
     {
-
-        $this->cache_path = Configuration::getInstance()
+        $this->setConfiguration($configuration);
+        $this->cache_path = $this->getConfiguration()
             ->file_cache_location;
 
         // Ensure the cache directory is OK

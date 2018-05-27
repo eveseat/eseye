@@ -34,6 +34,7 @@ use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
 use Seat\Eseye\Fetchers\FetcherInterface;
 use Seat\Eseye\Log\LogInterface;
+use Seat\Eseye\Traits\ConfigurationAware;
 
 /**
  * Class Eseye.
@@ -41,6 +42,7 @@ use Seat\Eseye\Log\LogInterface;
  */
 class Eseye
 {
+    use ConfigurationAware;
 
     /**
      * The Eseye Version.
@@ -110,8 +112,11 @@ class Eseye
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function __construct(
+        Configuration $configuration,
         EsiAuthentication $authentication = null)
     {
+
+        $this->setConfiguration($configuration);
 
         if (! is_null($authentication))
             $this->authentication = $authentication;
@@ -130,16 +135,6 @@ class Eseye
     {
 
         return $this->getConfiguration()->getLogger();
-    }
-
-    /**
-     * @return \Seat\Eseye\Configuration
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     */
-    public function getConfiguration(): Configuration
-    {
-
-        return Configuration::getInstance();
     }
 
     /**
@@ -274,7 +269,7 @@ class Eseye
     {
 
         if (! $this->access_checker)
-            $this->access_checker = new CheckAccess;
+            $this->access_checker = new CheckAccess($this->getConfiguration());
 
         return $this->access_checker;
     }
@@ -302,7 +297,7 @@ class Eseye
         if (! $this->fetcher) {
 
             $fetcher_class = $this->getConfiguration()->fetcher;
-            $this->fetcher = new $fetcher_class(...[$this->authentication]);
+            $this->fetcher = new $fetcher_class(...[$this->getConfiguration(), $this->authentication]);
 
         }
 

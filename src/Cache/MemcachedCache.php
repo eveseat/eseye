@@ -24,6 +24,7 @@ namespace Seat\Eseye\Cache;
 
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Traits\ConfigurationAware;
 
 /**
  * Class MemcachedCache.
@@ -31,7 +32,7 @@ use Seat\Eseye\Containers\EsiResponse;
  */
 class MemcachedCache implements CacheInterface
 {
-    use HashesStrings;
+    use HashesStrings, ConfigurationAware;
 
     /**
      * @var mixed
@@ -60,15 +61,15 @@ class MemcachedCache implements CacheInterface
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function __construct($instance = null)
+    public function __construct(Configuration $configuration, $instance = null)
     {
+        $this->setConfiguration($configuration);
 
         if ($instance != null)
             $this->memcached = $instance;
 
         $this->is_memcached = class_exists('Memcached', false);
 
-        $configuration = Configuration::getInstance();
         $this->prefix = $configuration->memcached_cache_prefix;
 
         if (is_null($this->memcached)) {

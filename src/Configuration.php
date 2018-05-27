@@ -35,11 +35,6 @@ class Configuration
 {
 
     /**
-     * @var Configuration
-     */
-    private static $instance;
-
-    /**
      * @var LogInterface
      */
     protected $logger;
@@ -62,19 +57,6 @@ class Configuration
     {
 
         $this->configuration = new EsiConfiguration;
-    }
-
-    /**
-     * @return \Seat\Eseye\Configuration
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     */
-    public static function getInstance(): self
-    {
-
-        if (is_null(self::$instance))
-            self::$instance = new self();
-
-        return self::$instance;
     }
 
     /**
@@ -108,7 +90,7 @@ class Configuration
     {
 
         if (! $this->logger)
-            $this->logger = new $this->configuration->logger;
+            $this->logger = new $this->configuration->logger($this);
 
         return $this->logger;
     }
@@ -120,7 +102,7 @@ class Configuration
     {
 
         if (! $this->cache)
-            $this->cache = new $this->configuration->cache;
+            $this->cache = new $this->configuration->cache($this);
 
         return $this->cache;
     }
