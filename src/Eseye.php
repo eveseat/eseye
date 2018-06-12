@@ -112,8 +112,8 @@ class Eseye
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function __construct(
-        Configuration $configuration,
-        EsiAuthentication $authentication = null)
+        EsiAuthentication $authentication = null,
+        Configuration $configuration = null)
     {
 
         $this->setConfiguration($configuration);

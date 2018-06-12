@@ -58,7 +58,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         // Remove caching
         $configuration->cache = NullCache::class;
         $configuration->datasource = 'test';
-        $this->esi = new Eseye($configuration);
+        $this->esi = new Eseye(null, $configuration);
     }
 
     public function testEseyeInstantiation()
@@ -75,7 +75,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         $authentication = new EsiAuthentication([
             'foo' => 'bar',
         ]);
-        new Eseye(new Configuration(), $authentication);
+        new Eseye($authentication, new Configuration());
     }
 
     public function testEseyeInstantiateWithValidAuthenticationData()
@@ -86,7 +86,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
             'secret'        => 'SSO_SECRET',
             'refresh_token' => 'CHARACTER_REFRESH_TOKEN',
         ]);
-        new Eseye(new Configuration(), $authentication);
+        new Eseye($authentication, new Configuration());
     }
 
     public function testEseyeSetNewInvalidAuthenticationData()
@@ -169,7 +169,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
     {
 
         $get_fetcher = self::getMethod('getFetcher');
-        $return = $get_fetcher->invokeArgs(new Eseye(new Configuration()), []);
+        $return = $get_fetcher->invokeArgs(new Eseye(null, new Configuration()), []);
 
         $this->assertInstanceOf(FetcherInterface::class, $return);
     }
@@ -195,7 +195,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
     {
 
         $get_fetcher = self::getMethod('getCache');
-        $return = $get_fetcher->invokeArgs(new Eseye(new Configuration()), []);
+        $return = $get_fetcher->invokeArgs(new Eseye(null, new Configuration()), []);
 
         $this->assertInstanceOf(CacheInterface::class, $return);
     }
