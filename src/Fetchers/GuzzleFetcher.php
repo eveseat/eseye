@@ -271,7 +271,9 @@ class GuzzleFetcher implements FetcherInterface
     {
 
         if (! $this->client)
-            $this->client = new Client;
+            $this->client = new Client([
+                'timeout' => 30,
+            ]);
 
         return $this->client;
     }

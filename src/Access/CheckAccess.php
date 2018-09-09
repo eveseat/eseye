@@ -106,8 +106,6 @@ class CheckAccess implements AccessInterface
             '/corporations/{corporation_id}/facilities/'                      => 'esi-corporations.read_facilities.v1',
             '/corporations/{corporation_id}/medals/'                          => 'esi-corporations.read_medals.v1',
             '/corporations/{corporation_id}/medals/issued/'                   => 'esi-corporations.read_medals.v1',
-            '/corporations/{corporation_id}/outposts/'                        => 'esi-corporations.read_outposts.v1',
-            '/corporations/{corporation_id}/outposts/{outpost_id}/'           => 'esi-corporations.read_outposts.v1',
             '/dogma/attributes/'                                              => 'public',
             '/dogma/attributes/{attribute_id}/'                               => 'public',
             '/dogma/effects/'                                                 => 'public',
