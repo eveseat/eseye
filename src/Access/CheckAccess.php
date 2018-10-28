@@ -76,6 +76,7 @@ class CheckAccess implements AccessInterface
             '/corporations/{corporation_id}/contacts/'                        => 'esi-corporations.read_contacts.v1',
             '/alliances/{alliance_id}/contacts/'                              => 'esi-alliances.read_contacts.v1',
             '/characters/{character_id}/contacts/labels/'                     => 'esi-characters.read_contacts.v1',
+            '/corporations/{corporation_id}/contacts/labels/'                 => 'esi-corporations.read_contacts.v1',
             '/characters/{character_id}/contracts/'                           => 'esi-contracts.read_character_contracts.v1',
             '/characters/{character_id}/contracts/{contract_id}/items/'       => 'esi-contracts.read_character_contracts.v1',
             '/characters/{character_id}/contracts/{contract_id}/bids/'        => 'esi-contracts.read_character_contracts.v1',
