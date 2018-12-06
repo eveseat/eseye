@@ -85,14 +85,6 @@ class Eseye
     /**
      * @var string
      */
-    protected $esi = [
-        'scheme' => 'https',
-        'host'   => 'esi.evetech.net',
-    ];
-
-    /**
-     * @var string
-     */
     protected $version = '/latest';
 
     /**
@@ -327,8 +319,9 @@ class Eseye
         ], $this->getQueryString());
 
         return Uri::fromParts([
-            'scheme' => $this->esi['scheme'],
-            'host'   => $this->esi['host'],
+            'scheme' => $this->getConfiguration()->esi_scheme,
+            'host'   => $this->getConfiguration()->esi_host,
+            'port'   => $this->getConfiguration()->esi_port,
             'path'   => rtrim($this->getVersion(), '/') .
                 $this->mapDataToUri($uri, $data),
             'query'  => http_build_query($query_params),
