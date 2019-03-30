@@ -179,8 +179,8 @@ class FileCache implements CacheInterface
         // Get the data from the file and unserialize it
         $file = unserialize(file_get_contents($cache_file_path));
 
-        // If the cached entry is expired, remove it.
-        if ($file->expired()) {
+        // If the cached entry is expired and does not have any ETag, remove it.
+        if ($file->expired() && ! $file->hasHeader('ETag')) {
 
             $this->forget($uri, $query);
 

@@ -206,8 +206,10 @@ class Eseye
      *
      * @return \Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
-     * @throws \Seat\Eseye\Exceptions\UriDataMissingException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
     public function invoke(string $method, string $uri, array $uri_data = []): EsiResponse
     {
@@ -235,17 +237,39 @@ class Eseye
             $cached = $this->getCache()->get($uri->getPath(), $uri->getQuery())
         ) {
 
-            // Mark the response as one that was loaded from the cache
-            $cached->setIsCachedload();
+            // Mark the response as one that was loaded from the cache in case no ETag exists
+            if (! $cached->hasHeader('ETag'))
+                $cached->setIsCachedLoad();
 
-            // Perform some debug logging
-            $this->getLogger()->debug('Loaded cached response for ' . $method . ' -> ' . $uri);
+            // Handling ETag marked response specifically (ignoring the expired time)
+            // Sending a request with the stored ETag in header - if we have a 304 response, data has not been altered.
+            if ($cached->hasHeader('ETag') && $cached->expired()) {
 
-            return $cached;
+                $result = $this->rawFetch($method, $uri, $this->getBody(), ['If-None-Match' => $cached->getHeader('ETag')]);
+
+                if ($result->getErrorCode() == 304)
+                    $cached->setIsCachedLoad();
+            }
+
+            // In case the result is effectively retrieved from cache,
+            // return the cached element.
+            if ($cached->isCachedLoad()) {
+
+                // Perform some debug logging
+                $logging_msg = 'Loaded cached response for ' . $method . ' -> ' . $uri;
+
+                if ($cached->hasHeader('ETag'))
+                    $logging_msg = sprintf('%s [%s]', $logging_msg, $cached->getHeader('ETag'));
+
+                $this->getLogger()->debug($logging_msg);
+
+                return $cached;
+            }
         }
 
-        // Call ESI itself and get the EsiResponse
-        $result = $this->rawFetch($method, $uri, $this->getBody());
+        // Call ESI itself and get the EsiResponse in case it has not already been handled with cache control
+        if (! isset($result))
+            $result = $this->rawFetch($method, $uri, $this->getBody());
 
         // Cache the response if it was a get and is not already expired
         if (in_array(strtolower($method), $this->cachable_verb) && ! $result->expired())
@@ -431,14 +455,17 @@ class Eseye
      * @param string $method
      * @param string $uri
      * @param array  $body
+     * @param array  $headers
      *
      * @return mixed
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function rawFetch(string $method, string $uri, array $body)
+    public function rawFetch(string $method, string $uri, array $body, array $headers = [])
     {
 
-        return $this->getFetcher()->call($method, $uri, $body);
+        return $this->getFetcher()->call($method, $uri, $body, $headers);
     }
 
     /**
