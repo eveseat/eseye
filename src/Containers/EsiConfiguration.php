@@ -43,10 +43,17 @@ class EsiConfiguration extends AbstractArrayAccess
      */
     protected $data = [
         'http_user_agent'            => 'Eseye Default Library',
+
+        // Esi
         'datasource'                 => 'tranquility',
         'esi_scheme'                 => 'https',
         'esi_host'                   => 'esi.evetech.net',
         'esi_port'                   => 443,
+
+        // Eve Online SSO
+        'sso_scheme'                 => 'https',
+        'sso_host'                   => 'login.eveonline.com',
+        'sso_port'                   => 443,
 
         // Fetcher
         'fetcher'                    => GuzzleFetcher::class,
