@@ -5,7 +5,7 @@
     "require": {
         "php": ">= 7.1",
         "guzzlehttp/guzzle": "^6.2",
-        "nesbot/carbon": "^1.21",
+        "nesbot/carbon": "^1.21|^2.6",
         "monolog/monolog": "^1.22",
         "predis/predis": "^1.1"
     },
