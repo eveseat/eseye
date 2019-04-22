@@ -59,7 +59,7 @@ class GuzzleFetcher implements FetcherInterface
     /**
      * @var string
      */
-    protected $sso_base = 'https://login.eveonline.com/oauth';
+    protected $sso_base;
 
     /**
      * EseyeFetcher constructor.
@@ -75,6 +75,10 @@ class GuzzleFetcher implements FetcherInterface
 
         // Setup the logger
         $this->logger = Configuration::getInstance()->getLogger();
+        $this->sso_base = sprintf('%s://%s:%d/oauth',
+            Configuration::getInstance()->sso_scheme,
+            Configuration::getInstance()->sso_host,
+            Configuration::getInstance()->sso_port);
     }
 
     /**
