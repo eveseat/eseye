@@ -68,7 +68,7 @@ class RotatingFileLogger implements LogInterface
     public function log(string $message)
     {
 
-        $this->logger->addInfo($message);
+        $this->logger->info($message);
     }
 
     /**
@@ -79,7 +79,7 @@ class RotatingFileLogger implements LogInterface
     public function debug(string $message)
     {
 
-        $this->logger->addDebug($message);
+        $this->logger->debug($message);
     }
 
     /**
@@ -90,7 +90,7 @@ class RotatingFileLogger implements LogInterface
     public function warning(string $message)
     {
 
-        $this->logger->addWarning($message);
+        $this->logger->warning($message);
     }
 
     /**
@@ -101,6 +101,6 @@ class RotatingFileLogger implements LogInterface
     public function error(string $message)
     {
 
-        $this->logger->addError($message);
+        $this->logger->error($message);
     }
 }
