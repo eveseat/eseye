@@ -69,7 +69,7 @@ class RotatingFileLoggerTest extends PHPUnit_Framework_TestCase
     public function testFileLoggerWritesLogDebug()
     {
 
-        Configuration::getInstance()->logger_level = Logger::DEBUG;
+        Configuration::getInstance()->logger_level = 'debug';
 
         // Init a new logger with the updated config
         $logger = new RotatingFileLogger;

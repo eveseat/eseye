@@ -60,7 +60,7 @@ class EsiConfiguration extends AbstractArrayAccess
 
         // Logging
         'logger'                     => RotatingFileLogger::class,
-        'logger_level'               => Logger::INFO,
+        'logger_level'               => 'info',
         'logfile_location'           => 'logs/',
 
         // Rotating Logger Details
