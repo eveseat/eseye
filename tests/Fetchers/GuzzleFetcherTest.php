@@ -27,7 +27,6 @@ use GuzzleHttp\Psr7\Response;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
-use Seat\Eseye\EseyeFetcher;
 use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use Seat\Eseye\Fetchers\GuzzleFetcher;

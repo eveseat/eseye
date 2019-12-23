@@ -22,7 +22,6 @@
 
 namespace Seat\Eseye\Containers;
 
-use Monolog\Logger;
 use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Fetchers\GuzzleFetcher;
 use Seat\Eseye\Log\RotatingFileLogger;
