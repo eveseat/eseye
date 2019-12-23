@@ -148,7 +148,7 @@ class GuzzleFetcher implements FetcherInterface
         $expires = carbon($this->getAuthentication()->token_expires);
 
         // If the token expires in the next minute, refresh it.
-        if ($expires->lte(carbon('now')->addMinute(1)))
+        if ($expires->lte(carbon('now')->addMinute()))
             $this->refreshToken();
 
         return $this->getAuthentication()->access_token;
