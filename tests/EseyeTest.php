@@ -57,6 +57,9 @@ class EseyeTest extends PHPUnit_Framework_TestCase
         // Remove caching
         $configuration->cache = NullCache::class;
 
+        // Force ESI data-source to be singularity
+        $configuration->datasource = 'singularity';
+
         $this->esi = new Eseye;
     }
 
@@ -252,7 +255,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
 
         $uri = $this->esi->buildDataUri('/{foo}/', ['foo' => 'bar']);
 
-        $this->assertEquals('https://esi.evetech.net/latest/bar/?datasource=test',
+        $this->assertEquals('https://esi.evetech.net/latest/bar/?datasource=singularity',
             $uri->__toString());
     }
 
