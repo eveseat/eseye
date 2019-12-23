@@ -52,7 +52,7 @@ class NullLoggerTest extends PHPUnit_Framework_TestCase
         $this->assertNull($this->logger->warning('foo'));
     }
 
-    public function testNullLoggerIgnoresErro()
+    public function testNullLoggerIgnoresError()
     {
 
         $this->assertNull($this->logger->error('foo'));
