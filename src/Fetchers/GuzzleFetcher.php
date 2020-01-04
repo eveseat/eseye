@@ -75,7 +75,7 @@ class GuzzleFetcher implements FetcherInterface
 
         // Setup the logger
         $this->logger = Configuration::getInstance()->getLogger();
-        $this->sso_base = sprintf('%s://%s:%d/oauth',
+        $this->sso_base = sprintf('%s://%s:%d/v2/oauth',
             Configuration::getInstance()->sso_scheme,
             Configuration::getInstance()->sso_host,
             Configuration::getInstance()->sso_port);
@@ -165,11 +165,15 @@ class GuzzleFetcher implements FetcherInterface
     {
 
         // Make the post request for a new access_token
-        $response = $this->httpRequest('post',
-            $this->sso_base . '/token/?grant_type=refresh_token&refresh_token=' .
-            $this->authentication->refresh_token, [
+        $response = $this->httpRequest('post', $this->sso_base . '/token',
+            [
+                'Content-Type' => 'application/x-form-urlencoded',
                 'Authorization' => 'Basic ' . base64_encode(
                         $this->authentication->client_id . ':' . $this->authentication->secret),
+            ],
+            [
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $this->authentication->refresh_token,
             ]
         );
 
