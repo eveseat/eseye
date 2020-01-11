@@ -165,17 +165,22 @@ class GuzzleFetcher implements FetcherInterface
     {
 
         // Make the post request for a new access_token
-        $response = $this->httpRequest('post', $this->sso_base . '/token',
+        $response = $this->getClient()->post($this->sso_base . '/token',
             [
-                'Content-Type' => 'application/x-form-urlencoded',
-                'Authorization' => 'Basic ' . base64_encode(
+                'form_params' => [
+                    'grant_type' => 'refresh_token',
+                    'refresh_token' => $this->authentication->refresh_token,
+                ],
+                'headers' => [
+                    'Authorization' => 'Basic ' . base64_encode(
                         $this->authentication->client_id . ':' . $this->authentication->secret),
-            ],
-            [
-                'grant_type' => 'refresh_token',
-                'refresh_token' => $this->authentication->refresh_token,
+                    'User-Agent'   => 'Eseye/' . Eseye::VERSION . '/' .
+                        Configuration::getInstance()->http_user_agent,
+                ],
             ]
         );
+
+        $response = json_decode($response->getBody()->getContents());
 
         // Get the current EsiAuth container
         $authentication = $this->getAuthentication();
