@@ -192,11 +192,14 @@ class GuzzleFetcher implements FetcherInterface
         // Get the current EsiAuth container
         $authentication = $this->getAuthentication();
 
+        $jws_token = $this->verifyToken($response->access_token);
+
+        $this->logger->debug(json_encode($jws_token));
+
         // Set the new authentication values from the request
         $authentication->access_token = $response->access_token;
         $authentication->refresh_token = $response->refresh_token;
-        $authentication->token_expires = carbon('now')
-            ->addSeconds($response->expires_in);
+        $authentication->token_expires = $jws_token['exp'];
 
         // ... and update the container
         $this->setAuthentication($authentication);
@@ -376,28 +379,29 @@ class GuzzleFetcher implements FetcherInterface
     public function setAuthenticationScopes()
     {
 
-        $scopes = $this->verifyToken()['scopes'];
+        $jws_token = $this->verifyToken($this->authentication->access_token);
 
-        $this->authentication->scopes = explode(' ', $scopes);
+        $this->authentication->scopes = $jws_token['scp'];
     }
 
     /**
      * Verify that an access_token is still valid.
      *
+     * @param string $access_token
      * @return array
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Exception
      */
-    private function verifyToken()
+    private function verifyToken(string $access_token)
     {
 
         $sets = $this->getJwkSets();
 
         $jwk_sets = JWKSet::createFromKeyData($sets);
 
-        $jws = Load::jws($this->getToken())
+        $jws = Load::jws($access_token)
             ->algs(['RS256', 'ES256', 'HS256'])
             ->exp()
             ->iss(Configuration::getInstance()->sso_host)
