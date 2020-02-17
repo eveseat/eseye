@@ -27,6 +27,13 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
+use Jose\Component\Core\JWKSet;
+use Jose\Easy\Load;
+use Seat\Eseye\Checker\Claim\AzpChecker;
+use Seat\Eseye\Checker\Claim\NameChecker;
+use Seat\Eseye\Checker\Claim\OwnerChecker;
+use Seat\Eseye\Checker\Claim\SubEveCharacterChecker;
+use Seat\Eseye\Checker\Header\TypeChecker;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
@@ -210,12 +217,10 @@ class GuzzleFetcher implements FetcherInterface
     {
 
         // Include some basic headers to those already passed in. Everything
-        // is considered to be Json.
+        // is considered to be json.
         $headers = array_merge($headers, [
             'Accept'       => 'application/json',
             'Content-Type' => 'application/json',
-            'User-Agent'   => 'Eseye/' . Eseye::VERSION . '/' .
-                Configuration::getInstance()->http_user_agent,
         ]);
 
         // Add some debug logging and start measuring how long the request took.
@@ -279,6 +284,7 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * @return \GuzzleHttp\Client
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function getClient(): Client
     {
@@ -286,6 +292,10 @@ class GuzzleFetcher implements FetcherInterface
         if (! $this->client)
             $this->client = new Client([
                 'timeout' => 30,
+                'headers' => [
+                    'User-Agent'   => 'Eseye/' . Eseye::VERSION . '/' .
+                        Configuration::getInstance()->http_user_agent,
+                ],
             ]);
 
         return $this->client;
@@ -366,25 +376,70 @@ class GuzzleFetcher implements FetcherInterface
     public function setAuthenticationScopes()
     {
 
-        $scopes = $this->verifyToken()['Scopes'];
+        $scopes = $this->verifyToken()['scopes'];
 
-        // Add the internal 'public' scope
-        $scopes = $scopes . ' public';
         $this->authentication->scopes = explode(' ', $scopes);
     }
 
     /**
      * Verify that an access_token is still valid.
      *
-     * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     * @return array
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     * @throws \Exception
      */
     private function verifyToken()
     {
 
-        return $this->httpRequest('get', $this->sso_base . '/verify/', [
-            'Authorization' => 'Bearer ' . $this->getToken(),
-        ]);
+        $sets = $this->getJwkSets();
+
+        $jwk_sets = JWKSet::createFromKeyData($sets);
+
+        $jws = Load::jws($this->getToken())
+            ->algs(['RS256', 'ES256', 'HS256'])
+            ->exp()
+            ->iss(Configuration::getInstance()->sso_host)
+            ->header('typ', new TypeChecker(['JWT'], true))
+            ->claim('sub', new SubEveCharacterChecker())
+            ->claim('azp', new AzpChecker($this->authentication->client_id))
+            ->claim('name', new NameChecker())
+            ->claim('owner', new OwnerChecker())
+            ->keyset($jwk_sets)
+            ->run();
+
+        return $jws->claims->all();
+    }
+
+    /**
+     * @return array
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     */
+    private function getJwkSets(): array
+    {
+        $jwk_uri = $this->getJwkUri();
+
+        $response = $this->getClient()->get($jwk_uri);
+
+        return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * @return string
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     */
+    private function getJwkUri(): string
+    {
+        $oauth_discovery = sprintf('%s://%s:%d/.well-known/oauth-authorization-server',
+            Configuration::getInstance()->sso_scheme,
+            Configuration::getInstance()->sso_host,
+            Configuration::getInstance()->sso_port);
+
+        $response = $this->getClient()->get($oauth_discovery);
+
+        $metadata = json_decode($response->getBody());
+
+        return $metadata->jwks_uri;
     }
 }
