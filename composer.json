@@ -4,6 +4,10 @@
     "type": "library",
     "require": {
         "php": ">= 7.2",
+        "ext-gmp": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
         "guzzlehttp/guzzle": "^6.2",
         "nesbot/carbon": "^2.0",
         "monolog/monolog": "^2.0",
