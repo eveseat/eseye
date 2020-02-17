@@ -169,7 +169,7 @@ class Eseye
      *
      * @return \Seat\Eseye\Eseye
      */
-    public function setRefreshToken(String $refreshToken): self
+    public function setRefreshToken(string $refreshToken): self
     {
 
         $this->authentication = $this->authentication->setRefreshToken($refreshToken);
