@@ -172,20 +172,46 @@ class GuzzleFetcher implements FetcherInterface
     {
 
         // Make the post request for a new access_token
-        $response = $this->getClient()->post($this->sso_base . '/token',
-            [
-                'form_params' => [
-                    'grant_type' => 'refresh_token',
-                    'refresh_token' => $this->authentication->refresh_token,
-                ],
-                'headers' => [
-                    'Authorization' => 'Basic ' . base64_encode(
-                        $this->authentication->client_id . ':' . $this->authentication->secret),
-                    'User-Agent'   => 'Eseye/' . Eseye::VERSION . '/' .
-                        Configuration::getInstance()->http_user_agent,
-                ],
-            ]
-        );
+        try {
+
+            $response = $this->getClient()->post($this->sso_base . '/token',
+                [
+                    'form_params' => [
+                        'grant_type' => 'refresh_token',
+                        'refresh_token' => $this->authentication->refresh_token,
+                    ],
+                    'headers' => [
+                        'Authorization' => 'Basic ' . base64_encode(
+                            $this->authentication->client_id . ':' . $this->authentication->secret),
+                        'User-Agent'   => 'Eseye/' . Eseye::VERSION . '/' .
+                            Configuration::getInstance()->http_user_agent,
+                    ],
+                ]
+            );
+
+        } catch (ClientException | ServerException $e) {
+
+            // Log the event as failed
+            $this->logger->error('[http ' . $e->getResponse()->getStatusCode() . ', ' .
+                strtolower($e->getResponse()->getReasonPhrase()) . '] ' .
+                'get -> ' . $this->sso_base . '/token'
+            );
+
+            // Grab the body from the StreamInterface intance.
+            $responseBody = $e->getResponse()->getBody()->getContents();
+
+            // For debugging purposes, log the response body
+            $this->logger->debug('Request for get -> ' . $this->sso_base . '/token failed. Response body was: ' .
+                $responseBody);
+
+            // Raise the exception that should be handled by the caller
+            throw new RequestFailedException($e, $this->makeEsiResponse(
+                $responseBody,
+                $e->getResponse()->getHeaders(),
+                'now',
+                $e->getResponse()->getStatusCode())
+            );
+        }
 
         $response = json_decode($response->getBody()->getContents());
 
