@@ -376,16 +376,15 @@ switch ($_GET['action']) {
         // Start a cURL session
         $ch = curl_init('https://login.eveonline.com/oauth/token');
         curl_setopt_array($ch, [
-                CURLOPT_URL             => 'https://login.eveonline.com/oauth/token',
-                CURLOPT_POST            => true,
-                CURLOPT_POSTFIELDS      => $fields,
-                CURLOPT_HTTPHEADER      => $headers,
-                CURLOPT_RETURNTRANSFER  => true,
-                CURLOPT_USERAGENT       => 'eseye/tokengenerator',
-                CURLOPT_SSL_VERIFYPEER  => true,
-                CURLOPT_SSL_CIPHER_LIST => 'TLSv1',
-            ]
-        );
+            CURLOPT_URL             => 'https://login.eveonline.com/oauth/token',
+            CURLOPT_POST            => true,
+            CURLOPT_POSTFIELDS      => $fields,
+            CURLOPT_HTTPHEADER      => $headers,
+            CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_USERAGENT       => 'eseye/tokengenerator',
+            CURLOPT_SSL_VERIFYPEER  => true,
+            CURLOPT_SSL_CIPHER_LIST => 'TLSv1',
+        ]);
 
         $result = curl_exec($ch);
 
