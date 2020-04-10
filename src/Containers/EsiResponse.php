@@ -276,6 +276,20 @@ class EsiResponse extends ArrayObject
     }
 
     /**
+     * @param \Carbon\Carbon $date
+     */
+    public function setExpires(Carbon $date)
+    {
+        // turn headers into case insensitive array
+        $key_map = array_change_key_case($this->headers, CASE_LOWER);
+
+        // update expires header with provided date
+        $key_map['expires'] = $date->toRfc7231String();
+        $this->expires_at = strlen($key_map['expires']) > 2 ? $key_map['expires'] : 'now';
+        $this->headers = $key_map;
+    }
+
+    /**
      * @return string
      */
     public function serialize()

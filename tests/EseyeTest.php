@@ -26,6 +26,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
+use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Cache\NullCache;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
@@ -294,6 +295,43 @@ class EseyeTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('bar', $response->foo);
 
+    }
+
+    public function testEseyeMakesEsiApiCallWithExpiredCachedResponseAndValidEtag()
+    {
+        $mock = new MockHandler([
+            new Response(200, [
+                'Expires' => carbon()->addSeconds(10)->toRfc7231String(),
+                'ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0819"',
+            ], json_encode(['foo' => 'bar'])),
+            new Response(304, [
+                'Expires' => carbon()->addHour()->toRfc7231String(),
+                'ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0819"',
+            ]),
+        ]);
+
+        $config = Configuration::getInstance();
+        $config->cache = FileCache::class;
+
+        //$esi = new Eseye;
+
+        $fetcher = new GuzzleFetcher;
+        $fetcher->setClient(new Client([
+            'handler' => HandlerStack::create($mock),
+        ]));
+
+        // Update the fetchers client
+        $this->esi->setFetcher($fetcher);
+
+        // send an initial call to seed cache
+        $response = $this->esi->invoke('get', '/foo2');
+        $this->assertFalse($response->isCachedLoad());
+
+        sleep(20);
+
+        // send a new call to trigger cache
+        $response = $this->esi->invoke('get', '/foo2');
+        $this->assertTrue($response->isCachedLoad());
     }
 
     public function testEseyeMakesEsiApiCallWithoutCachedResponse()

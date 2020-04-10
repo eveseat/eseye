@@ -247,8 +247,16 @@ class Eseye
 
                 $result = $this->rawFetch($method, $uri, $this->getBody(), ['If-None-Match' => $cached->getHeader('ETag')]);
 
-                if ($result->getErrorCode() == 304)
+                if ($result->getErrorCode() == 304) {
+
+                    // update expires header with newly provided value
+                    $cached->setExpires($result->expires());
+
+                    // store updated response in cache to renew internal cache duration
+                    $this->getCache()->set($uri->getPath(), $uri->getQuery(), $cached);
+
                     $cached->setIsCachedLoad();
+                }
             }
 
             // In case the result is effectively retrieved from cache,
@@ -457,7 +465,7 @@ class Eseye
      * @param array  $body
      * @param array  $headers
      *
-     * @return mixed
+     * @return \Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
