@@ -274,4 +274,48 @@ class EsiResponse extends ArrayObject
 
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public function serialize()
+    {
+        return serialize([
+            $this->raw,
+            $this->headers,
+            $this->raw_headers,
+            $this->error_limit,
+            $this->pages,
+            $this->expires_at,
+            $this->response_code,
+            $this->error_message,
+            $this->optional_return,
+            $this->cached_load,
+        ]);
+    }
+
+    /**
+     * @param string $data
+     */
+    public function unserialize($data)
+    {
+        list(
+            $this->raw,
+            $this->headers,
+            $this->raw_headers,
+            $this->error_limit,
+            $this->pages,
+            $this->expires_at,
+            $this->response_code,
+            $this->error_message,
+            $this->optional_return,
+            $this->cached_load,
+        ) = unserialize($data);
+
+        // rebuild array with decoded value
+        $this->exchangeArray(json_decode($this->raw));
+
+        // update flags
+        $this->setFlags(self::ARRAY_AS_PROPS);
+    }
 }
