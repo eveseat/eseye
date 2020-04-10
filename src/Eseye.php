@@ -237,8 +237,8 @@ class Eseye
             $cached = $this->getCache()->get($uri->getPath(), $uri->getQuery())
         ) {
 
-            // Mark the response as one that was loaded from the cache in case no ETag exists
-            if (! $cached->hasHeader('ETag'))
+            // In case the cached entry is still valid, mark content as being loaded from cache.
+            if (! $cached->expired())
                 $cached->setIsCachedLoad();
 
             // Handling ETag marked response specifically (ignoring the expired time)
