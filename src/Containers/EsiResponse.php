@@ -309,7 +309,7 @@ class EsiResponse extends ArrayObject
             $this->response_code,
             $this->error_message,
             $this->optional_return,
-            $this->cached_load,
+            $this->cached_load
         ) = unserialize($data);
 
         // rebuild array with decoded value
