@@ -164,7 +164,7 @@ class FileCache implements CacheInterface
      * @param string $uri
      * @param string $query
      *
-     * @return mixed
+     * @return \Seat\Eseye\Containers\EsiResponse|bool
      */
     public function get(string $uri, string $query = '')
     {
@@ -177,17 +177,17 @@ class FileCache implements CacheInterface
             return false;
 
         // Get the data from the file and unserialize it
-        $file = unserialize(file_get_contents($cache_file_path));
+        $data = unserialize(file_get_contents($cache_file_path));
 
         // If the cached entry is expired and does not have any ETag, remove it.
-        if ($file->expired() && ! $file->hasHeader('ETag')) {
+        if ($data->expired() && ! $data->hasHeader('ETag')) {
 
             $this->forget($uri, $query);
 
             return false;
         }
 
-        return $file;
+        return $data;
     }
 
     /**
