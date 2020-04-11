@@ -313,7 +313,7 @@ class EsiResponse extends ArrayObject
      */
     public function unserialize($data)
     {
-        list(
+        [
             $this->raw,
             $this->headers,
             $this->raw_headers,
@@ -324,7 +324,7 @@ class EsiResponse extends ArrayObject
             $this->error_message,
             $this->optional_return,
             $this->cached_load
-        ) = unserialize($data);
+        ] = unserialize($data);
 
         // rebuild array with decoded value
         $this->exchangeArray(json_decode($this->raw));
