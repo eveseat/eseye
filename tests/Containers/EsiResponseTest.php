@@ -121,6 +121,50 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Test Error: Test Description', $esi->error());
     }
 
+    public function testEsiResponseSerializableSingleValueResponse()
+    {
+        $data = '29500.01';
+        $esi = new EsiResponse($data, [], 'now', 200);
+
+        $serialized = serialize($esi);
+        $esi = unserialize($serialized);
+
+        $this->assertInstanceOf(EsiResponse::class, $esi);
+    }
+
+    public function testEsiResponseSerializableObjectResponse()
+    {
+        $data = '{"foo": "bar"}';
+        $esi = new EsiResponse($data, [], 'now', 200);
+
+        $serialized = serialize($esi);
+        $esi = unserialize($serialized);
+
+        $this->assertInstanceOf(EsiResponse::class, $esi);
+    }
+
+    public function testEsiResponseSerializableArrayResponse()
+    {
+        $data = '[1, 2, 3, 4, 5, 6, 7, 8]';
+        $esi = new EsiResponse($data, [], 'now', 200);
+
+        $serialized = serialize($esi);
+        $esi = unserialize($serialized);
+
+        $this->assertInstanceOf(EsiResponse::class, $esi);
+    }
+
+    public function testEsiResponseSerializableArrayObjectResponse()
+    {
+        $data = '[{"id": 646465444, "amount": 6546546.33}, {"id": 6568794131, "amount": 464657896584.17}]';
+        $esi = new EsiResponse($data, [], 'now', 200);
+
+        $serialized = serialize($esi);
+        $esi = unserialize($serialized);
+
+        $this->assertInstanceOf(EsiResponse::class, $esi);
+    }
+
     public function testEsiResponseCanGetErrorCode()
     {
 
