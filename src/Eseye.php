@@ -45,7 +45,7 @@ class Eseye
     /**
      * The Eseye Version.
      */
-    const VERSION = '2.1.1';
+    const VERSION = '2.2.0';
 
     /**
      * @var \Seat\Eseye\Containers\EsiAuthentication
@@ -337,7 +337,7 @@ class Eseye
      * @param string $uri
      * @param array  $data
      *
-     * @return \GuzzleHttp\Psr7\Uri
+     * @return \Psr\Http\Message\UriInterface
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
