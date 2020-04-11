@@ -327,7 +327,7 @@ class EsiResponse extends ArrayObject
         ] = unserialize($data);
 
         // rebuild array with decoded value
-        $this->exchangeArray(json_decode($this->raw));
+        $this->exchangeArray((object) json_decode($this->raw));
 
         // update flags
         $this->setFlags(self::ARRAY_AS_PROPS);
