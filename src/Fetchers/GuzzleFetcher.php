@@ -94,7 +94,7 @@ class GuzzleFetcher implements FetcherInterface
      * @param array  $body
      * @param array  $headers
      *
-     * @return mixed|\Seat\Eseye\Containers\EsiResponse
+     * @return \Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException

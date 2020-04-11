@@ -183,4 +183,15 @@ class EsiResponseTest extends PHPUnit_Framework_TestCase
         $this->esi_response->setIsCachedload();
         $this->assertTrue($this->esi_response->isCachedLoad());
     }
+
+    public function testEsiResponseCanSetExpires()
+    {
+        $old_expires = $this->esi_response->expires();
+        $new_expires = carbon()->addHour();
+
+        $this->esi_response->setExpires($new_expires);
+
+        $this->assertNotEquals($old_expires, $this->esi_response->expires());
+        $this->assertNotEquals($old_expires->toRfc7231String(), $this->esi_response->getHeader('expires'));
+    }
 }
