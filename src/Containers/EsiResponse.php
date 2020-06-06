@@ -101,7 +101,7 @@ class EsiResponse extends ArrayObject
         $this->parseHeaders($headers);
 
         // decode and create an object from the data
-        $data = (object) json_decode($data);
+        $data = json_decode($data);
 
         // Ensure that the value for 'expires' is longer than
         // 2 characters. The shortest expected value is 'now'. If it
@@ -109,16 +109,19 @@ class EsiResponse extends ArrayObject
         $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
         $this->response_code = $response_code;
 
-        // If there is an error, set that.
-        if (property_exists($data, 'error'))
-            $this->error_message = $data->error;
+        if (is_object($data)) {
 
-        // If there is an error description, set that.
-        if (property_exists($data, 'error_description'))
-            $this->error_message .= ': ' . $data->error_description;
+            // If there is an error, set that.
+            if (property_exists($data, 'error'))
+                $this->error_message = $data->error;
+
+            // If there is an error description, set that.
+            if (property_exists($data, 'error_description'))
+                $this->error_message .= ': ' . $data->error_description;
+        }
 
         // Run the parent constructor
-        parent::__construct($data, ArrayObject::ARRAY_AS_PROPS);
+        parent::__construct(is_array($data) ? (array) $data : (object) $data, ArrayObject::ARRAY_AS_PROPS);
     }
 
     /**
