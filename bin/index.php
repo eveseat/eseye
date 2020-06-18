@@ -341,7 +341,7 @@ switch ($_GET['action']) {
         $_SESSION['state'] = uniqid();
 
         // Generate the url with the requested scopes
-        $url = 'https://login.eveonline.com/oauth/authorize/?response_type=code&redirect_uri=' .
+        $url = 'https://login.eveonline.com/v2/oauth/authorize/?response_type=code&redirect_uri=' .
             urlencode(get_sso_callback_url()) . '&client_id=' .
             $_SESSION['clientid'] . '&scope=' . implode(' ', $_REQUEST['scopes']) . ' &state=' . $_SESSION['state'];
 
@@ -374,9 +374,9 @@ switch ($_GET['action']) {
         ]);
 
         // Start a cURL session
-        $ch = curl_init('https://login.eveonline.com/oauth/token');
+        $ch = curl_init('https://login.eveonline.com/v2/oauth/token');
         curl_setopt_array($ch, [
-            CURLOPT_URL             => 'https://login.eveonline.com/oauth/token',
+            CURLOPT_URL             => 'https://login.eveonline.com/v2/oauth/token',
             CURLOPT_POST            => true,
             CURLOPT_POSTFIELDS      => $fields,
             CURLOPT_HTTPHEADER      => $headers,
