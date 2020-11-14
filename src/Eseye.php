@@ -45,7 +45,7 @@ class Eseye
     /**
      * The Eseye Version.
      */
-    const VERSION = '2.2.2';
+    const VERSION = '2.3.0';
 
     /**
      * @var \Seat\Eseye\Containers\EsiAuthentication
@@ -162,6 +162,14 @@ class Eseye
         $this->authentication = $authentication;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAuthenticated(): bool
+    {
+        return ! is_null($this->authentication);
     }
 
     /**
