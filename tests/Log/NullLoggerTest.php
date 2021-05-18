@@ -20,16 +20,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Log\NullLogger;
 
-class NullLoggerTest extends PHPUnit_Framework_TestCase
+class NullLoggerTest extends TestCase
 {
 
     protected $logger;
 
-    public function setUp()
+    public function setUp(): void
     {
-
 
         $this->logger = new NullLogger;
     }

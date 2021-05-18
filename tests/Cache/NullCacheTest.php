@@ -20,15 +20,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Cache\NullCache;
 use Seat\Eseye\Containers\EsiResponse;
 
-class NullCacheTest extends PHPUnit_Framework_TestCase
+class NullCacheTest extends TestCase
 {
 
     protected $null_cache;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         $this->null_cache = new NullCache;

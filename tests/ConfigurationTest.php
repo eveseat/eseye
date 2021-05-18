@@ -20,13 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Log\LogInterface;
 
-class ConfigurationTest extends PHPUnit_Framework_TestCase
+class ConfigurationTest extends TestCase
 {
 
     public function testConfigurationInstantiation()

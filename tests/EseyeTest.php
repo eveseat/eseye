@@ -24,6 +24,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Cache\FileCache;
@@ -40,7 +41,7 @@ use Seat\Eseye\Fetchers\GuzzleFetcher;
 use Seat\Eseye\Log\LogInterface;
 use Seat\Eseye\Log\NullLogger;
 
-class EseyeTest extends PHPUnit_Framework_TestCase
+class EseyeTest extends TestCase
 {
 
     /**
@@ -48,7 +49,7 @@ class EseyeTest extends PHPUnit_Framework_TestCase
      */
     protected $esi;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         // Remove logging
@@ -89,7 +90,9 @@ class EseyeTest extends PHPUnit_Framework_TestCase
             'secret'        => 'SSO_SECRET',
             'refresh_token' => 'CHARACTER_REFRESH_TOKEN',
         ]);
-        new Eseye($authentication);
+        $client = new Eseye($authentication);
+
+        $this->assertEquals($authentication, $client->getAuthentication());
     }
 
     public function testEseyeSetNewInvalidAuthenticationData()
@@ -116,6 +119,8 @@ class EseyeTest extends PHPUnit_Framework_TestCase
             'scopes'        => ['public'],
         ]);
         $this->esi->setAuthentication($authentication);
+
+        $this->assertEquals($authentication, $this->esi->getAuthentication());
     }
 
     public function testEseyeGetAuthenticationBeforeSet()

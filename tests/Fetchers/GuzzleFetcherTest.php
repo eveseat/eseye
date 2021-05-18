@@ -26,6 +26,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Jose\Component\Core\JWK;
 use Jose\Easy\Build;
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
@@ -34,7 +35,7 @@ use Seat\Eseye\Exceptions\RequestFailedException;
 use Seat\Eseye\Fetchers\GuzzleFetcher;
 use Seat\Eseye\Log\NullLogger;
 
-class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
+class GuzzleFetcherTest extends TestCase
 {
 
     /**
@@ -42,7 +43,7 @@ class GuzzleFetcherTest extends PHPUnit_Framework_TestCase
      */
     protected $fetcher;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         // Remove logging

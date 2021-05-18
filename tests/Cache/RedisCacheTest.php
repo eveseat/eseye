@@ -20,11 +20,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use M6Web\Component\RedisMock\RedisMockFactory;
+use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Seat\Eseye\Cache\RedisCache;
 use Seat\Eseye\Containers\EsiResponse;
 
-class RedisCacheTest extends PHPUnit_Framework_TestCase
+class RedisCacheTest extends TestCase
 {
 
     /**
@@ -34,14 +36,16 @@ class RedisCacheTest extends PHPUnit_Framework_TestCase
 
     protected $esi_response_object;
 
-    public function setUp()
+    public function setUp(): void
     {
 
-        $redis = $this->createMock(Client::class);
+        $factory = new RedisMockFactory();
+        $class = $factory->getAdapterClass(Client::class, true);
+        $redis = new $class();
 
         // Set the cache
         $this->redis_cache = new RedisCache($redis);
-        $this->esi_response_object = new EsiResponse('', [], 'now', 200);
+        $this->esi_response_object = new EsiResponse('', ['ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0819"'], 'now', 200);
     }
 
     public function testRedisCacheInstantiates()
@@ -67,12 +71,16 @@ class RedisCacheTest extends PHPUnit_Framework_TestCase
     {
 
         $this->redis_cache->set('/foo', 'foo=bar', $this->esi_response_object);
+
+        $this->assertEquals($this->esi_response_object, $this->redis_cache->get('/foo', 'foo=bar'));
     }
 
     public function testRedisCacheForgetsKey()
     {
 
         $this->redis_cache->forget('/foo', 'foo=bar');
+
+        $this->assertFalse($this->redis_cache->has('/foo', 'foo=bar'));
     }
 
 }
