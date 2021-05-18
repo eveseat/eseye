@@ -20,15 +20,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 
-class EsiAuthenticationTest extends PHPUnit_Framework_TestCase
+class EsiAuthenticationTest extends TestCase
 {
 
     protected $esi_authentication;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         $this->esi_authentication = new EsiAuthentication;

@@ -20,16 +20,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Log\NullLogger;
 
-class CheckAccessTest extends PHPUnit_Framework_TestCase
+class CheckAccessTest extends TestCase
 {
 
     protected $check_access;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         $this->check_access = new CheckAccess;

@@ -22,17 +22,18 @@
 
 use Monolog\Logger;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Log\FileLogger;
 
-class FileLoggerTest extends PHPUnit_Framework_TestCase
+class FileLoggerTest extends TestCase
 {
 
     protected $root;
 
     protected $logger;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         // Set the file cache path in the config singleton
@@ -48,7 +49,7 @@ class FileLoggerTest extends PHPUnit_Framework_TestCase
         $this->logger->log('foo');
         $logfile_content = $this->root->getChild('eseye.log')->getContent();
 
-        $this->assertContains('eseye.INFO: foo', $logfile_content);
+        $this->assertStringContainsString('eseye.INFO: foo', $logfile_content);
     }
 
     public function testFileLoggerSkipWritesLogDebugWithoutRequiredLevel()
@@ -71,7 +72,7 @@ class FileLoggerTest extends PHPUnit_Framework_TestCase
         $logger->debug('foo');
         $logfile_content = $this->root->getChild('eseye.log')->getContent();
 
-        $this->assertContains('eseye.DEBUG: foo', $logfile_content);
+        $this->assertStringContainsString('eseye.DEBUG: foo', $logfile_content);
     }
 
     public function testFileLoggerWritesLogWarning()
@@ -80,7 +81,7 @@ class FileLoggerTest extends PHPUnit_Framework_TestCase
         $this->logger->warning('foo');
         $logfile_content = $this->root->getChild('eseye.log')->getContent();
 
-        $this->assertContains('eseye.WARNING: foo', $logfile_content);
+        $this->assertStringContainsString('eseye.WARNING: foo', $logfile_content);
     }
 
     public function testFileLoggerWritesLogError()
@@ -89,7 +90,7 @@ class FileLoggerTest extends PHPUnit_Framework_TestCase
         $this->logger->error('foo');
         $logfile_content = $this->root->getChild('eseye.log')->getContent();
 
-        $this->assertContains('eseye.ERROR: foo', $logfile_content);
+        $this->assertStringContainsString('eseye.ERROR: foo', $logfile_content);
     }
 
 }

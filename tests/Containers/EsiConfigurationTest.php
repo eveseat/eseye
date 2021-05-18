@@ -20,18 +20,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 
 /**
  * Class EsiConfigurationTest
  */
-class EsiConfigurationTest extends \PHPUnit_Framework_TestCase
+class EsiConfigurationTest extends TestCase
 {
 
     protected $esi_configuration;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         $this->esi_configuration = new EsiConfiguration;

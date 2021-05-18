@@ -20,56 +20,66 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Cache\MemcachedCache;
 use Seat\Eseye\Containers\EsiResponse;
 
 
-class MemcachedCacheTest extends PHPUnit_Framework_TestCase
+class MemcachedCacheTest extends TestCase
 {
-    /*
-     * @var MemcachedCache
+    /**
+     * @var \Seat\Eseye\Containers\EsiResponse
      */
-    protected $memcached_cache;
-
     protected $esi_response_object;
 
-    public function setUp()
+    public function setUp(): void
     {
-
-        $is_memcached = class_exists('Memcached', false);
-        if ($is_memcached)
-            $instance = $this->createMock(\Memcached::class);
-        else
-            $instance = $this->createMock(\Memcache::class);
-
-        // Set the cache
-        $this->memcached_cache = new MemcachedCache($instance);
-
-        $this->esi_response_object = new EsiResponse('', [], 'now', 200);
+        $this->esi_response_object = new EsiResponse('', ['ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0819"'], 'now', 200);
     }
 
     public function testMemcachedCacheInstantiates()
     {
+        $cache = new MemcachedCache();
 
-        $this->assertInstanceOf(MemcachedCache::class, $this->memcached_cache);
+        $this->assertInstanceOf(MemcachedCache::class, $cache);
     }
 
     public function testMemcachedCacheBuildsCacheKey()
     {
+        $cache = new MemcachedCache();
 
-        $key = $this->memcached_cache->buildCacheKey('/test', 'foo=bar');
+        $key = $cache->buildCacheKey('/test', 'foo=bar');
         $this->assertEquals('eseye:b0f071c288f528954cddef0e1aa24df41de874aa', $key);
     }
 
     public function testMemcachedCacheSetsKey()
     {
+        // Mock a memcache instance
+        $instance = $this->getMockBuilder(stdClass::class)->addMethods(['set', 'get'])->getMock();
+        $instance->expects($this->once())->method('set')->willReturn(true);
+        $instance->expects($this->once())->method('get')->willReturn(serialize($this->esi_response_object));
 
-        $this->memcached_cache->set('/foo', 'foo=bar', $this->esi_response_object);
+        // Set the cache
+        $cache = new MemcachedCache($instance);
+
+        $cache->set('/foo', 'foo=bar', $this->esi_response_object);
+
+        $this->assertEquals($this->esi_response_object, $cache->get('/foo', 'foo=bar'));
     }
 
     public function testMemcachedCacheForgetsKey()
     {
 
-        $this->memcached_cache->forget('/foo', 'foo=bar');
+        // Mock a memcache instance
+        $instance = $this->getMockBuilder(stdClass::class)->addMethods(['delete', 'get'])->getMock();
+        $instance->expects($this->once())->method('delete')->willReturn(true);
+        $instance->expects($this->once())->method('get')->willReturn(false);
+
+        // Set the cache
+        $cache = new MemcachedCache($instance);
+
+        $cache->forget('/foo', 'foo=bar');
+
+        $this->assertFalse($cache->get('/foo', 'foo=bar'));
     }
 }
