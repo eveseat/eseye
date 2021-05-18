@@ -6,7 +6,7 @@ enabled:
   - no_empty_comment
 
 disabled:
-  - psr12_braces
+  - laravel_braces
   - concat_without_spaces
   - phpdoc_no_package
   - no_blank_lines_after_class_opening
