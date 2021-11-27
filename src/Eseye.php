@@ -279,6 +279,8 @@ class Eseye
 
                 $this->getLogger()->debug($logging_msg);
 
+                $this->cleanupRequestData();
+
                 return $cached;
             }
         }
