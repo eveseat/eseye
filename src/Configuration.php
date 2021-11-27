@@ -29,6 +29,7 @@ use Seat\Eseye\Log\LogInterface;
 
 /**
  * Class Configuration.
+ *
  * @package Seat\Eseye
  */
 class Configuration
@@ -56,6 +57,7 @@ class Configuration
 
     /**
      * Configuration constructor.
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function __construct()
@@ -66,6 +68,7 @@ class Configuration
 
     /**
      * @return \Seat\Eseye\Configuration
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public static function getInstance(): self
@@ -87,7 +90,7 @@ class Configuration
     }
 
     /**
-     * @param \Seat\Eseye\Containers\EsiConfiguration $configuration
+     * @param  \Seat\Eseye\Containers\EsiConfiguration  $configuration
      *
      * @throws \Seat\Eseye\Exceptions\InvalidConfigurationException
      */
@@ -130,7 +133,6 @@ class Configuration
      * property.
      *
      * @param $name
-     *
      * @return mixed
      */
     public function __get(string $name)
@@ -140,9 +142,8 @@ class Configuration
     }
 
     /**
-     * @param string $name
-     * @param string $value
-     *
+     * @param  string  $name
+     * @param  string  $value
      * @return string
      */
     public function __set(string $name, string $value)

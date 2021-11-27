@@ -26,6 +26,7 @@ use Exception;
 
 /**
  * Class UriDataMissingException.
+ *
  * @package Seat\Eseye\Exceptions
  */
 class UriDataMissingException extends Exception

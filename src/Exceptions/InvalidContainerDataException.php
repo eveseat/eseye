@@ -26,6 +26,7 @@ use Exception;
 
 /**
  * Class InvalidContainerDataException.
+ *
  * @package Seat\Eseye\Exceptions
  */
 class InvalidContainerDataException extends Exception

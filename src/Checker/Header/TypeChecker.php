@@ -47,8 +47,8 @@ final class TypeChecker implements HeaderChecker
     /**
      * TypeChecker constructor.
      *
-     * @param string[] $supported_types
-     * @param bool $protected_header
+     * @param  string[]  $supported_types
+     * @param  bool  $protected_header
      */
     public function __construct(array $supported_types, bool $protected_header = true)
     {

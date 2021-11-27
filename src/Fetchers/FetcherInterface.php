@@ -26,17 +26,18 @@ use Seat\Eseye\Containers\EsiResponse;
 
 /**
  * Interface FetcherInterface.
+ *
  * @package Seat\Eseye\Fetchers
  */
 interface FetcherInterface
 {
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array  $body
-     * @param array  $headers
-     *
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $body
+     * @param  array  $headers
      * @return \Seat\Eseye\Containers\EsiResponse
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException

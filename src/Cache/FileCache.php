@@ -28,6 +28,7 @@ use Seat\Eseye\Exceptions\CachePathException;
 
 /**
  * Class FileCache.
+ *
  * @package Seat\Eseye\Cache
  */
 class FileCache implements CacheInterface
@@ -47,6 +48,7 @@ class FileCache implements CacheInterface
 
     /**
      * FileCache constructor.
+     *
      * @throws \Seat\Eseye\Exceptions\CachePathException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
@@ -62,6 +64,7 @@ class FileCache implements CacheInterface
 
     /**
      * @return bool
+     *
      * @throws \Seat\Eseye\Exceptions\CachePathException
      */
     public function checkCacheDirectory()
@@ -98,10 +101,9 @@ class FileCache implements CacheInterface
     }
 
     /**
-     * @param string                             $uri
-     * @param string                             $query
-     * @param \Seat\Eseye\Containers\EsiResponse $data
-     *
+     * @param  string  $uri
+     * @param  string  $query
+     * @param  \Seat\Eseye\Containers\EsiResponse  $data
      * @return mixed|void
      */
     public function set(string $uri, string $query, EsiResponse $data)
@@ -118,9 +120,8 @@ class FileCache implements CacheInterface
     }
 
     /**
-     * @param string $path
-     * @param string $query
-     *
+     * @param  string  $path
+     * @param  string  $query
      * @return string
      */
     public function buildRelativePath(string $path, string $query = ''): string
@@ -135,8 +136,7 @@ class FileCache implements CacheInterface
     }
 
     /**
-     * @param string $uri
-     *
+     * @param  string  $uri
      * @return string
      */
     public function safePath(string $uri): string
@@ -146,9 +146,8 @@ class FileCache implements CacheInterface
     }
 
     /**
-     * @param string $uri
-     * @param string $query
-     *
+     * @param  string  $uri
+     * @param  string  $query
      * @return bool|mixed
      */
     public function has(string $uri, string $query = ''): bool
@@ -161,9 +160,8 @@ class FileCache implements CacheInterface
     }
 
     /**
-     * @param string $uri
-     * @param string $query
-     *
+     * @param  string  $uri
+     * @param  string  $query
      * @return \Seat\Eseye\Containers\EsiResponse|bool
      */
     public function get(string $uri, string $query = '')
@@ -191,9 +189,8 @@ class FileCache implements CacheInterface
     }
 
     /**
-     * @param string $uri
-     * @param string $query
-     *
+     * @param  string  $uri
+     * @param  string  $query
      * @return void
      */
     public function forget(string $uri, string $query = '')

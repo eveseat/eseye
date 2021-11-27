@@ -25,8 +25,7 @@ if (! function_exists('carbon')) {
     /**
      * A helper to get a fresh instance of Carbon.
      *
-     * @param null $data
-     *
+     * @param  null  $data
      * @return \Carbon\Carbon
      */
     function carbon($data = null)

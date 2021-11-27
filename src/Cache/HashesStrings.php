@@ -24,13 +24,13 @@ namespace Seat\Eseye\Cache;
 
 /**
  * Class HashesStrings.
+ *
  * @package Seat\Eseye\Cache
  */
 trait HashesStrings
 {
     /**
-     * @param string $string
-     *
+     * @param  string  $string
      * @return string
      */
     public function hashString(string $string)

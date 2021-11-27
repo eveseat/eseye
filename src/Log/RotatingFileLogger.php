@@ -29,6 +29,7 @@ use Seat\Eseye\Configuration;
 
 /**
  * Class RotatingFileLogger.
+ *
  * @package Seat\Eseye\Log
  */
 class RotatingFileLogger implements LogInterface
@@ -40,6 +41,7 @@ class RotatingFileLogger implements LogInterface
 
     /**
      * FileLogger constructor.
+     *
      * @throws \Exception
      */
     public function __construct()
@@ -61,8 +63,7 @@ class RotatingFileLogger implements LogInterface
     }
 
     /**
-     * @param string $message
-     *
+     * @param  string  $message
      * @return mixed|void
      */
     public function log(string $message)
@@ -72,8 +73,7 @@ class RotatingFileLogger implements LogInterface
     }
 
     /**
-     * @param string $message
-     *
+     * @param  string  $message
      * @return mixed|void
      */
     public function debug(string $message)
@@ -83,8 +83,7 @@ class RotatingFileLogger implements LogInterface
     }
 
     /**
-     * @param string $message
-     *
+     * @param  string  $message
      * @return mixed|void
      */
     public function warning(string $message)
@@ -94,8 +93,7 @@ class RotatingFileLogger implements LogInterface
     }
 
     /**
-     * @param string $message
-     *
+     * @param  string  $message
      * @return mixed|void
      */
     public function error(string $message)

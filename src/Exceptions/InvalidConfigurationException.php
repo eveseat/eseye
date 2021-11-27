@@ -26,6 +26,7 @@ use Exception;
 
 /**
  * Class InvalidConfigurationException.
+ *
  * @package Seat\Eseye\Exceptions
  */
 class InvalidConfigurationException extends Exception

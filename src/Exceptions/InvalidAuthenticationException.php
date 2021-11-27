@@ -26,6 +26,7 @@ use Exception;
 
 /**
  * Class InvalidAuthenticationException.
+ *
  * @package Seat\Eseye\Exceptions
  */
 class InvalidAuthenticationException extends Exception

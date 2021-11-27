@@ -24,15 +24,15 @@ namespace Seat\Eseye\Access;
 
 /**
  * Interface AccessInterface.
+ *
  * @package Seat\Eseye\Access
  */
 interface AccessInterface
 {
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array  $scopes
-     *
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $scopes
      * @return bool|mixed
      */
     public function can(string $method, string $uri, array $scopes): bool;

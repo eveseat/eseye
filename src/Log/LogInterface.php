@@ -24,34 +24,31 @@ namespace Seat\Eseye\Log;
 
 /**
  * Interface LogInterface.
+ *
  * @package Seat\Eseye\Log
  */
 interface LogInterface
 {
     /**
-     * @param string $message
-     *
+     * @param  string  $message
      * @return mixed
      */
     public function log(string $message);
 
     /**
-     * @param string $message
-     *
+     * @param  string  $message
      * @return mixed
      */
     public function debug(string $message);
 
     /**
-     * @param string $message
-     *
+     * @param  string  $message
      * @return mixed
      */
     public function warning(string $message);
 
     /**
-     * @param string $message
-     *
+     * @param  string  $message
      * @return mixed
      */
     public function error(string $message);

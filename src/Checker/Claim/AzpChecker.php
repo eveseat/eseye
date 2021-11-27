@@ -42,7 +42,7 @@ class AzpChecker implements ClaimChecker
     /**
      * AzpChecker constructor.
      *
-     * @param string $client_id
+     * @param  string  $client_id
      */
     public function __construct(string $client_id)
     {

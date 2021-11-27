@@ -30,6 +30,7 @@ use Seat\Eseye\Traits\ValidatesContainers;
 
 /**
  * Class EsiConfiguration.
+ *
  * @package Seat\Eseye\Containers
  */
 class EsiConfiguration extends AbstractArrayAccess

@@ -26,6 +26,7 @@ use Exception;
 
 /**
  * Class EsiScopeAccessDeniedException.
+ *
  * @package Seat\Eseye\Exceptions
  */
 class EsiScopeAccessDeniedException extends Exception
