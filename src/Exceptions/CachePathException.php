@@ -26,6 +26,7 @@ use Exception;
 
 /**
  * Class CachePathException.
+ *
  * @package Seat\Eseye\Exceptions
  */
 class CachePathException extends Exception

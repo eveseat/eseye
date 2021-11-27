@@ -26,6 +26,7 @@ use Seat\Eseye\Exceptions\InvalidContainerDataException;
 
 /**
  * Class ConstructsContainers.
+ *
  * @package Seat\Eseye\Traits
  */
 trait ConstructsContainers
@@ -38,7 +39,7 @@ trait ConstructsContainers
      * the incoming array to ensure that only the keys in
      * the data property of the container is set.
      *
-     * @param array|null $data
+     * @param  array|null  $data
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */

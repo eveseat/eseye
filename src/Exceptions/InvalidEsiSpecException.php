@@ -26,6 +26,7 @@ use Exception;
 
 /**
  * Class InvalidEsiSpecException.
+ *
  * @package Seat\Eseye\Exceptions
  */
 class InvalidEsiSpecException extends Exception

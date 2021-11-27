@@ -43,6 +43,7 @@ use Seat\Eseye\Exceptions\RequestFailedException;
 
 /**
  * Class GuzzleFetcher.
+ *
  * @package Seat\Eseye\Fetchers
  */
 class GuzzleFetcher implements FetcherInterface
@@ -71,7 +72,7 @@ class GuzzleFetcher implements FetcherInterface
     /**
      * EseyeFetcher constructor.
      *
-     * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
+     * @param  \Seat\Eseye\Containers\EsiAuthentication  $authentication
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
@@ -89,12 +90,12 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array  $body
-     * @param array  $headers
-     *
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $body
+     * @param  array  $headers
      * @return \Seat\Eseye\Containers\EsiResponse
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
@@ -123,7 +124,7 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
-     * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
+     * @param  \Seat\Eseye\Containers\EsiAuthentication  $authentication
      *
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      */
@@ -138,6 +139,7 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * @return string
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
@@ -189,7 +191,7 @@ class GuzzleFetcher implements FetcherInterface
                 ]
             );
 
-        } catch (ClientException | ServerException $e) {
+        } catch (ClientException|ServerException $e) {
 
             // Log the event as failed
             $this->logger->error('[http ' . $e->getResponse()->getStatusCode() . ', ' .
@@ -232,12 +234,12 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array  $headers
-     * @param array  $body
-     *
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $headers
+     * @param  array  $body
      * @return mixed|\Seat\Eseye\Containers\EsiResponse
+     *
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
@@ -268,7 +270,7 @@ class GuzzleFetcher implements FetcherInterface
             $response = $this->getClient()->send(
                 new Request($method, $uri, $headers, $body));
 
-        } catch (ClientException | ServerException $e) {
+        } catch (ClientException|ServerException $e) {
 
             // Log the event as failed
             $this->logger->error('[http ' . $e->getResponse()->getStatusCode() . ', ' .
@@ -313,6 +315,7 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * @return \GuzzleHttp\Client
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function getClient(): Client
@@ -331,7 +334,7 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
-     * @param \GuzzleHttp\Client $client
+     * @param  \GuzzleHttp\Client  $client
      */
     public function setClient(Client $client)
     {
@@ -340,8 +343,7 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
-     * @param string $uri
-     *
+     * @param  string  $uri
      * @return string
      */
     public function stripRefreshTokenValue(string $uri): string
@@ -356,11 +358,10 @@ class GuzzleFetcher implements FetcherInterface
     }
 
     /**
-     * @param string $body
-     * @param array  $headers
-     * @param string $expires
-     * @param int    $status_code
-     *
+     * @param  string  $body
+     * @param  array  $headers
+     * @param  string  $expires
+     * @param  int  $status_code
      * @return \Seat\Eseye\Containers\EsiResponse
      */
     public function makeEsiResponse(
@@ -413,8 +414,9 @@ class GuzzleFetcher implements FetcherInterface
     /**
      * Verify that an access_token is still valid.
      *
-     * @param string $access_token
+     * @param  string  $access_token
      * @return array
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
@@ -444,6 +446,7 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * @return array
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     private function getJwkSets(): array
@@ -457,6 +460,7 @@ class GuzzleFetcher implements FetcherInterface
 
     /**
      * @return string
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     private function getJwkUri(): string

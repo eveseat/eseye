@@ -26,6 +26,7 @@ use Seat\Eseye\Configuration;
 
 /**
  * Class CheckAccess.
+ *
  * @package Seat\Eseye\Access
  */
 class CheckAccess implements AccessInterface
@@ -258,11 +259,11 @@ class CheckAccess implements AccessInterface
     ];
 
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array  $scopes
-     *
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $scopes
      * @return bool|mixed
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function can(string $method, string $uri, array $scopes): bool

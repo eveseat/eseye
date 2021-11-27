@@ -24,6 +24,7 @@ namespace Seat\Eseye\Traits;
 
 /**
  * Class ValidatesContainers.
+ *
  * @package Seat\Eseye\Traits
  */
 trait ValidatesContainers

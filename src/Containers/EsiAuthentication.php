@@ -27,6 +27,7 @@ use Seat\Eseye\Traits\ValidatesContainers;
 
 /**
  * Class EsiAuthentication.
+ *
  * @package Seat\Eseye\Containers
  */
 class EsiAuthentication extends AbstractArrayAccess

@@ -27,6 +27,7 @@ use Seat\Eseye\Containers\EsiResponse;
 
 /**
  * Class RequestFailedException.
+ *
  * @package Seat\Eseye\Exceptions
  */
 class RequestFailedException extends Exception
@@ -45,8 +46,8 @@ class RequestFailedException extends Exception
     /**
      * RequestFailedException constructor.
      *
-     * @param \Exception                         $exception
-     * @param \Seat\Eseye\Containers\EsiResponse $esi_response
+     * @param  \Exception  $exception
+     * @param  \Seat\Eseye\Containers\EsiResponse  $esi_response
      */
     public function __construct(Exception $exception, EsiResponse $esi_response)
     {

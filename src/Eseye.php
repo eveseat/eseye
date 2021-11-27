@@ -37,6 +37,7 @@ use Seat\Eseye\Log\LogInterface;
 
 /**
  * Class Eseye.
+ *
  * @package Seat\Eseye
  */
 class Eseye
@@ -97,7 +98,7 @@ class Eseye
     /**
      * Eseye constructor.
      *
-     * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
+     * @param  \Seat\Eseye\Containers\EsiAuthentication  $authentication
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
@@ -116,6 +117,7 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Log\LogInterface
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function getLogger(): LogInterface
@@ -126,6 +128,7 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Configuration
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function getConfiguration(): Configuration
@@ -136,6 +139,7 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Containers\EsiAuthentication
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      */
     public function getAuthentication(): EsiAuthentication
@@ -148,9 +152,9 @@ class Eseye
     }
 
     /**
-     * @param \Seat\Eseye\Containers\EsiAuthentication $authentication
-     *
+     * @param  \Seat\Eseye\Containers\EsiAuthentication  $authentication
      * @return \Seat\Eseye\Eseye
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function setAuthentication(EsiAuthentication $authentication): self
@@ -173,8 +177,7 @@ class Eseye
     }
 
     /**
-     * @param string $refreshToken
-     *
+     * @param  string  $refreshToken
      * @return \Seat\Eseye\Eseye
      */
     public function setRefreshToken(string $refreshToken): self
@@ -186,7 +189,7 @@ class Eseye
     }
 
     /**
-     * @param \Seat\Eseye\Fetchers\FetcherInterface $fetcher
+     * @param  \Seat\Eseye\Fetchers\FetcherInterface  $fetcher
      */
     public function setFetcher(FetcherInterface $fetcher)
     {
@@ -195,8 +198,7 @@ class Eseye
     }
 
     /**
-     * @param array $body
-     *
+     * @param  array  $body
      * @return \Seat\Eseye\Eseye
      */
     public function setBody(array $body): self
@@ -208,11 +210,11 @@ class Eseye
     }
 
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array  $uri_data
-     *
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $uri_data
      * @return \Seat\Eseye\Containers\EsiResponse
+     *
      * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
@@ -314,8 +316,7 @@ class Eseye
     }
 
     /**
-     * @param \Seat\Eseye\Access\AccessInterface $checker
-     *
+     * @param  \Seat\Eseye\Access\AccessInterface  $checker
      * @return \Seat\Eseye\Eseye
      */
     public function setAccessChecker(AccessInterface $checker): self
@@ -328,6 +329,7 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Fetchers\FetcherInterface
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     private function getFetcher(): FetcherInterface
@@ -344,10 +346,10 @@ class Eseye
     }
 
     /**
-     * @param string $uri
-     * @param array  $data
-     *
+     * @param  string  $uri
+     * @param  array  $data
      * @return \Psr\Http\Message\UriInterface
+     *
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
@@ -380,8 +382,7 @@ class Eseye
     }
 
     /**
-     * @param array $query
-     *
+     * @param  array  $query
      * @return \Seat\Eseye\Eseye
      */
     public function setQueryString(array $query): self
@@ -412,8 +413,7 @@ class Eseye
     /**
      * Set the version of the API endpoints base URI.
      *
-     * @param string $version
-     *
+     * @param  string  $version
      * @return \Seat\Eseye\Eseye
      */
     public function setVersion(string $version)
@@ -428,10 +428,10 @@ class Eseye
     }
 
     /**
-     * @param string $uri
-     * @param array  $data
-     *
+     * @param  string  $uri
+     * @param  array  $data
      * @return string
+     *
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
     private function mapDataToUri(string $uri, array $data): string
@@ -461,6 +461,7 @@ class Eseye
 
     /**
      * @return \Seat\Eseye\Cache\CacheInterface
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     private function getCache(): CacheInterface
@@ -470,12 +471,12 @@ class Eseye
     }
 
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array  $body
-     * @param array  $headers
-     *
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $body
+     * @param  array  $headers
      * @return \Seat\Eseye\Containers\EsiResponse
+     *
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
@@ -532,8 +533,7 @@ class Eseye
     /**
      * A helper method to specify the page to retrieve.
      *
-     * @param int $page
-     *
+     * @param  int  $page
      * @return \Seat\Eseye\Eseye
      */
     public function page(int $page): self

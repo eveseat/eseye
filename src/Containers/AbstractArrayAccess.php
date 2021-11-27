@@ -24,6 +24,7 @@ namespace Seat\Eseye\Containers;
 
 /**
  * Class AbstractArrayAccess.
+ *
  * @package Seat\Eseye\Containers
  */
 abstract class AbstractArrayAccess implements \ArrayAccess
@@ -35,8 +36,7 @@ abstract class AbstractArrayAccess implements \ArrayAccess
     protected $data;
 
     /**
-     * @param mixed $offset
-     *
+     * @param  mixed  $offset
      * @return bool
      */
     public function offsetExists($offset)
@@ -46,8 +46,7 @@ abstract class AbstractArrayAccess implements \ArrayAccess
     }
 
     /**
-     * @param mixed $offset
-     *
+     * @param  mixed  $offset
      * @return mixed
      */
     public function offsetGet($offset)
@@ -57,8 +56,8 @@ abstract class AbstractArrayAccess implements \ArrayAccess
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
+     * @param  mixed  $offset
+     * @param  mixed  $value
      */
     public function offsetSet($offset, $value)
     {
@@ -67,7 +66,7 @@ abstract class AbstractArrayAccess implements \ArrayAccess
     }
 
     /**
-     * @param mixed $offset
+     * @param  mixed  $offset
      */
     public function offsetUnset($offset)
     {
@@ -77,7 +76,6 @@ abstract class AbstractArrayAccess implements \ArrayAccess
 
     /**
      * @param $key
-     *
      * @return mixed
      */
     public function __get($key)
