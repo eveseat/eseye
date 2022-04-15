@@ -1,0 +1,41 @@
+name: Run Unit Tests
+on:
+  pull_request:
+  push:
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.1]
+        stability: [prefer-stable]
+    name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          extensions: curl gmp json mbstring memcached openssl
+          coverage: xdebug2
+
+      - name: Install Dependencies
+        run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
+
+      - name: Download Codeclimate Tools
+        run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter && chmod +x ./cc-test-reporter
+
+      - name: Init Codeclimate Tools
+        run: ./cc-test-reporter before-build
+
+      - name: Run Tests
+        run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+
+      - name: Publish code coverage
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        run: ./cc-test-reporter after-build -t clover
