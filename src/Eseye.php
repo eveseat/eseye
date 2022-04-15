@@ -323,53 +323,15 @@ class Eseye
         }
 
         // Check if there is a cached response we can return
-        if (in_array(strtolower($method), $this->cachable_verb) &&
-            $cached = $this->getCache()->get($uri)
-        ) {
-            // In case the cached entry is still valid, mark content as being loaded from cache.
-            if (! $cached->expired())
-                $cached->setIsCachedLoad();
-
-            // Handling ETag marked response specifically (ignoring the expired time)
-            // Sending a request with the stored ETag in header - if we have a 304 response, data has not been altered.
-            if ($cached->hasHeader('ETag') && $cached->expired()) {
-
-                $result = $this->rawFetch($method, $uri, $this->getBody(), ['If-None-Match' => $cached->getHeader('ETag')]);
-
-                if ($result->getErrorCode() == 304) {
-
-                    // update expires header with newly provided value
-                    $cached->setExpires($result->expires());
-
-                    // store updated response in cache to renew internal cache duration
-                    $this->getCache()->set($uri, $cached);
-
-                    $cached->setIsCachedLoad();
-                }
-            }
-
-            // In case the result is effectively retrieved from cache,
-            // return the cached element.
-            if ($cached->isCachedLoad()) {
-
-                // Perform some debug logging
-                $this->getLogger()->debug('Loaded cached response for ' . $method . ' -> ' . $uri, [
-                    'etag' => $cached->hasHeader('ETag') ? $cached->getHeader('ETag') : '',
-                    'body' => $cached->raw,
-                ]);
-
-                $this->cleanupRequestData();
-
-                return $cached;
-            }
-        }
+        if ($this->isCachable($method))
+            $result = $this->handleCacheEntry($method, $uri);
 
         // Call ESI itself and get the EsiResponse in case it has not already been handled with cache control
         if (! isset($result))
             $result = $this->rawFetch($method, $uri, $this->getBody());
 
         // Cache the response if it was a get and is not already expired
-        if (in_array(strtolower($method), $this->cachable_verb) && ! $result->expired())
+        if ($this->isCachable($method) && ! $result->expired())
             $this->getCache()->set($uri, $result);
 
         // In preparation for the next request, perform some
@@ -434,6 +396,79 @@ class Eseye
         }
 
         return $uri;
+    }
+
+    /**
+     * Determine if call can be cached.
+     *
+     * @param  string  $method
+     * @return bool
+     */
+    private function isCachable(string $method): bool
+    {
+        return in_array(strtolower($method), $this->cachable_verb);
+    }
+
+    /**
+     * Handle request that might be cached.
+     *
+     * @param  string  $method
+     * @param  \Psr\Http\Message\UriInterface  $uri
+     * @return \Seat\Eseye\Containers\EsiResponse|null
+     *
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     */
+    private function handleCacheEntry(string $method, UriInterface $uri): ?EsiResponse
+    {
+        $cache_entry = $this->getCache()->get($uri);
+
+        // If we were not able to retrieve data from cache, abort and return null
+        if (! $cache_entry)
+            return null;
+
+        // In case the cached entry is still valid, mark content as being loaded from cache.
+        if (! $cache_entry->expired())
+            $cache_entry->setIsCachedLoad();
+
+        // Handling ETag marked response specifically (ignoring the expired time)
+        // Sending a request with the stored ETag in header - if we have a 304 response, data has not been altered.
+        if ($cache_entry->hasHeader('ETag') && $cache_entry->expired()) {
+
+            $result = $this->rawFetch($method, $uri, $this->getBody(), ['If-None-Match' => $cache_entry->getHeader('ETag')]);
+
+            // in case response was distinct from 304 (unmodified) - return it directly
+            if ($result->getErrorCode() !== 304)
+                return $result;
+
+            // update expires header with newly provided value
+            $cache_entry->setExpires($result->expires());
+
+            // store updated response in cache to renew internal cache duration
+            $this->getCache()->set($uri, $cache_entry);
+
+            $cache_entry->setIsCachedLoad();
+        }
+
+        // In case the result is effectively retrieved from cache,
+        // return the cached element.
+        if ($cache_entry->isCachedLoad()) {
+
+            // Perform some debug logging
+            $logging_msg = 'Loaded cached response for ' . $method . ' -> ' . $uri;
+
+            if ($cache_entry->hasHeader('ETag'))
+                $logging_msg = sprintf('%s [%s]', $logging_msg, $cache_entry->getHeader('ETag'));
+
+            $this->getLogger()->debug($logging_msg);
+
+            $this->cleanupRequestData();
+
+            return $cache_entry;
+        }
+
+        return null;
     }
 
     /**
