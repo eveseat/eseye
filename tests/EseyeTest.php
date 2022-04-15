@@ -301,13 +301,20 @@ class EseyeTest extends TestCase
             'handler' => HandlerStack::create($mock),
         ]));
 
+        // update cache engine to file cache engine
+        $configuration = Configuration::getInstance();
+        $configuration->cache = FileCache::class;
+
         // Update the fetchers client
         $this->esi->setFetcher($fetcher);
 
         $response = $this->esi->invoke('get', '/foo');
+        $this->assertFalse($response->isCachedLoad());
 
+        $response = $this->esi->invoke('get', '/foo');
+
+        $this->assertTrue($response->isCachedLoad());
         $this->assertEquals('bar', $response->foo);
-
     }
 
     public function testEseyeMakesEsiApiCallWithExpiredCachedResponseAndValidEtag()
@@ -344,6 +351,41 @@ class EseyeTest extends TestCase
         // send a new call to trigger cache
         $response = $this->esi->invoke('get', '/foo2');
         $this->assertTrue($response->isCachedLoad());
+    }
+
+    public function testEseyeMakesEsiApiCallWithExpiredCachedResponseAndInvalidEtag()
+    {
+        $mock = new MockHandler([
+            new Response(200, [
+                'Expires' => carbon()->addSeconds(3)->toRfc7231String(),
+                'ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0819"',
+            ], json_encode(['foo' => 'bar'])),
+            new Response(200, [
+                'Expires' => carbon()->addHour()->toRfc7231String(),
+                'ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0818"',
+            ]),
+        ]);
+
+        $config = Configuration::getInstance();
+        $config->cache = FileCache::class;
+
+        $fetcher = new GuzzleFetcher;
+        $fetcher->setClient(new Client([
+            'handler' => HandlerStack::create($mock),
+        ]));
+
+        // Update the fetchers client
+        $this->esi->setFetcher($fetcher);
+
+        // send an initial call to seed cache
+        $response = $this->esi->invoke('get', '/foo3');
+        $this->assertFalse($response->isCachedLoad());
+
+        sleep(5);
+
+        // send a new call to trigger cache
+        $response = $this->esi->invoke('get', '/foo3');
+        $this->assertFalse($response->isCachedLoad());
     }
 
     public function testEseyeMakesEsiApiCallWithoutCachedResponse()
