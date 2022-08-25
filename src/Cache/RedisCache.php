@@ -33,24 +33,22 @@ use Seat\Eseye\Containers\EsiResponse;
  */
 class RedisCache implements CacheInterface
 {
-
     use HashesStrings;
 
     /**
      * @var \Predis\Client
      */
-    protected $redis;
+    protected Client $redis;
 
     /**
      * RedisCache constructor.
      *
-     * @param  \Predis\Client  $redis
+     * @param  \Predis\Client|null  $redis
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function __construct(Client $redis = null)
     {
-
         // If we didn't get a Redis instance in the constructor,
         // build a new one.
         if (is_null($redis)) {
@@ -73,9 +71,8 @@ class RedisCache implements CacheInterface
      * @param  \Seat\Eseye\Containers\EsiResponse  $data
      * @return void
      */
-    public function set(string $uri, string $query, EsiResponse $data)
+    public function set(string $uri, string $query, EsiResponse $data): void
     {
-
         $this->redis->set($this->buildCacheKey($uri, $query), serialize($data));
     }
 
@@ -86,7 +83,6 @@ class RedisCache implements CacheInterface
      */
     public function buildCacheKey(string $uri, string $query = ''): string
     {
-
         if ($query != '')
             $query = $this->hashString($query);
 
@@ -98,9 +94,8 @@ class RedisCache implements CacheInterface
      * @param  string  $query
      * @return \Seat\Eseye\Containers\EsiResponse|bool
      */
-    public function get(string $uri, string $query = '')
+    public function get(string $uri, string $query = ''): EsiResponse|bool
     {
-
         if (! $this->has($uri, $query))
             return false;
 
@@ -121,22 +116,20 @@ class RedisCache implements CacheInterface
     /**
      * @param  string  $uri
      * @param  string  $query
-     * @return bool|mixed
+     * @return bool
      */
     public function has(string $uri, string $query = ''): bool
     {
-
         return $this->redis->exists($this->buildCacheKey($uri, $query));
     }
 
     /**
      * @param  string  $uri
      * @param  string  $query
-     * @return mixed
+     * @return bool
      */
-    public function forget(string $uri, string $query = '')
+    public function forget(string $uri, string $query = ''): bool
     {
-
-        return $this->redis->del([$this->buildCacheKey($uri, $query)]);
+        return $this->redis->del([$this->buildCacheKey($uri, $query)]) !== 0;
     }
 }

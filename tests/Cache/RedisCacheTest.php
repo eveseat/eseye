@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Cache;
+
 use M6Web\Component\RedisMock\RedisMockFactory;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
@@ -32,9 +34,9 @@ class RedisCacheTest extends TestCase
     /**
      * @var RedisCache
      */
-    protected $redis_cache;
+    protected RedisCache $redis_cache;
 
-    protected $esi_response_object;
+    protected EsiResponse $esi_response_object;
 
     public function setUp(): void
     {

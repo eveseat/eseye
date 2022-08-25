@@ -22,14 +22,23 @@
 
 namespace Seat\Eseye\Containers;
 
-use Seat\Eseye\Cache\FileCache;
-use Seat\Eseye\Fetchers\GuzzleFetcher;
-use Seat\Eseye\Log\RotatingFileLogger;
+use GuzzleHttp\Psr7\HttpFactory;
+use Psr\Http\Client\ClientInterface;
+use Seat\Eseye\Cache\NullCache;
+use Seat\Eseye\Fetchers\Fetcher;
+use Seat\Eseye\Log\NullLogger;
 use Seat\Eseye\Traits\ConstructsContainers;
 use Seat\Eseye\Traits\ValidatesContainers;
 
 /**
  * Class EsiConfiguration.
+ *
+ * @property string $logger
+ * @property string $cache
+ * @property string $http_client
+ * @property string $http_stream_factory
+ * @property string $http_request_factory
+ * @property string $datasource
  *
  * @package Seat\Eseye\Containers
  */
@@ -41,7 +50,7 @@ class EsiConfiguration extends AbstractArrayAccess
     /**
      * @var array
      */
-    protected $data = [
+    protected array $data = [
         'http_user_agent'            => 'Eseye Default Library',
 
         // Esi
@@ -56,18 +65,18 @@ class EsiConfiguration extends AbstractArrayAccess
         'sso_port'                   => 443,
 
         // Fetcher
-        'fetcher'                    => GuzzleFetcher::class,
+        'fetcher'                    => Fetcher::class,
 
         // Logging
-        'logger'                     => RotatingFileLogger::class,
-        'logger_level'               => 'info',
+        'logger'                     => NullLogger::class,
+        'logger_level'               => 'INFO',
         'logfile_location'           => 'logs/',
 
         // Rotating Logger Details
         'log_max_files'              => 10,
 
         // Cache
-        'cache'                      => FileCache::class,
+        'cache'                      => NullCache::class,
 
         // File Cache
         'file_cache_location'        => 'cache/',
@@ -81,6 +90,11 @@ class EsiConfiguration extends AbstractArrayAccess
         'memcached_cache_port'       => '11211',
         'memcached_cache_prefix'     => 'eseye:',
         'memcached_cache_compressed' => false,
+
+        // HTTP
+        'http_client'                => ClientInterface::class,
+        'http_request_factory'       => HttpFactory::class,
+        'http_stream_factory'        => HttpFactory::class,
     ];
 
 }

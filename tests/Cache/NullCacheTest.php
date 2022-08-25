@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Cache;
+
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Cache\NullCache;
 use Seat\Eseye\Containers\EsiResponse;
@@ -27,7 +29,7 @@ use Seat\Eseye\Containers\EsiResponse;
 class NullCacheTest extends TestCase
 {
 
-    protected $null_cache;
+    protected NullCache $null_cache;
 
     public function setUp(): void
     {
@@ -45,9 +47,10 @@ class NullCacheTest extends TestCase
     {
 
         $esi_response = $this->createMock(EsiResponse::class);
-        $return = $this->null_cache->set('/test', 'foo=bar', $esi_response);
+        $this->null_cache->set('/test', 'foo=bar', $esi_response);
+        $cached_entry = $this->null_cache->get('/test', 'foo=bar');
 
-        $this->assertNull($return);
+        $this->assertFalse($cached_entry);
     }
 
     public function testNullCacheGetsValue()
@@ -59,7 +62,7 @@ class NullCacheTest extends TestCase
     public function testNullCacheForgetsValues()
     {
 
-        $this->assertNull($this->null_cache->forget('/test', 'foo=bar'));
+        $this->assertFalse($this->null_cache->forget('/test', 'foo=bar'));
     }
 
     public function testNullCacheHasValue()

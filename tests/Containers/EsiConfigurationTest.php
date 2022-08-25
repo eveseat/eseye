@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Containers;
+
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
@@ -30,7 +32,7 @@ use Seat\Eseye\Exceptions\InvalidContainerDataException;
 class EsiConfigurationTest extends TestCase
 {
 
-    protected $esi_configuration;
+    protected EsiConfiguration $esi_configuration;
 
     public function setUp(): void
     {
@@ -103,11 +105,11 @@ class EsiConfigurationTest extends TestCase
     }
 
     /**
-     * @param $key The key to check for existence
+     * @param string $key The key to check for existence
      *
      * @dataProvider providerTestRequiredKeysExists
      */
-    public function testRequiredKeysExists($key)
+    public function testRequiredKeysExists(string $key)
     {
 
         $configuration = new EsiConfiguration;
@@ -119,9 +121,8 @@ class EsiConfigurationTest extends TestCase
      *
      * @return array
      */
-    public function providerTestRequiredKeysExists()
+    public function providerTestRequiredKeysExists(): array
     {
-
         return [
             ['http_user_agent'],
             ['datasource'],

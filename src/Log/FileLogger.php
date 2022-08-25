@@ -25,20 +25,22 @@ namespace Seat\Eseye\Log;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Seat\Eseye\Configuration;
+use Stringable;
 
 /**
  * Class FileLogger.
  *
  * @package Seat\Eseye\Log
  */
-class FileLogger implements LogInterface
+class FileLogger implements LoggerInterface
 {
 
     /**
      * @var \Monolog\Logger
      */
-    protected $logger;
+    protected Logger $logger;
 
     /**
      * FileLogger constructor.
@@ -63,42 +65,93 @@ class FileLogger implements LogInterface
     }
 
     /**
-     * @param  string  $message
-     * @return mixed|void
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
      */
-    public function log(string $message)
+    public function emergency(string|Stringable $message, array $context = []): void
     {
-
-        $this->logger->info($message);
+        $this->logger->emergency($message, $context);
     }
 
     /**
-     * @param  string  $message
-     * @return mixed|void
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
      */
-    public function debug(string $message)
+    public function alert(string|Stringable $message, array $context = []): void
     {
-
-        $this->logger->debug($message);
+        $this->logger->alert($message, $context);
     }
 
     /**
-     * @param  string  $message
-     * @return mixed|void
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
      */
-    public function warning(string $message)
+    public function critical(string|Stringable $message, array $context = []): void
     {
-
-        $this->logger->warning($message);
+        $this->logger->critical($message, $context);
     }
 
     /**
-     * @param  string  $message
-     * @return mixed|void
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
      */
-    public function error(string $message)
+    public function error(string|Stringable $message, array $context = []): void
     {
+        $this->logger->error($message, $context);
+    }
 
-        $this->logger->error($message);
+    /**
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function warning(string|Stringable $message, array $context = []): void
+    {
+        $this->logger->warning($message, $context);
+    }
+
+    /**
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function notice(string|Stringable $message, array $context = []): void
+    {
+        $this->logger->notice($message, $context);
+    }
+
+    /**
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function info(string|Stringable $message, array $context = []): void
+    {
+        $this->logger->info($message, $context);
+    }
+
+    /**
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function debug(string|Stringable $message, array $context = []): void
+    {
+        $this->logger->debug($message, $context);
+    }
+
+    /**
+     * @param $level
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function log($level, string|Stringable $message, array $context = []): void
+    {
+        $this->logger->log($level, $message, $context);
     }
 }

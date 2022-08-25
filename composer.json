@@ -3,25 +3,40 @@
     "description": "A Standalone PHP ESI (EVE Swagger Interface) Client Library",
     "type": "library",
     "require": {
-        "php": ">= 7.2|^8.0",
+        "php": "^8.0",
         "ext-gmp": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
-        "guzzlehttp/guzzle": "^6.2|^7.0",
+        "guzzlehttp/psr7": "^2.0",
         "nesbot/carbon": "^2.0",
-        "monolog/monolog": "^2.0",
-        "predis/predis": "^1.1",
+        "psr/http-client": "^1.0",
+        "psr/http-client-implementation": "*",
+        "psr/http-factory": "^1.0",
+        "psr/http-factory-implementation": "*",
+        "psr/log": "^3.0",
         "web-token/jwt-easy": "^2.1",
         "web-token/jwt-signature-algorithm-hmac": "^2.1",
         "web-token/jwt-signature-algorithm-rsa": "^2.1",
         "web-token/jwt-signature-algorithm-ecdsa": "^2.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.0|^9.0",
+        "ext-memcache": "*",
+        "ext-memcached": "*",
+        "guzzlehttp/guzzle": "^7.0",
         "mikey179/vfsstream": "~1",
+        "monolog/monolog": "^2.0",
         "m6web/redis-mock": "^5.0",
-        "codeclimate/php-test-reporter": "dev-master"
+        "mockery/mockery": "^1.0",
+        "phpunit/phpunit": "^8.0|^9.0",
+        "predis/predis": "^1.0"
+    },
+    "suggest": {
+        "ext-memcache": "Required to use the memcache cache driver.",
+        "ext-memcached": "Required to use the memcached cache driver.",
+        "guzzlehttp/guzzle": "A widely used http client library.",
+        "monolog/monolog": "A widely used log library.",
+        "predis/predis": "Required to use the redis cache driver."
     },
     "license": "GPL-2.0",
     "authors": [
@@ -37,6 +52,11 @@
         "files": [
             "src/Helpers/helpers.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Seat\\Tests\\": "tests/"
+        }
     },
     "bin": [
         "bin/tokengenerator"

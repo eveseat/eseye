@@ -20,11 +20,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use ReflectionClass;
 use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Cache\FileCache;
@@ -36,9 +41,8 @@ use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
 use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
+use Seat\Eseye\Fetchers\Fetcher;
 use Seat\Eseye\Fetchers\FetcherInterface;
-use Seat\Eseye\Fetchers\GuzzleFetcher;
-use Seat\Eseye\Log\LogInterface;
 use Seat\Eseye\Log\NullLogger;
 
 class EseyeTest extends TestCase
@@ -47,7 +51,7 @@ class EseyeTest extends TestCase
     /**
      * @var Eseye
      */
-    protected $esi;
+    protected Eseye $esi;
 
     public function setUp(): void
     {
@@ -61,6 +65,11 @@ class EseyeTest extends TestCase
 
         // Force ESI data-source to be singularity
         $configuration->datasource = 'singularity';
+
+        // Setup HTTP client
+        $configuration->http_client = Client::class;
+        $configuration->http_stream_factory = HttpFactory::class;
+        $configuration->http_request_factory = HttpFactory::class;
 
         $this->esi = new Eseye;
     }
@@ -156,7 +165,7 @@ class EseyeTest extends TestCase
     public function testEseyeGetLogger()
     {
 
-        $this->assertInstanceOf(LogInterface::class, $this->esi->getLogger());
+        $this->assertInstanceOf(LoggerInterface::class, $this->esi->getLogger());
     }
 
     public function testEseyeSetAccessChecker()
@@ -191,8 +200,7 @@ class EseyeTest extends TestCase
      */
     protected static function getMethod($name)
     {
-
-        $class = new ReflectionClass('Seat\Eseye\Eseye');
+        $class = new ReflectionClass(Eseye::class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
 
@@ -288,7 +296,7 @@ class EseyeTest extends TestCase
             new Response(200, ['Expires' => 'Sat, 28 Jan 4017 05:46:49 GMT'], json_encode(['foo' => 'bar'])),
         ]);
 
-        $fetcher = new GuzzleFetcher;
+        $fetcher = new Fetcher;
         $fetcher->setClient(new Client([
             'handler' => HandlerStack::create($mock),
         ]));
@@ -317,8 +325,9 @@ class EseyeTest extends TestCase
 
         $config = Configuration::getInstance();
         $config->cache = FileCache::class;
+        $config->file_cache_location = __DIR__ . '/../cache/' . uniqid('', true);
 
-        $fetcher = new GuzzleFetcher;
+        $fetcher = new Fetcher;
         $fetcher->setClient(new Client([
             'handler' => HandlerStack::create($mock),
         ]));
@@ -344,7 +353,7 @@ class EseyeTest extends TestCase
             new Response(200, ['Foo' => 'Bar'], json_encode(['foo' => 'bar'])),
         ]);
 
-        $fetcher = new GuzzleFetcher;
+        $fetcher = new Fetcher;
         $fetcher->setClient(new Client([
             'handler' => HandlerStack::create($mock),
         ]));
@@ -368,7 +377,7 @@ class EseyeTest extends TestCase
         ]);
 
         // Update the fetchers client
-        $this->esi->setFetcher(new GuzzleFetcher(null, new Client([
+        $this->esi->setFetcher(new Fetcher(null, new Client([
             'handler' => HandlerStack::create($mock),
         ])));
 

@@ -33,7 +33,7 @@ trait HashesStrings
      * @param  string  $string
      * @return string
      */
-    public function hashString(string $string)
+    public function hashString(string $string): string
     {
 
         return sha1($string);

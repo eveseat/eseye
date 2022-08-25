@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Exceptions;
+
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\RequestFailedException;
@@ -30,12 +32,11 @@ class RequestFailedExceptionTest extends TestCase
     /**
      * @var RequestFailedException
      */
-    protected $exception;
+    protected RequestFailedException $exception;
 
     public function setUp(): void
     {
-
-        $this->exception = new RequestFailedException(new Exception('Foo'), new EsiResponse(
+        $this->exception = new RequestFailedException(new EsiResponse(
             json_encode(['error' => 'test']),
             [],
             'now',
@@ -45,7 +46,6 @@ class RequestFailedExceptionTest extends TestCase
 
     public function testRequestFailedGetsErrors()
     {
-
         $error = $this->exception->getError();
 
         $this->assertEquals('test', $error);
@@ -53,18 +53,8 @@ class RequestFailedExceptionTest extends TestCase
 
     public function testRequestFailedGetsEsiResponse()
     {
-
         $response = $this->exception->getEsiResponse();
 
         $this->assertInstanceOf(EsiResponse::class, $response);
     }
-
-    public function testRequestFailedGetsOriginalException()
-    {
-
-        $response = $this->exception->getOriginalException();
-
-        $this->assertInstanceOf(Exception::class, $response);
-    }
-
 }

@@ -20,42 +20,83 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Log;
+
+use Mockery;
 use PHPUnit\Framework\TestCase;
+use Seat\Eseye\Configuration;
 use Seat\Eseye\Log\NullLogger;
 
 class NullLoggerTest extends TestCase
 {
+    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
     protected $logger;
 
     public function setUp(): void
     {
+        Configuration::getInstance()->logger_level = 'DEBUG';
+        $this->logger = Mockery::mock(NullLogger::class);
+    }
 
-        $this->logger = new NullLogger;
+    protected function tearDown(): void
+    {
+        Mockery::close();
     }
 
     public function testNullLoggerIgnoresInfo()
     {
+        $this->logger->shouldReceive('log')->with('info', 'foo');
 
-        $this->assertNull($this->logger->log('foo'));
+        $this->logger->log('info', 'foo');
+    }
+
+    public function testNullLoggerIgnoresNotice()
+    {
+        $this->logger->shouldReceive('notice')->with('foo');
+
+        $this->logger->notice('foo');
     }
 
     public function testNullLoggerIgnoresDebug()
     {
+        $this->logger->shouldReceive('debug')->with('foo');
 
-        $this->assertNull($this->logger->debug('foo'));
+        $this->logger->debug('foo');
     }
 
     public function testNullLoggerIgnoresWarning()
     {
+        $this->logger->shouldReceive('warning')->with('foo');
 
-        $this->assertNull($this->logger->warning('foo'));
+        $this->logger->warning('foo');
     }
 
     public function testNullLoggerIgnoresError()
     {
+        $this->logger->shouldReceive('error')->with('foo');
 
-        $this->assertNull($this->logger->error('foo'));
+        $this->logger->error('foo');
     }
 
+    public function testNullLoggerIgnoresCritical()
+    {
+        $this->logger->shouldReceive('critical')->with('foo');
+
+        $this->logger->critical('foo');
+    }
+
+    public function testNullLoggerIgnoresAlert()
+    {
+        $this->logger->shouldReceive('alert')->with('foo');
+
+        $this->logger->alert('foo');
+    }
+
+    public function testNullLoggerIgnoresEmergency()
+    {
+        $this->logger->shouldReceive('emergency')->with('foo');
+
+        $this->logger->emergency('foo');
+    }
 }

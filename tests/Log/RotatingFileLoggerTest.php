@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Log;
+
 use Monolog\Logger;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
@@ -49,10 +51,9 @@ class RotatingFileLoggerTest extends TestCase
         $this->logfile_name = 'eseye-' . date('Y-m-d') . '.log';
     }
 
-    public function testFileLoggerWritesLogInfo()
+    public function testFileLoggerWritesLog()
     {
-
-        $this->logger->log('foo');
+        $this->logger->log('INFO', 'foo');
         $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
 
         $this->assertStringContainsString('eseye.INFO: foo', $logfile_content);
@@ -60,16 +61,30 @@ class RotatingFileLoggerTest extends TestCase
 
     public function testFileLoggerSkipWritesLogDebugWithoutRequiredLevel()
     {
-
         $this->logger->debug('foo');
         $logfile_content = $this->root->getChild($this->logfile_name);
 
         $this->assertNull($logfile_content);
     }
 
+    public function testFileLoggerWritesLogNotice()
+    {
+        $this->logger->notice('foo');
+        $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
+
+        $this->assertStringContainsString('eseye.NOTICE: foo', $logfile_content);
+    }
+
+    public function testFileLoggerWritesLogInfo()
+    {
+        $this->logger->info('foo');
+        $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
+
+        $this->assertStringContainsString('eseye.INFO: foo', $logfile_content);
+    }
+
     public function testFileLoggerWritesLogDebug()
     {
-
         Configuration::getInstance()->logger_level = 'debug';
 
         // Init a new logger with the updated config
@@ -99,4 +114,27 @@ class RotatingFileLoggerTest extends TestCase
         $this->assertStringContainsString('eseye.ERROR: foo', $logfile_content);
     }
 
+    public function testFileLoggerWritesLogCritical()
+    {
+        $this->logger->critical('foo');
+        $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
+
+        $this->assertStringContainsString('eseye.CRITICAL: foo', $logfile_content);
+    }
+
+    public function testFileLoggerWritesLogAlert()
+    {
+        $this->logger->alert('foo');
+        $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
+
+        $this->assertStringContainsString('eseye.ALERT: foo', $logfile_content);
+    }
+
+    public function testFileLoggerWritesLogEmergency()
+    {
+        $this->logger->emergency('foo');
+        $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
+
+        $this->assertStringContainsString('eseye.EMERGENCY: foo', $logfile_content);
+    }
 }

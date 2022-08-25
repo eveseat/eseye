@@ -20,7 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-use Monolog\Logger;
+namespace Seat\Tests\Log;
+
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Configuration;
@@ -28,14 +29,12 @@ use Seat\Eseye\Log\FileLogger;
 
 class FileLoggerTest extends TestCase
 {
-
     protected $root;
 
-    protected $logger;
+    protected FileLogger $logger;
 
     public function setUp(): void
     {
-
         // Set the file cache path in the config singleton
         $this->root = vfsStream::setup('logs/');
         Configuration::getInstance()->logfile_location = vfsStream::url('logs/');
@@ -43,10 +42,25 @@ class FileLoggerTest extends TestCase
         $this->logger = new FileLogger;
     }
 
+    public function testFileLoggerWritesLog()
+    {
+        $this->logger->log('ERROR', 'foo');
+        $logfile_content = $this->root->getChild('eseye.log')->getContent();
+
+        $this->assertStringContainsString('eseye.ERROR: foo', $logfile_content);
+    }
+
+    public function testFileLoggerWritesLogNotice()
+    {
+        $this->logger->notice('foo');
+        $logfile_content = $this->root->getChild('eseye.log')->getContent();
+
+        $this->assertStringContainsString('eseye.NOTICE: foo', $logfile_content);
+    }
+
     public function testFileLoggerWritesLogInfo()
     {
-
-        $this->logger->log('foo');
+        $this->logger->info('foo');
         $logfile_content = $this->root->getChild('eseye.log')->getContent();
 
         $this->assertStringContainsString('eseye.INFO: foo', $logfile_content);
@@ -54,7 +68,6 @@ class FileLoggerTest extends TestCase
 
     public function testFileLoggerSkipWritesLogDebugWithoutRequiredLevel()
     {
-
         $this->logger->debug('foo');
         $logfile_content = $this->root->getChild('eseye.log');
 
@@ -63,8 +76,7 @@ class FileLoggerTest extends TestCase
 
     public function testFileLoggerWritesLogDebug()
     {
-
-        Configuration::getInstance()->logger_level = 'debug';
+        Configuration::getInstance()->logger_level = 'DEBUG';
 
         // Init a new logger with the updated config
         $logger = new FileLogger;
@@ -77,7 +89,6 @@ class FileLoggerTest extends TestCase
 
     public function testFileLoggerWritesLogWarning()
     {
-
         $this->logger->warning('foo');
         $logfile_content = $this->root->getChild('eseye.log')->getContent();
 
@@ -86,11 +97,33 @@ class FileLoggerTest extends TestCase
 
     public function testFileLoggerWritesLogError()
     {
-
         $this->logger->error('foo');
         $logfile_content = $this->root->getChild('eseye.log')->getContent();
 
         $this->assertStringContainsString('eseye.ERROR: foo', $logfile_content);
     }
 
+    public function testFileLoggerWritesLogCritical()
+    {
+        $this->logger->critical('foo');
+        $logfile_content = $this->root->getChild('eseye.log')->getContent();
+
+        $this->assertStringContainsString('eseye.CRITICAL: foo', $logfile_content);
+    }
+
+    public function testFileLoggerWritesLogAlert()
+    {
+        $this->logger->alert('foo');
+        $logfile_content = $this->root->getChild('eseye.log')->getContent();
+
+        $this->assertStringContainsString('eseye.ALERT: foo', $logfile_content);
+    }
+
+    public function testFileLoggerWritesLogEmergency()
+    {
+        $this->logger->emergency('foo');
+        $logfile_content = $this->root->getChild('eseye.log')->getContent();
+
+        $this->assertStringContainsString('eseye.EMERGENCY: foo', $logfile_content);
+    }
 }

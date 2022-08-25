@@ -20,17 +20,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Cache;
+
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Cache\MemcachedCache;
 use Seat\Eseye\Containers\EsiResponse;
-
+use stdClass;
 
 class MemcachedCacheTest extends TestCase
 {
     /**
      * @var \Seat\Eseye\Containers\EsiResponse
      */
-    protected $esi_response_object;
+    protected EsiResponse $esi_response_object;
 
     public function setUp(): void
     {
