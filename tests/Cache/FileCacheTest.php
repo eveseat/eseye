@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Cache;
+
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Cache\FileCache;
@@ -31,7 +33,7 @@ class FileCacheTest extends TestCase
 
     protected $root;
 
-    protected $file_cache;
+    protected FileCache $file_cache;
 
     public function setUp(): void
     {
@@ -76,7 +78,7 @@ class FileCacheTest extends TestCase
 
         $this->expectException(CachePathException::class);
 
-        if (substr(PHP_OS, 0, 3) == 'WIN')
+        if (str_starts_with(PHP_OS, 'WIN'))
             $invalid_path = '/completely:invalid?path';
         else
             $invalid_path = '/completely/invalid/path';
@@ -103,9 +105,8 @@ class FileCacheTest extends TestCase
     /**
      * @return array
      */
-    public function providerTestFileCacheSafePathValues()
+    public function providerTestFileCacheSafePathValues(): array
     {
-
         return [
             ['A/B/C', 'A/B/C'],
             ['\'A/B/C', 'A/B/C'],

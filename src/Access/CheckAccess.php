@@ -35,7 +35,7 @@ class CheckAccess implements AccessInterface
     /**
      * @var array
      */
-    protected $scope_map = [
+    protected array $scope_map = [
         'get'    => [
 
             // 'meta' URI's. see: https://esi.evetech.net/ui/?version=meta
@@ -262,13 +262,12 @@ class CheckAccess implements AccessInterface
      * @param  string  $method
      * @param  string  $uri
      * @param  array  $scopes
-     * @return bool|mixed
+     * @return bool
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function can(string $method, string $uri, array $scopes): bool
     {
-
         if (! array_key_exists($uri, $this->scope_map[$method])) {
 
             Configuration::getInstance()->getLogger()

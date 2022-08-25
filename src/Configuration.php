@@ -22,47 +22,83 @@
 
 namespace Seat\Eseye;
 
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Log\LoggerInterface;
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Exceptions\InvalidConfigurationException;
-use Seat\Eseye\Log\LogInterface;
 
 /**
  * Class Configuration.
+ *
+ * @property string $sso_scheme
+ * @property string $sso_host
+ * @property int $sso_port
+ * @property string $http_user_agent
+ * @property string $datasource
+ * @property string $esi_scheme
+ * @property string $esi_host
+ * @property int $esi_port
+ * @property string $logger_level
+ * @property string $logfile_location
+ * @property int $log_max_files
+ * @property string $file_cache_location
+ * @property string $redis_cache_location
+ * @property string $redis_cache_prefix
+ * @property string $memcached_cache_host
+ * @property string $memcached_cache_port
+ * @property string $memcached_cache_prefix
+ * @property int $memcached_cache_compressed
+ * @property \Seat\Eseye\Fetchers\FetcherInterface $fetcher
  *
  * @package Seat\Eseye
  */
 class Configuration
 {
+    /**
+     * @var Configuration|null
+     */
+    private static ?Configuration $instance = null;
 
     /**
-     * @var Configuration
+     * @var \Psr\Log\LoggerInterface|string|null
      */
-    private static $instance;
+    protected LoggerInterface|string|null $logger = null;
 
     /**
-     * @var LogInterface
+     * @var CacheInterface|string|null
      */
-    protected $logger;
+    protected CacheInterface|string|null $cache = null;
 
     /**
-     * @var CacheInterface
+     * @var \Psr\Http\Client\ClientInterface|string|null
      */
-    protected $cache;
+    protected ClientInterface|string|null $http_client = null;
+
+    /**
+     * @var \Psr\Http\Message\StreamFactoryInterface|string|null
+     */
+    protected StreamFactoryInterface|string|null $http_stream_factory = null;
+
+    /**
+     * @var \Psr\Http\Message\RequestFactoryInterface|string|null
+     */
+    protected RequestFactoryInterface|string|null $http_request_factory = null;
 
     /**
      * @var EsiConfiguration
      */
-    protected $configuration;
+    protected EsiConfiguration $configuration;
 
     /**
      * Configuration constructor.
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function __construct()
+    private function __construct()
     {
-
         $this->configuration = new EsiConfiguration;
     }
 
@@ -73,8 +109,7 @@ class Configuration
      */
     public static function getInstance(): self
     {
-
-        if (is_null(self::$instance))
+        if (self::$instance === null)
             self::$instance = new self();
 
         return self::$instance;
@@ -83,9 +118,8 @@ class Configuration
     /**
      * @return \Seat\Eseye\Containers\EsiConfiguration
      */
-    public function getConfiguration()
+    public function getConfiguration(): EsiConfiguration
     {
-
         return $this->configuration;
     }
 
@@ -94,9 +128,8 @@ class Configuration
      *
      * @throws \Seat\Eseye\Exceptions\InvalidConfigurationException
      */
-    public function setConfiguration(EsiConfiguration $configuration)
+    public function setConfiguration(EsiConfiguration $configuration): void
     {
-
         if (! $configuration->valid())
             throw new InvalidConfigurationException(
                 'The configuration is empty/invalid values');
@@ -105,11 +138,10 @@ class Configuration
     }
 
     /**
-     * @return \Seat\Eseye\Log\LogInterface
+     * @return \Psr\Log\LoggerInterface
      */
-    public function getLogger(): LogInterface
+    public function getLogger(): LoggerInterface
     {
-
         if (! $this->logger)
             $this->logger = new $this->configuration->logger;
 
@@ -121,7 +153,6 @@ class Configuration
      */
     public function getCache(): CacheInterface
     {
-
         if (! $this->cache)
             $this->cache = new $this->configuration->cache;
 
@@ -129,15 +160,47 @@ class Configuration
     }
 
     /**
+     * @return \Psr\Http\Client\ClientInterface
+     */
+    public function getHttpClient(): ClientInterface
+    {
+        if (! $this->http_client)
+            $this->http_client = new $this->configuration->http_client;
+
+        return $this->http_client;
+    }
+
+    /**
+     * @return \Psr\Http\Message\StreamFactoryInterface
+     */
+    public function getHttpStreamFactory(): StreamFactoryInterface
+    {
+        if (! $this->http_stream_factory)
+            $this->http_stream_factory = new $this->configuration->http_stream_factory;
+
+        return $this->http_stream_factory;
+    }
+
+    /**
+     * @return \Psr\Http\Message\RequestFactoryInterface
+     */
+    public function getHttpRequestFactory(): RequestFactoryInterface
+    {
+        if (! $this->http_request_factory)
+            $this->http_request_factory = new $this->configuration->http_request_factory;
+
+        return $this->http_request_factory;
+    }
+
+    /**
      * Magic method to get the configuration from the configuration
      * property.
      *
-     * @param $name
+     * @param  string  $name
      * @return mixed
      */
     public function __get(string $name)
     {
-
         return $this->configuration->$name;
     }
 
@@ -148,7 +211,6 @@ class Configuration
      */
     public function __set(string $name, string $value)
     {
-
         return $this->configuration->$name = $value;
     }
 }

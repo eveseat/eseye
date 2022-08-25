@@ -37,7 +37,7 @@ class AzpChecker implements ClaimChecker
     /**
      * @var string
      */
-    private $client_id;
+    private string $client_id;
 
     /**
      * AzpChecker constructor.

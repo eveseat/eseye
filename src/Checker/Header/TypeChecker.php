@@ -37,12 +37,12 @@ final class TypeChecker implements HeaderChecker
     /**
      * @var bool
      */
-    private $protected_header = true;
+    private bool $protected_header;
 
     /**
      * @var string[]
      */
-    private $supported_types;
+    private array $supported_types;
 
     /**
      * TypeChecker constructor.

@@ -23,6 +23,8 @@
 namespace Seat\Eseye;
 
 use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
+use Psr\Log\LoggerInterface;
 use Seat\Eseye\Access\AccessInterface;
 use Seat\Eseye\Access\CheckAccess;
 use Seat\Eseye\Cache\CacheInterface;
@@ -33,7 +35,6 @@ use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
 use Seat\Eseye\Exceptions\UriDataMissingException;
 use Seat\Eseye\Fetchers\FetcherInterface;
-use Seat\Eseye\Log\LogInterface;
 
 /**
  * Class Eseye.
@@ -46,64 +47,63 @@ class Eseye
     /**
      * The Eseye Version.
      */
-    const VERSION = '2.4.0';
+    const VERSION = '3.0.0';
 
     /**
-     * @var \Seat\Eseye\Containers\EsiAuthentication
+     * @var \Seat\Eseye\Containers\EsiAuthentication|null
      */
-    protected $authentication;
+    protected ?EsiAuthentication $authentication = null;
 
     /**
-     * @var
+     * @var \Seat\Eseye\Fetchers\FetcherInterface|null
      */
-    protected $fetcher;
+    protected ?FetcherInterface $fetcher = null;
 
     /**
-     * @var
+     * @var \Seat\Eseye\Cache\CacheInterface|null
      */
-    protected $cache;
+    protected ?CacheInterface $cache = null;
 
     /**
-     * @var \Seat\Eseye\Log\LogInterface
+     * @var \Psr\Log\LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
-     * @var
+     * @var \Seat\Eseye\Access\AccessInterface|null
      */
-    protected $access_checker;
-
-    /**
-     * @var array
-     */
-    protected $query_string = [];
+    protected ?AccessInterface $access_checker = null;
 
     /**
      * @var array
      */
-    protected $request_body = [];
+    protected array $query_string = [];
+
+    /**
+     * @var array
+     */
+    protected array $request_body = [];
 
     /**
      * @var string
      */
-    protected $version = '/latest';
+    protected string $version = '/latest';
 
     /**
      * HTTP verbs that could have their responses cached.
      *
      * @var array
      */
-    protected $cachable_verb = ['get'];
+    protected array $cachable_verb = ['get'];
 
     /**
      * Eseye constructor.
      *
-     * @param  \Seat\Eseye\Containers\EsiAuthentication  $authentication
+     * @param  \Seat\Eseye\Containers\EsiAuthentication|null  $authentication
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function __construct(
-        EsiAuthentication $authentication = null)
+    public function __construct(EsiAuthentication $authentication = null)
     {
 
         if (! is_null($authentication))
@@ -116,11 +116,11 @@ class Eseye
     }
 
     /**
-     * @return \Seat\Eseye\Log\LogInterface
+     * @return \Psr\Log\LoggerInterface
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function getLogger(): LogInterface
+    public function getLogger(): LoggerInterface
     {
 
         return $this->getConfiguration()->getLogger();
@@ -133,7 +133,6 @@ class Eseye
      */
     public function getConfiguration(): Configuration
     {
-
         return Configuration::getInstance();
     }
 
@@ -191,7 +190,7 @@ class Eseye
     /**
      * @param  \Seat\Eseye\Fetchers\FetcherInterface  $fetcher
      */
-    public function setFetcher(FetcherInterface $fetcher)
+    public function setFetcher(FetcherInterface $fetcher): void
     {
 
         $this->fetcher = $fetcher;
@@ -304,9 +303,9 @@ class Eseye
     }
 
     /**
-     * @return \Seat\Eseye\Access\CheckAccess
+     * @return \Seat\Eseye\Access\AccessInterface
      */
-    public function getAccessChecker()
+    public function getAccessChecker(): AccessInterface
     {
 
         if (! $this->access_checker)
@@ -334,28 +333,24 @@ class Eseye
      */
     private function getFetcher(): FetcherInterface
     {
-
         if (! $this->fetcher) {
-
             $fetcher_class = $this->getConfiguration()->fetcher;
             $this->fetcher = new $fetcher_class(...[$this->authentication]);
-
         }
 
         return $this->fetcher;
     }
 
     /**
-     * @param  string  $uri
+     * @param  string  $endpoint
      * @param  array  $data
      * @return \Psr\Http\Message\UriInterface
      *
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function buildDataUri(string $uri, array $data): Uri
+    public function buildDataUri(string $endpoint, array $data): UriInterface
     {
-
         // Create a query string for the URI. We automatically
         // include the datasource value from the configuration.
         $query_params = array_merge([
@@ -366,8 +361,7 @@ class Eseye
             'scheme' => $this->getConfiguration()->esi_scheme,
             'host'   => $this->getConfiguration()->esi_host,
             'port'   => $this->getConfiguration()->esi_port,
-            'path'   => rtrim($this->getVersion(), '/') .
-                $this->mapDataToUri($uri, $data),
+            'path'   => rtrim($this->getVersion(), '/') . $this->mapDataToUri($endpoint, $data),
             'query'  => http_build_query($query_params),
         ]);
     }
@@ -416,10 +410,10 @@ class Eseye
      * @param  string  $version
      * @return \Seat\Eseye\Eseye
      */
-    public function setVersion(string $version)
+    public function setVersion(string $version): Eseye
     {
 
-        if (substr($version, 0, 1) !== '/')
+        if (! str_starts_with($version, '/'))
             $version = '/' . $version;
 
         $this->version = $version;
@@ -481,7 +475,7 @@ class Eseye
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function rawFetch(string $method, string $uri, array $body, array $headers = [])
+    public function rawFetch(string $method, string $uri, array $body, array $headers = []): EsiResponse
     {
 
         return $this->getFetcher()->call($method, $uri, $body, $headers);

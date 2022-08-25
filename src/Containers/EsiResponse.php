@@ -36,52 +36,47 @@ class EsiResponse extends ArrayObject
     /**
      * @var string
      */
-    public $raw;
+    public string $raw;
 
     /**
      * @var array
      */
-    public $headers;
+    public array $headers;
 
     /**
      * @var array
      */
-    public $raw_headers;
+    public array $raw_headers;
 
     /**
      * @var int
      */
-    public $error_limit;
+    public int $error_limit;
 
     /**
      * @var int
      */
-    public $pages;
-
-    /**
-     * @var array
-     */
-    protected $expires_at;
+    public int $pages;
 
     /**
      * @var string
      */
-    protected $response_code;
+    protected string $expires_at;
 
     /**
-     * @var mixed
+     * @var string
      */
-    protected $error_message;
+    protected string $response_code;
 
     /**
-     * @var mixed
+     * @var string|null
      */
-    protected $optional_return;
+    protected ?string $error_message = null;
 
     /**
      * @var bool
      */
-    protected $cached_load = false;
+    protected bool $cached_load = false;
 
     /**
      * EsiResponse constructor.
@@ -91,10 +86,8 @@ class EsiResponse extends ArrayObject
      * @param  string  $expires
      * @param  int  $response_code
      */
-    public function __construct(
-        string $data, array $headers, string $expires, int $response_code)
+    public function __construct(string $data, array $headers, string $expires, int $response_code)
     {
-
         // set the raw data to the raw property
         $this->raw = $data;
 
@@ -136,7 +129,6 @@ class EsiResponse extends ArrayObject
      */
     private function parseHeaders(array $headers)
     {
-
         // Set the raw headers as we got from the constructor.
         $this->raw_headers = $headers;
 
@@ -169,9 +161,8 @@ class EsiResponse extends ArrayObject
      * @param  string  $index
      * @return mixed
      */
-    public function optional(string $index)
+    public function optional(string $index): mixed
     {
-
         if (! $this->offsetExists($index))
             return null;
 
@@ -192,7 +183,6 @@ class EsiResponse extends ArrayObject
      */
     public function expired(): bool
     {
-
         if ($this->expires()->lte(
             carbon()->now($this->expires()->timezoneName))
         )
@@ -206,16 +196,14 @@ class EsiResponse extends ArrayObject
      */
     public function expires(): Carbon
     {
-
         return carbon($this->expires_at);
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function error()
+    public function error(): ?string
     {
-
         return $this->error_message;
     }
 
@@ -224,7 +212,6 @@ class EsiResponse extends ArrayObject
      */
     public function getErrorCode(): int
     {
-
         return $this->response_code;
     }
 
@@ -233,7 +220,6 @@ class EsiResponse extends ArrayObject
      */
     public function setIsCachedLoad(): bool
     {
-
         return $this->cached_load = true;
     }
 
@@ -242,7 +228,6 @@ class EsiResponse extends ArrayObject
      */
     public function isCachedLoad(): bool
     {
-
         return $this->cached_load;
     }
 
@@ -250,9 +235,9 @@ class EsiResponse extends ArrayObject
      * @param  string  $name
      * @return bool
      */
-    public function hasHeader(string $name)
+    public function hasHeader(string $name): bool
     {
-        // turn headers into case insensitive array
+        // turn headers into case-insensitive array
         $key_map = array_change_key_case($this->headers, CASE_LOWER);
 
         // track for the requested header name
@@ -263,12 +248,12 @@ class EsiResponse extends ArrayObject
      * @param  string  $name
      * @return mixed|null
      */
-    public function getHeader(string $name)
+    public function getHeader(string $name): mixed
     {
-        // turn header name into case insensitive
+        // turn header name into case-insensitive
         $insensitive_key = strtolower($name);
 
-        // turn headers into case insensitive array
+        // turn headers into case-insensitive array
         $key_map = array_change_key_case($this->headers, CASE_LOWER);
 
         // track for the requested header name and return its value if exists
@@ -283,7 +268,7 @@ class EsiResponse extends ArrayObject
      */
     public function setExpires(Carbon $date)
     {
-        // turn headers into case insensitive array
+        // turn headers into case-insensitive array
         $key_map = array_change_key_case($this->headers, CASE_LOWER);
 
         // update expires header with provided date

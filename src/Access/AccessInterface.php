@@ -33,7 +33,7 @@ interface AccessInterface
      * @param  string  $method
      * @param  string  $uri
      * @param  array  $scopes
-     * @return bool|mixed
+     * @return bool
      */
     public function can(string $method, string $uri, array $scopes): bool;
 }

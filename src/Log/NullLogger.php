@@ -22,46 +22,95 @@
 
 namespace Seat\Eseye\Log;
 
+use Psr\Log\LoggerInterface;
+use Stringable;
+
 /**
  * Class NullLogger.
  *
  * @package Seat\Eseye\Log
  */
-class NullLogger implements LogInterface
+class NullLogger implements LoggerInterface
 {
     /**
-     * @param  string  $message
-     * @return mixed
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
      */
-    public function log(string $message)
+    public function emergency(Stringable|string $message, array $context = []): void
     {
-
     }
 
     /**
-     * @param  string  $message
-     * @return mixed
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
      */
-    public function debug(string $message)
+    public function alert(Stringable|string $message, array $context = []): void
     {
-
     }
 
     /**
-     * @param  string  $message
-     * @return mixed
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
      */
-    public function warning(string $message)
+    public function critical(Stringable|string $message, array $context = []): void
     {
-
     }
 
     /**
-     * @param  string  $message
-     * @return mixed
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
      */
-    public function error(string $message)
+    public function error(Stringable|string $message, array $context = []): void
     {
+    }
 
+    /**
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function warning(Stringable|string $message, array $context = []): void
+    {
+    }
+
+    /**
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function notice(Stringable|string $message, array $context = []): void
+    {
+    }
+
+    /**
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function info(Stringable|string $message, array $context = []): void
+    {
+    }
+
+    /**
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function debug(Stringable|string $message, array $context = []): void
+    {
+    }
+
+    /**
+     * @param $level
+     * @param  string|\Stringable  $message
+     * @param  array  $context
+     * @return void
+     */
+    public function log($level, Stringable|string $message, array $context = []): void
+    {
     }
 }

@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Containers;
+
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
@@ -27,7 +29,7 @@ use Seat\Eseye\Exceptions\InvalidContainerDataException;
 class EsiAuthenticationTest extends TestCase
 {
 
-    protected $esi_authentication;
+    protected EsiAuthentication $esi_authentication;
 
     public function setUp(): void
     {
@@ -99,11 +101,11 @@ class EsiAuthenticationTest extends TestCase
     }
 
     /**
-     * @param $key The key to check for existence
+     * @param string $key The key to check for existence
      *
      * @dataProvider providerTestRequiredKeysExists
      */
-    public function testRequiredKeysExists($key)
+    public function testRequiredKeysExists(string $key)
     {
 
         $authentication = new EsiAuthentication;
@@ -115,9 +117,8 @@ class EsiAuthenticationTest extends TestCase
      *
      * @return array
      */
-    public function providerTestRequiredKeysExists()
+    public function providerTestRequiredKeysExists(): array
     {
-
         return [
             ['client_id'],
             ['secret'],
@@ -130,7 +131,6 @@ class EsiAuthenticationTest extends TestCase
 
     public function testEsiAuthenticationContainerSetRefreshToken()
     {
-
         $authentication = new EsiAuthentication;
         $authentication->setRefreshToken('REFRESH_TOKEN');
 

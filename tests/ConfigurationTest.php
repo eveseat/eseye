@@ -20,12 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests;
+
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;
-use Seat\Eseye\Log\LogInterface;
 
 class ConfigurationTest extends TestCase
 {
@@ -81,7 +83,7 @@ class ConfigurationTest extends TestCase
     {
 
         $logger = Configuration::getInstance()->getLogger();
-        $this->assertInstanceOf(LogInterface::class, $logger);
+        $this->assertInstanceOf(LoggerInterface::class, $logger);
     }
 
     public function testConfigurationGetsCache()

@@ -37,22 +37,22 @@ class MemcachedCache implements CacheInterface
     /**
      * @var mixed
      */
-    protected $prefix;
+    protected mixed $prefix;
 
     /**
      * @var bool
      */
-    protected $is_memcached;
+    protected bool $is_memcached;
 
     /**
-     * @var \Memcache
+     * @var \Memcache|\Memcached|null
      */
-    protected $memcached;
+    protected mixed $memcached = null;
 
     /**
      * @var int
      */
-    protected $flags;
+    protected int $flags = 0;
 
     /**
      * MemcachedCache constructor.
@@ -63,7 +63,6 @@ class MemcachedCache implements CacheInterface
      */
     public function __construct($instance = null)
     {
-
         if ($instance != null)
             $this->memcached = $instance;
 
@@ -94,9 +93,8 @@ class MemcachedCache implements CacheInterface
      * @param  \Seat\Eseye\Containers\EsiResponse  $data
      * @return void
      */
-    public function set(string $uri, string $query, EsiResponse $data)
+    public function set(string $uri, string $query, EsiResponse $data): void
     {
-
         if ($this->is_memcached)
             $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), 0);
         else
@@ -122,7 +120,7 @@ class MemcachedCache implements CacheInterface
      * @param  string  $query
      * @return \Seat\Eseye\Containers\EsiResponse|bool
      */
-    public function get(string $uri, string $query = '')
+    public function get(string $uri, string $query = ''): EsiResponse|bool
     {
 
         $value = $this->memcached->get($this->buildCacheKey($uri, $query));
@@ -144,9 +142,9 @@ class MemcachedCache implements CacheInterface
     /**
      * @param  string  $uri
      * @param  string  $query
-     * @return mixed
+     * @return bool
      */
-    public function forget(string $uri, string $query = '')
+    public function forget(string $uri, string $query = ''): bool
     {
 
         return $this->memcached->delete($this->buildCacheKey($uri, $query));
@@ -155,7 +153,7 @@ class MemcachedCache implements CacheInterface
     /**
      * @param  string  $uri
      * @param  string  $query
-     * @return bool|mixed
+     * @return bool
      */
     public function has(string $uri, string $query = ''): bool
     {

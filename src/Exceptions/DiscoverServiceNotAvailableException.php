@@ -20,36 +20,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Seat\Eseye\Log;
+namespace Seat\Eseye\Exceptions;
 
-/**
- * Interface LogInterface.
- *
- * @package Seat\Eseye\Log
- */
-interface LogInterface
+use Exception;
+use Throwable;
+
+class DiscoverServiceNotAvailableException extends Exception
 {
-    /**
-     * @param  string  $message
-     * @return mixed
-     */
-    public function log(string $message);
-
-    /**
-     * @param  string  $message
-     * @return mixed
-     */
-    public function debug(string $message);
-
-    /**
-     * @param  string  $message
-     * @return mixed
-     */
-    public function warning(string $message);
-
-    /**
-     * @param  string  $message
-     * @return mixed
-     */
-    public function error(string $message);
+    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
+    }
 }

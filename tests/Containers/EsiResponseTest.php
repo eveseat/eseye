@@ -20,15 +20,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Containers;
+
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Containers\EsiResponse;
 
 class EsiResponseTest extends TestCase
 {
 
-    protected $esi_response;
+    protected EsiResponse $esi_response;
 
-    protected $headers;
+    protected array $headers;
 
     public function setUp(): void
     {

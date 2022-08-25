@@ -36,37 +36,28 @@ class RequestFailedException extends Exception
     /**
      * @var \Seat\Eseye\Containers\EsiResponse
      */
-    private $esi_response;
-
-    /**
-     * @var \Exception
-     */
-    private $original_exception;
+    private EsiResponse $esi_response;
 
     /**
      * RequestFailedException constructor.
      *
-     * @param  \Exception  $exception
      * @param  \Seat\Eseye\Containers\EsiResponse  $esi_response
      */
-    public function __construct(Exception $exception, EsiResponse $esi_response)
+    public function __construct(EsiResponse $esi_response)
     {
 
         $this->esi_response = $esi_response;
-        $this->original_exception = $exception;
 
         // Finish constructing the exception
         parent::__construct(
             $this->getError(),
-            $this->getEsiResponse()->getErrorCode(),
-            $exception->getPrevious()
-        );
+            $this->getEsiResponse()->getErrorCode());
     }
 
     /**
      * @return null|string
      */
-    public function getError()
+    public function getError(): string|null
     {
 
         return $this->getEsiResponse()->error();
@@ -79,14 +70,5 @@ class RequestFailedException extends Exception
     {
 
         return $this->esi_response;
-    }
-
-    /**
-     * @return \Exception
-     */
-    public function getOriginalException(): Exception
-    {
-
-        return $this->original_exception;
     }
 }

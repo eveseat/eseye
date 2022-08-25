@@ -20,57 +20,62 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Seat\Tests\Fetchers;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
 use Jose\Component\Core\JWK;
 use Jose\Easy\Build;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
+use ReflectionClass;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
-use Seat\Eseye\Fetchers\GuzzleFetcher;
+use Seat\Eseye\Fetchers\Fetcher;
 use Seat\Eseye\Log\NullLogger;
 
-class GuzzleFetcherTest extends TestCase
+class FetcherTest extends TestCase
 {
 
     /**
-     * @var GuzzleFetcher
+     * @var Fetcher
      */
-    protected $fetcher;
+    protected Fetcher $fetcher;
 
     public function setUp(): void
     {
-
         // Remove logging
         $configuration = Configuration::getInstance();
         $configuration->logger = NullLogger::class;
 
-        $this->fetcher = new GuzzleFetcher;
+        // Setup HTTP client
+        $configuration->http_client = Client::class;
+        $configuration->http_stream_factory = HttpFactory::class;
+        $configuration->http_request_factory = HttpFactory::class;
+
+        $this->fetcher = new Fetcher;
     }
 
     public function testGuzzleFetcherInstantiation()
     {
-
-        $this->assertInstanceOf(GuzzleFetcher::class, $this->fetcher);
+        $this->assertInstanceOf(Fetcher::class, $this->fetcher);
     }
 
     public function testGuzzleGetsClientIfNoneSet()
     {
+        $client = $this->fetcher->getClient();
 
-        $fetcher = new GuzzleFetcher;
-        $client = $fetcher->getClient();
-
-        $this->assertInstanceOf(Client::class, $client);
+        $this->assertInstanceOf(ClientInterface::class, $client);
     }
 
     public function testGuzzleFetcherStripRefreshTokenFromUrl()
     {
-
         $url = 'https://esi.url/oauth?type=refresh_token&refresh_token=foo';
         $stripped = $this->fetcher->stripRefreshTokenValue($url);
 
@@ -79,7 +84,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleFetcherStripRefreshTokenFromUrlWithoutRefreshToken()
     {
-
         $url = 'https://esi.url/type=refresh_token';
         $stripped = $this->fetcher->stripRefreshTokenValue($url);
 
@@ -88,7 +92,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleFetcherStripRefreshTokenNoTokenMention()
     {
-
         $url = 'https://esi.url/foo=bar';
         $stripped = $this->fetcher->stripRefreshTokenValue($url);
 
@@ -97,7 +100,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleFetcherMakeEsiResponseContainer()
     {
-
         $response = json_encode(['response' => 'ok']);
 
         $container = $this->fetcher->makeEsiResponse($response, [], 'now', 200);
@@ -107,7 +109,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleFetcherGetAuthenticationWhenNoneSet()
     {
-
         $authentication = $this->fetcher->getAuthentication();
 
         $this->assertNull($authentication);
@@ -115,8 +116,7 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleFetcherGetAuthenticationWhenSettingAuthentication()
     {
-
-        $fetcher = new GuzzleFetcher(new EsiAuthentication([
+        $fetcher = new Fetcher(new EsiAuthentication([
             'client_id' => 'foo',
         ]));
 
@@ -125,7 +125,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleSetsAuthentication()
     {
-
         $this->fetcher->setAuthentication(new EsiAuthentication([
             'client_id'     => 'foo',
             'secret'        => 'bar',
@@ -140,7 +139,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleFailsSettingInvalidAuthentication()
     {
-
         $this->expectException(InvalidAuthenticationException::class);
 
         $this->fetcher->setAuthentication(new EsiAuthentication([
@@ -150,11 +148,10 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleShouldFailGettingTokenWithoutAuthentication()
     {
-
         $this->expectException(InvalidAuthenticationException::class);
 
         $get_token = self::getMethod('getToken');
-        $get_token->invokeArgs(new GuzzleFetcher, []);
+        $get_token->invokeArgs(new Fetcher, []);
     }
 
     /**
@@ -166,8 +163,7 @@ class GuzzleFetcherTest extends TestCase
      */
     protected static function getMethod($name)
     {
-
-        $class = new ReflectionClass('Seat\Eseye\Fetchers\GuzzleFetcher');
+        $class = new ReflectionClass(Fetcher::class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
 
@@ -176,15 +172,13 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleFetcherGetPublicScopeWithoutAuthentication()
     {
-
         $scopes = $this->fetcher->getAuthenticationScopes();
 
-        $this->assertEquals(1, count($scopes));
+        $this->assertCount(1, $scopes);
     }
 
     public function testGuzzleCallingWithoutAuthentication()
     {
-
         $mock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode(['foo' => 'var'])),
         ]);
@@ -201,7 +195,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleCallingWithAuthentication()
     {
-
         // init a JWK set
         $jwk = $this->getJwkSet();
 
@@ -253,7 +246,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleCallingCatchesRequestAuthenticationFailure()
     {
-
         $this->expectException(RequestFailedException::class);
 
         $mock = new MockHandler([
@@ -270,7 +262,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleFetcherMakesHttpRequest()
     {
-
         $mock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode(['foo' => 'var'])),
         ]);
@@ -288,7 +279,6 @@ class GuzzleFetcherTest extends TestCase
 
     public function testGuzzleConstructsWithClientAndGetsAuthenticationScopes()
     {
-
         // init a JWK Set
         $jwk = $this->getJwkSet();
 
@@ -323,7 +313,7 @@ class GuzzleFetcherTest extends TestCase
             'token_expires' => '1970-01-01 00:00:00',
         ]);
 
-        $fetcher = new GuzzleFetcher($authentication);
+        $fetcher = new Fetcher($authentication);
         $fetcher->setClient($client);
 
         $scopes = $fetcher->getAuthenticationScopes();
@@ -334,7 +324,7 @@ class GuzzleFetcherTest extends TestCase
     /**
      * @return \Jose\Component\Core\JWK
      */
-    private function getJwkSet()
+    private function getJwkSet(): JWK
     {
         return new JWK([
             "p"   => "1UQV33bi2J-WJ9529sOTuXiAGCh_lcUAgRHayLbBSElC9O_kA8g2ipC0Qu58tpKdKjq2dD7_SfbESqEI0AJD7oMfP1i-Ispn31vjIb7fmnlddF2qflc9SEkWkrZPCntusTzIraxBDUwIlmdOdAI24xHHpGe-DISE4R1LYrQS0m0",
