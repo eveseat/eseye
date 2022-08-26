@@ -49,14 +49,14 @@ class EsiResponse extends ArrayObject
     public array $raw_headers;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public int $error_limit;
+    public ?int $error_limit = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public int $pages;
+    public ?int $pages = null;
 
     /**
      * @var string
