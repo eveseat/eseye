@@ -64,9 +64,9 @@ class MemcachedCacheTest extends TestCase
         // Set the cache
         $cache = new MemcachedCache($instance);
 
-        $cache->set('/foo', 'foo=bar', $this->esi_response_object);
+        $cache->set('/foo?foo=bar', $this->esi_response_object);
 
-        $this->assertEquals($this->esi_response_object, $cache->get('/foo', 'foo=bar'));
+        $this->assertEquals($this->esi_response_object, $cache->get('/foo?foo=bar'));
     }
 
     public function testMemcachedCacheForgetsKey()
@@ -80,8 +80,8 @@ class MemcachedCacheTest extends TestCase
         // Set the cache
         $cache = new MemcachedCache($instance);
 
-        $cache->forget('/foo', 'foo=bar');
+        $this->assertTrue($cache->delete('/foo?foo=bar'));
 
-        $this->assertFalse($cache->get('/foo', 'foo=bar'));
+        $this->assertNull($cache->get('/foo?foo=bar'));
     }
 }

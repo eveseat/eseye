@@ -26,6 +26,7 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Cache\FileCache;
 use Seat\Eseye\Configuration;
+use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\CachePathException;
 
 class FileCacheTest extends TestCase
@@ -49,6 +50,13 @@ class FileCacheTest extends TestCase
     {
 
         $this->assertInstanceOf(FileCache::class, new FileCache);
+    }
+
+    public function testFileCacheCanRetrievePath()
+    {
+        $result = $this->file_cache->getCachePath();
+
+        $this->assertEquals(Configuration::getInstance()->file_cache_location, $result);
     }
 
     public function testFileCacheCheckCacheDirectory()
@@ -86,6 +94,111 @@ class FileCacheTest extends TestCase
         Configuration::getInstance()
             ->file_cache_location = $invalid_path;
         new FileCache();
+    }
+
+    public function testFileCacheCheckEntryDoesNotExist()
+    {
+        $result = $this->file_cache->has('https://example.tld');
+
+        $this->assertFalse($result);
+    }
+
+    public function testFileCacheCheckEntryExists()
+    {
+        $response = new EsiResponse('', [], carbon()->addMinute(), 200);
+        $this->file_cache->set('https://example.tld', $response);
+
+        $result = $this->file_cache->has('https://example.tld');
+
+        $this->assertTrue($result);
+    }
+
+    public function testFileCacheCanStoreMultipleEntries()
+    {
+        $responses = [
+            'https://example.tld/foo' => new EsiResponse('', [], carbon()->addMinute(), 200),
+            'https://example.tld/bar' => new EsiResponse('', [], carbon()->addMinute(), 200),
+        ];
+
+        $result = $this->file_cache->setMultiple($responses);
+
+        $this->assertTrue($result);
+    }
+
+    public function testFileCacheCanRetrieveMultipleEntries()
+    {
+        $responses = [
+            '/foo' => new EsiResponse('', [], carbon()->addMinute(), 200),
+            '/bar' => new EsiResponse('', [], carbon()->addMinute(), 200),
+        ];
+
+        $this->file_cache->setMultiple($responses);
+
+        $result = $this->file_cache->getMultiple(array_keys($responses));
+
+        foreach ($result as $response) {
+            $this->assertNotNull($response);
+        }
+    }
+
+    public function testFileCacheCanDeleteEntry()
+    {
+        $response = new EsiResponse('', [], carbon()->addMinute(), 200);
+
+        $this->file_cache->set('/foo', $response);
+
+        $result = $this->file_cache->delete('/foo');
+
+        $this->assertTrue($result);
+    }
+
+    public function testFileCacheCannotDeleteEntry()
+    {
+        $result = $this->file_cache->delete('/dummy');
+
+        $this->assertFalse($result);
+    }
+
+    public function testFileCacheCanDeleteMultipleEntries()
+    {
+        $responses = [
+            '/foo' => new EsiResponse('', [], carbon()->addMinute(), 200),
+            '/bar' => new EsiResponse('', [], carbon()->addMinute(), 200),
+        ];
+
+        $this->file_cache->setMultiple($responses);
+
+        $result = $this->file_cache->deleteMultiple(array_keys($responses));
+
+        $this->assertTrue($result);
+    }
+
+    public function testFileCacheCannotDeleteMultipleEntries()
+    {
+        $responses = [
+            '/foo' => new EsiResponse('', [], carbon()->addMinute(), 200),
+            '/bar' => new EsiResponse('', [], carbon()->addMinute(), 200),
+        ];
+
+        $this->file_cache->set('/foo', $responses['/foo']);
+
+        $result = $this->file_cache->deleteMultiple(array_keys($responses));
+
+        $this->assertFalse($result);
+    }
+
+    public function testFileCacheCanClearStorage()
+    {
+        $responses = [
+            '/foo' => new EsiResponse('', [], carbon()->addMinute(), 200),
+            '/bar' => new EsiResponse('', [], carbon()->addMinute(), 200),
+        ];
+
+        $this->file_cache->setMultiple($responses);
+
+        $result = $this->file_cache->clear();
+
+        $this->assertTrue($result);
     }
 
     /**

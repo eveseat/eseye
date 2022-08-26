@@ -72,17 +72,17 @@ class RedisCacheTest extends TestCase
     public function testRedisCacheSetsKey()
     {
 
-        $this->redis_cache->set('/foo', 'foo=bar', $this->esi_response_object);
+        $this->redis_cache->set('/foo?foo=bar', $this->esi_response_object);
 
-        $this->assertEquals($this->esi_response_object, $this->redis_cache->get('/foo', 'foo=bar'));
+        $this->assertEquals($this->esi_response_object, $this->redis_cache->get('/foo?foo=bar'));
     }
 
     public function testRedisCacheForgetsKey()
     {
 
-        $this->redis_cache->forget('/foo', 'foo=bar');
+        $this->redis_cache->delete('/foo?foo=bar');
 
-        $this->assertFalse($this->redis_cache->has('/foo', 'foo=bar'));
+        $this->assertFalse($this->redis_cache->has('/foo?foo=bar'));
     }
 
 }

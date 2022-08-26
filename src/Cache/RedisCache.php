@@ -22,7 +22,10 @@
 
 namespace Seat\Eseye\Cache;
 
+use DateInterval;
+use InvalidArgumentException;
 use Predis\Client;
+use Psr\SimpleCache\CacheInterface;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
 
@@ -33,7 +36,7 @@ use Seat\Eseye\Containers\EsiResponse;
  */
 class RedisCache implements CacheInterface
 {
-    use HashesStrings;
+    use CommonOperations, HashesStrings, ValidateCacheEntry;
 
     /**
      * @var \Predis\Client
@@ -66,19 +69,89 @@ class RedisCache implements CacheInterface
     }
 
     /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @param  \Seat\Eseye\Containers\EsiResponse  $data
-     * @return void
+     * @param  string  $key
+     * @param  \Seat\Eseye\Containers\EsiResponse  $value
+     * @param  int|\DateInterval|null  $ttl
+     *
+     * @return bool
      */
-    public function set(string $uri, string $query, EsiResponse $data): void
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
     {
-        $this->redis->set($this->buildCacheKey($uri, $query), serialize($data));
+        if (! $value instanceof EsiResponse)
+            throw new InvalidArgumentException('An EsiResponse object was expected as cache value.');
+
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+
+        $this->redis->set($this->buildCacheKey($uri_path, $uri_query), serialize($value));
+
+        return true;
+    }
+
+    /**
+     * @param  string  $key
+     * @param  mixed|null  $default
+     *
+     * @return \Seat\Eseye\Containers\EsiResponse
+     */
+    public function get(string $key, mixed $default = null): mixed
+    {
+        if (! $this->has($key))
+            return $default;
+
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+
+        $data = unserialize($this->redis->get($this->buildCacheKey($uri_path, $uri_query)));
+
+        if ($data === false)
+            return $default;
+
+        // If the cached entry is expired and does not have any ETag, remove it.
+        if ($data->expired() && ! $data->hasHeader('ETag')) {
+
+            $this->delete($key);
+
+            return $default;
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param  string  $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+
+        return $this->redis->exists($this->buildCacheKey($uri_path, $uri_query));
+    }
+
+    /**
+     * @param  string  $key
+     *
+     * @return bool
+     */
+    public function delete(string $key): bool
+    {
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+
+        return $this->redis->del([$this->buildCacheKey($uri_path, $uri_query)]) !== 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function clear(): bool
+    {
+        return false;
     }
 
     /**
      * @param  string  $uri
      * @param  string  $query
+     *
      * @return string
      */
     public function buildCacheKey(string $uri, string $query = ''): string
@@ -87,49 +160,5 @@ class RedisCache implements CacheInterface
             $query = $this->hashString($query);
 
         return $this->hashString($uri . $query);
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return \Seat\Eseye\Containers\EsiResponse|bool
-     */
-    public function get(string $uri, string $query = ''): EsiResponse|bool
-    {
-        if (! $this->has($uri, $query))
-            return false;
-
-        $data = unserialize($this->redis
-            ->get($this->buildCacheKey($uri, $query)));
-
-        // If the cached entry is expired and does not have any ETag, remove it.
-        if ($data->expired() && ! $data->hasHeader('ETag')) {
-
-            $this->forget($uri, $query);
-
-            return false;
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return bool
-     */
-    public function has(string $uri, string $query = ''): bool
-    {
-        return $this->redis->exists($this->buildCacheKey($uri, $query));
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return bool
-     */
-    public function forget(string $uri, string $query = ''): bool
-    {
-        return $this->redis->del([$this->buildCacheKey($uri, $query)]) !== 0;
     }
 }

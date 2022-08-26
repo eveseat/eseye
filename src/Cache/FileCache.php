@@ -22,8 +22,9 @@
 
 namespace Seat\Eseye\Cache;
 
+use DateInterval;
+use Psr\SimpleCache\CacheInterface;
 use Seat\Eseye\Configuration;
-use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\CachePathException;
 
 /**
@@ -34,7 +35,7 @@ use Seat\Eseye\Exceptions\CachePathException;
 class FileCache implements CacheInterface
 {
 
-    use HashesStrings;
+    use CommonOperations, HashesStrings, ValidateCacheEntry;
 
     /**
      * @var string
@@ -54,7 +55,6 @@ class FileCache implements CacheInterface
      */
     public function __construct()
     {
-
         $this->cache_path = Configuration::getInstance()->file_cache_location;
 
         // Ensure the cache directory is OK
@@ -68,7 +68,6 @@ class FileCache implements CacheInterface
      */
     public function checkCacheDirectory(): bool
     {
-
         // Ensure the cache path exists
         if (! is_dir($this->cache_path) &&
             ! @mkdir($this->cache_path, 0775, true)
@@ -95,37 +94,126 @@ class FileCache implements CacheInterface
      */
     public function getCachePath(): string
     {
-
         return $this->cache_path;
     }
 
     /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @param  \Seat\Eseye\Containers\EsiResponse  $data
-     * @return void
+     * @param  string  $key
+     * @param  mixed  $value
+     * @param  int|\DateInterval|null  $ttl
+     *
+     * @return bool
      */
-    public function set(string $uri, string $query, EsiResponse $data): void
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
     {
-
-        $path = $this->buildRelativePath($this->safePath($uri), $query);
+        $this->validateCacheValue($value);
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+        $path = $this->buildRelativePath($this->safePath($uri_path), $uri_query);
 
         // Create the subpath if that does not already exist
         if (! file_exists($path))
             @mkdir($path, 0775, true);
 
         // Dump the contents to file
-        file_put_contents($path . $this->results_filename, serialize($data));
+        return file_put_contents($path . $this->results_filename, serialize($value)) !== false;
+    }
+
+    /**
+     * @param  string  $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
+        return $this->get($key) !== null;
+    }
+
+    /**
+     * @param  string  $key
+     * @param  mixed|null  $default
+     *
+     * @return \Seat\Eseye\Containers\EsiResponse
+     */
+    public function get(string $key, mixed $default = null): mixed
+    {
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+        $path = $this->buildRelativePath($this->safePath($uri_path), $uri_query);
+        $cache_file_path = $path . $this->results_filename;
+
+        // If we cant read from the cache, then just return false.
+        if (! is_readable($cache_file_path))
+            return $default;
+
+        // Get the data from the file and unserialize it
+        $data = unserialize(file_get_contents($cache_file_path));
+
+        if ($data === false)
+            return $default;
+
+        // If the cached entry is expired and does not have any ETag, remove it.
+        if ($data->expired() && ! $data->hasHeader('ETag')) {
+            $this->delete($key);
+
+            return $default;
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param  string  $key
+     *
+     * @return bool
+     */
+    public function delete(string $key): bool
+    {
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+        $path = $this->buildRelativePath($this->safePath($uri_path), $uri_query);
+        $cache_file_path = $path . $this->results_filename;
+
+        return @unlink($cache_file_path);
+    }
+
+    /**
+     * @return bool
+     */
+    public function clear(): bool
+    {
+        return $this->clearContainer($this->getCachePath());
+    }
+
+    /**
+     * @param  string  $base_path
+     *
+     * @return bool
+     */
+    private function clearContainer(string $base_path): bool
+    {
+        $paths = glob($base_path . '/*');
+
+        foreach ($paths as $path) {
+            $success = is_dir($path) ? $this->clearContainer($path) : @unlink($path);
+
+            if (! $success)
+                return false;
+        }
+
+        if ($base_path != $this->getCachePath()) {
+            if (! @rmdir($base_path))
+                return false;
+        }
+
+        return true;
     }
 
     /**
      * @param  string  $path
      * @param  string  $query
+     *
      * @return string
      */
     public function buildRelativePath(string $path, string $query = ''): string
     {
-
         // If the query string has data, hash it.
         if ($query != '')
             $query = $this->hashString($query);
@@ -136,68 +224,11 @@ class FileCache implements CacheInterface
 
     /**
      * @param  string  $uri
+     *
      * @return string
      */
     public function safePath(string $uri): string
     {
-
         return preg_replace('/[^A-Za-z0-9\/]/', '', $uri);
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return bool
-     */
-    public function has(string $uri, string $query = ''): bool
-    {
-
-        if ($this->get($uri, $query))
-            return true;
-
-        return false;
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return \Seat\Eseye\Containers\EsiResponse|bool
-     */
-    public function get(string $uri, string $query = ''): EsiResponse|bool
-    {
-
-        $path = $this->buildRelativePath($this->safePath($uri), $query);
-        $cache_file_path = $path . $this->results_filename;
-
-        // If we cant read from the cache, then just return false.
-        if (! is_readable($cache_file_path))
-            return false;
-
-        // Get the data from the file and unserialize it
-        $data = unserialize(file_get_contents($cache_file_path));
-
-        // If the cached entry is expired and does not have any ETag, remove it.
-        if ($data->expired() && ! $data->hasHeader('ETag')) {
-
-            $this->forget($uri, $query);
-
-            return false;
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return bool
-     */
-    public function forget(string $uri, string $query = ''): bool
-    {
-
-        $path = $this->buildRelativePath($uri, $query);
-        $cache_file_path = $path . $this->results_filename;
-
-        return @unlink($cache_file_path);
     }
 }

@@ -26,7 +26,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
-use Seat\Eseye\Cache\CacheInterface;
+use Psr\SimpleCache\CacheInterface;
 use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Exceptions\InvalidConfigurationException;
 
@@ -68,7 +68,7 @@ class Configuration
     protected LoggerInterface|string|null $logger = null;
 
     /**
-     * @var CacheInterface|string|null
+     * @var \Psr\SimpleCache\CacheInterface|string|null
      */
     protected CacheInterface|string|null $cache = null;
 
@@ -151,7 +151,7 @@ class Configuration
     }
 
     /**
-     * @return \Seat\Eseye\Cache\CacheInterface
+     * @return \Psr\SimpleCache\CacheInterface
      */
     public function getCache(): CacheInterface
     {
