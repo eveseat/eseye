@@ -206,6 +206,13 @@ class EsiResponseTest extends TestCase
             $this->esi_response->headers['Access-Control-Allow-Headers']);
     }
 
+    public function testEsiResponseNotReturningPagesInHeaders()
+    {
+        $esi_response = new EsiResponse('', [], 'now', 200);
+
+        $this->assertNull($esi_response->pages);
+    }
+
     public function testEsiResponseCanGetParsedPagesFromHeaders()
     {
 
