@@ -142,8 +142,10 @@ class Configuration
      */
     public function getLogger(): LoggerInterface
     {
-        if (! $this->logger)
-            $this->logger = new $this->configuration->logger;
+        if (! $this->logger) {
+            $this->logger = is_string($this->configuration->logger) ?
+                new $this->configuration->logger : $this->configuration->logger;
+        }
 
         return $this->logger;
     }
@@ -153,8 +155,10 @@ class Configuration
      */
     public function getCache(): CacheInterface
     {
-        if (! $this->cache)
-            $this->cache = new $this->configuration->cache;
+        if (! $this->cache) {
+            $this->cache = is_string($this->configuration->cache) ?
+                new $this->configuration->cache : $this->configuration->cache;
+        }
 
         return $this->cache;
     }
@@ -164,8 +168,10 @@ class Configuration
      */
     public function getHttpClient(): ClientInterface
     {
-        if (! $this->http_client)
-            $this->http_client = new $this->configuration->http_client;
+        if (! $this->http_client) {
+            $this->http_client = is_string($this->configuration->http_client) ?
+                new $this->configuration->http_client : $this->configuration->http_client;
+        }
 
         return $this->http_client;
     }
@@ -175,8 +181,10 @@ class Configuration
      */
     public function getHttpStreamFactory(): StreamFactoryInterface
     {
-        if (! $this->http_stream_factory)
-            $this->http_stream_factory = new $this->configuration->http_stream_factory;
+        if (! $this->http_stream_factory) {
+            $this->http_stream_factory = is_string($this->configuration->http_stream_factory) ?
+                new $this->configuration->http_stream_factory : $this->configuration->http_stream_factory;
+        }
 
         return $this->http_stream_factory;
     }
@@ -186,8 +194,10 @@ class Configuration
      */
     public function getHttpRequestFactory(): RequestFactoryInterface
     {
-        if (! $this->http_request_factory)
-            $this->http_request_factory = new $this->configuration->http_request_factory;
+        if (! $this->http_request_factory) {
+            $this->http_request_factory = is_string($this->configuration->http_request_factory) ?
+                new $this->configuration->http_request_factory : $this->configuration->http_request_factory;
+        }
 
         return $this->http_request_factory;
     }
@@ -199,17 +209,17 @@ class Configuration
      * @param  string  $name
      * @return mixed
      */
-    public function __get(string $name)
+    public function __get(string $name): mixed
     {
         return $this->configuration->$name;
     }
 
     /**
      * @param  string  $name
-     * @param  string  $value
+     * @param  mixed  $value
      * @return string
      */
-    public function __set(string $name, string $value)
+    public function __set(string $name, mixed $value)
     {
         return $this->configuration->$name = $value;
     }
