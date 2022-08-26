@@ -25,9 +25,9 @@ namespace Seat\Eseye;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 use Seat\Eseye\Access\AccessInterface;
 use Seat\Eseye\Access\CheckAccess;
-use Seat\Eseye\Cache\CacheInterface;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\EsiScopeAccessDeniedException;
@@ -60,7 +60,7 @@ class Eseye
     protected ?FetcherInterface $fetcher = null;
 
     /**
-     * @var \Seat\Eseye\Cache\CacheInterface|null
+     * @var \Psr\SimpleCache\CacheInterface|null
      */
     protected ?CacheInterface $cache = null;
 
@@ -219,6 +219,7 @@ class Eseye
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function invoke(string $method, string $uri, array $uri_data = []): EsiResponse
     {
@@ -243,7 +244,7 @@ class Eseye
 
         // Check if there is a cached response we can return
         if (in_array(strtolower($method), $this->cachable_verb) &&
-            $cached = $this->getCache()->get($uri->getPath(), $uri->getQuery())
+            $cached = $this->getCache()->get($uri)
         ) {
 
             // In case the cached entry is still valid, mark content as being loaded from cache.
@@ -262,7 +263,7 @@ class Eseye
                     $cached->setExpires($result->expires());
 
                     // store updated response in cache to renew internal cache duration
-                    $this->getCache()->set($uri->getPath(), $uri->getQuery(), $cached);
+                    $this->getCache()->set($uri, $cached);
 
                     $cached->setIsCachedLoad();
                 }
@@ -292,7 +293,7 @@ class Eseye
 
         // Cache the response if it was a get and is not already expired
         if (in_array(strtolower($method), $this->cachable_verb) && ! $result->expired())
-            $this->getCache()->set($uri->getPath(), $uri->getQuery(), $result);
+            $this->getCache()->set($uri, $result);
 
         // In preparation for the next request, perform some
         // self cleanups of this objects request data such as
@@ -454,7 +455,7 @@ class Eseye
     }
 
     /**
-     * @return \Seat\Eseye\Cache\CacheInterface
+     * @return \Psr\SimpleCache\CacheInterface
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */

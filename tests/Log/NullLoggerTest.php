@@ -58,6 +58,13 @@ class NullLoggerTest extends TestCase
         $this->logger->notice('foo');
     }
 
+    public function testInfoLoggerIgnoresNotice()
+    {
+        $this->logger->shouldReceive('info')->with('foo');
+
+        $this->logger->info('foo');
+    }
+
     public function testNullLoggerIgnoresDebug()
     {
         $this->logger->shouldReceive('debug')->with('foo');

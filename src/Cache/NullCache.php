@@ -22,6 +22,9 @@
 
 namespace Seat\Eseye\Cache;
 
+use DateInterval;
+use InvalidArgumentException;
+use Psr\SimpleCache\CacheInterface;
 use Seat\Eseye\Containers\EsiResponse;
 
 /**
@@ -31,46 +34,88 @@ use Seat\Eseye\Containers\EsiResponse;
  */
 class NullCache implements CacheInterface
 {
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @param  \Seat\Eseye\Containers\EsiResponse  $data
-     * @return void
-     */
-    public function set(string $uri, string $query, EsiResponse $data): void
-    {
 
+    /**
+     * @param  string  $key
+     * @param  mixed|null  $default
+     * @return mixed
+     */
+    public function get(string $key, mixed $default = null): mixed
+    {
+        return $default;
     }
 
     /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return \Seat\Eseye\Containers\EsiResponse|bool
+     * @param  string  $key
+     * @param  mixed  $value
+     * @param  int|\DateInterval|null  $ttl
+     * @return bool
      */
-    public function get(string $uri, string $query = ''): EsiResponse|bool
+    public function set(string $key, mixed $value, DateInterval|int|null $ttl = null): bool
     {
+        if (! $value instanceof EsiResponse)
+            throw new InvalidArgumentException('An EsiResponse object was expected as cache value.');
 
         return false;
     }
 
     /**
-     * @param  string  $uri
-     * @param  string  $query
+     * @param  string  $key
      * @return bool
      */
-    public function forget(string $uri, string $query = ''): bool
+    public function delete(string $key): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function clear(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param  iterable  $keys
+     * @param  mixed|null  $default
+     * @return iterable
+     */
+    public function getMultiple(iterable $keys, mixed $default = null): iterable
+    {
+        $results = [];
+
+        foreach ($keys as $key)
+            $results[$key] = $default;
+
+        return $results;
+    }
+
+    /**
+     * @param  iterable  $values
+     * @param  int|\DateInterval|null  $ttl
+     * @return bool
+     */
+    public function setMultiple(iterable $values, DateInterval|int|null $ttl = null): bool
     {
         return false;
     }
 
     /**
-     * @param  string  $uri
-     * @param  string  $query
+     * @param  iterable  $keys
      * @return bool
      */
-    public function has(string $uri, string $query = ''): bool
+    public function deleteMultiple(iterable $keys): bool
     {
+        return true;
+    }
 
+    /**
+     * @param  string  $key
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
         return false;
     }
 }

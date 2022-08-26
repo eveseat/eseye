@@ -24,7 +24,7 @@ namespace Seat\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Seat\Eseye\Cache\CacheInterface;
+use Psr\SimpleCache\CacheInterface;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiConfiguration;
 use Seat\Eseye\Exceptions\InvalidContainerDataException;

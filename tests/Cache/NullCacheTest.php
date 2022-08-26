@@ -47,28 +47,28 @@ class NullCacheTest extends TestCase
     {
 
         $esi_response = $this->createMock(EsiResponse::class);
-        $this->null_cache->set('/test', 'foo=bar', $esi_response);
-        $cached_entry = $this->null_cache->get('/test', 'foo=bar');
+        $this->null_cache->set('/test?foo=bar', $esi_response);
+        $cached_entry = $this->null_cache->get('/test?foo=bar');
 
-        $this->assertFalse($cached_entry);
+        $this->assertNull($cached_entry);
     }
 
     public function testNullCacheGetsValue()
     {
 
-        $this->assertFalse($this->null_cache->get('/test', 'foo=bar'));
+        $this->assertNull($this->null_cache->get('/test?foo=bar'));
     }
 
     public function testNullCacheForgetsValues()
     {
 
-        $this->assertFalse($this->null_cache->forget('/test', 'foo=bar'));
+        $this->assertTrue($this->null_cache->delete('/test?foo=bar'));
     }
 
     public function testNullCacheHasValue()
     {
 
-        $this->assertFalse($this->null_cache->has('/test', 'foo=bar'));
+        $this->assertFalse($this->null_cache->has('/test?foo=bar'));
     }
 
 }

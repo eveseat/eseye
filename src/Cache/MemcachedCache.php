@@ -22,8 +22,9 @@
 
 namespace Seat\Eseye\Cache;
 
+use DateInterval;
+use Psr\SimpleCache\CacheInterface;
 use Seat\Eseye\Configuration;
-use Seat\Eseye\Containers\EsiResponse;
 
 /**
  * Class MemcachedCache.
@@ -32,7 +33,7 @@ use Seat\Eseye\Containers\EsiResponse;
  */
 class MemcachedCache implements CacheInterface
 {
-    use HashesStrings;
+    use CommonOperations, HashesStrings, ValidateCacheEntry;
 
     /**
      * @var mixed
@@ -84,21 +85,84 @@ class MemcachedCache implements CacheInterface
             else
                 $this->flags = ($configuration->memcached_cache_compressed) ? MEMCACHE_COMPRESSED : 0;
         }
-
     }
 
     /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @param  \Seat\Eseye\Containers\EsiResponse  $data
-     * @return void
+     * @param  string  $key
+     * @param  mixed  $value
+     * @param  int|\DateInterval|null  $ttl
+     *
+     * @return bool
      */
-    public function set(string $uri, string $query, EsiResponse $data): void
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
     {
+        $this->validateCacheValue($value);
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+
         if ($this->is_memcached)
-            $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), 0);
+            return $this->memcached->set($this->buildCacheKey($uri_path, $uri_query), serialize($value), 0);
         else
-            $this->memcached->set($this->buildCacheKey($uri, $query), serialize($data), $this->flags, 0);
+            return $this->memcached->set($this->buildCacheKey($uri_path, $uri_query), serialize($value), $this->flags, 0);
+    }
+
+    /**
+     * @param  string  $key
+     * @param  mixed|null  $default
+     *
+     * @return \Seat\Eseye\Containers\EsiResponse
+     */
+    public function get(string $key, mixed $default = null): mixed
+    {
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+
+        $value = $this->memcached->get($this->buildCacheKey($uri_path, $uri_query));
+        if ($value === false)
+            return $default;
+
+        $data = unserialize($value);
+
+        if ($data === false)
+            return $default;
+
+        // If the cached entry is expired and does not have any ETag, remove it.
+        if ($data->expired() && ! $data->hasHeader('ETag')) {
+            $this->delete($key);
+
+            return $default;
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param  string  $key
+     *
+     * @return bool
+     */
+    public function delete(string $key): bool
+    {
+        $this->validateCacheKey($key, $uri_path, $uri_query);
+
+        return $this->memcached->delete($this->buildCacheKey($uri_path, $uri_query));
+    }
+
+    /**
+     * @param  string  $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
+
+        return $this->memcached->get($this->buildCacheKey($key)) !== null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function clear(): bool
+    {
+        return false;
     }
 
     /**
@@ -108,56 +172,9 @@ class MemcachedCache implements CacheInterface
      */
     public function buildCacheKey(string $uri, string $query = ''): string
     {
-
         if ($query != '')
             $query = $this->hashString($query);
 
         return $this->prefix . $this->hashString($uri . $query);
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return \Seat\Eseye\Containers\EsiResponse|bool
-     */
-    public function get(string $uri, string $query = ''): EsiResponse|bool
-    {
-
-        $value = $this->memcached->get($this->buildCacheKey($uri, $query));
-        if ($value === false)
-            return false;
-
-        $data = unserialize($value);
-
-        // If the cached entry is expired and does not have any ETag, remove it.
-        if ($data->expired() && ! $data->hasHeader('ETag')) {
-            $this->forget($uri, $query);
-
-            return false;
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return bool
-     */
-    public function forget(string $uri, string $query = ''): bool
-    {
-
-        return $this->memcached->delete($this->buildCacheKey($uri, $query));
-    }
-
-    /**
-     * @param  string  $uri
-     * @param  string  $query
-     * @return bool
-     */
-    public function has(string $uri, string $query = ''): bool
-    {
-
-        return $this->memcached->get($this->buildCacheKey($uri, $query)) !== false;
     }
 }
