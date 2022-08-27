@@ -120,7 +120,7 @@ class Fetcher implements FetcherInterface
         // Authorization header.
         if ($this->getAuthentication())
             $headers = array_merge($headers, [
-                'Authorization' => 'Bearer ' . $this->getToken(),
+                'Authorization' => $this->getBearerAuthorizationHeader(),
             ]);
 
         return $this->httpRequest($method, $uri, $headers, $body);
@@ -185,15 +185,13 @@ class Fetcher implements FetcherInterface
      */
     private function refreshToken(): void
     {
-
         // Make the post request for a new access_token
-        $boundary = hash('sha256', uniqid('', true));
-        $stream = $this->stream_factory->createStream($this->getRefreshTokenForm($boundary));
+        $stream = $this->stream_factory->createStream($this->getRefreshTokenForm());
 
         $request = $this->request_factory->createRequest('POST', $this->sso_base . '/token')
-            ->withHeader('Authorization', $this->getAuthorizationHeader())
+            ->withHeader('Authorization', $this->getBasicAuthorizationHeader())
             ->withHeader('User-Agent', 'Eseye/' . Eseye::VERSION . '/' . Configuration::getInstance()->http_user_agent)
-            ->withHeader('Content-Type', 'multipart/formdata; boundary=' . $boundary)
+            ->withHeader('Content-Type', 'application/x-www-form-urlencoded')
             ->withBody($stream);
 
         $response = $this->getClient()->sendRequest($request);
@@ -243,32 +241,35 @@ class Fetcher implements FetcherInterface
     /**
      * @return string
      */
-    private function getAuthorizationHeader(): string
+    private function getBasicAuthorizationHeader(): string
     {
         return 'Basic ' . base64_encode($this->authentication->client_id . ':' . $this->authentication->secret);
     }
 
     /**
-     * @param  string  $boundary
+     * @return string
+     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @throws \Seat\Eseye\Exceptions\DiscoverServiceNotAvailableException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     * @throws \Seat\Eseye\Exceptions\RequestFailedException
+     */
+    private function getBearerAuthorizationHeader(): string
+    {
+        return 'Bearer ' . $this->getToken();
+    }
+
+    /**
      * @return string
      */
-    private function getRefreshTokenForm(string $boundary): string
+    private function getRefreshTokenForm(): string
     {
         $form = [
             'grant_type' => 'refresh_token',
             'refresh_token' => $this->authentication->refresh_token,
         ];
 
-        $body = '';
-
-        foreach ($form as $field => $value) {
-            $body .= '--' . $boundary . PHP_EOL;
-            $body .= 'Content-Disposition: form-data; name="' . $field . '"' . PHP_EOL . PHP_EOL . $value . PHP_EOL;
-        }
-
-        $body .= '--' . $boundary . '--' . PHP_EOL;
-
-        return $body;
+        return http_build_query($form);
     }
 
     /**
