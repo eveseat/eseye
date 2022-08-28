@@ -328,11 +328,12 @@ class Fetcher implements FetcherInterface
         // Grab the body from the StreamInterface instance.
         $content = $response->getBody()->getContents();
 
-        if ($log_level == LogLevel::ERROR) {
+        // For debugging purposes, log the response body
+        $this->logger->debug('[http ' . $response->getStatusCode() . ', ' . strtolower($response->getReasonPhrase()) . '] ' . $method . ' -> ' . $this->stripRefreshTokenValue($uri), [
+            'body' => $content,
+        ]);
 
-            // For debugging purposes, log the response body
-            $this->logger->debug('Request for ' . $method . ' -> ' . $uri . ' failed. Response body was: ' .
-                $content);
+        if ($log_level == LogLevel::ERROR) {
 
             // Raise the exception that should be handled by the caller
             throw new RequestFailedException($this->makeEsiResponse(
