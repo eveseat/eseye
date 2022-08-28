@@ -50,7 +50,7 @@ class EsiAuthentication extends AbstractArrayAccess
         'secret'        => null,
         'access_token'  => '_',
         'refresh_token' => null,
-        'token_expires' => '1970-01-01 00:00:00',
+        'token_expires' => 0,
         'scopes'        => [],
     ];
 
