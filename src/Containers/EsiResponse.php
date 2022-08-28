@@ -103,6 +103,12 @@ class EsiResponse extends ArrayObject
         $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
         $this->response_code = $response_code;
 
+        // ArrayObject is expecting an iterable structure
+        // json_decode will not parse simple string
+        // json_decode will parse int, float and boolean as it
+        if (! is_object($data) && ! is_array($data))
+            $data = (object) $data;
+
         if (is_object($data)) {
 
             // If there is an error, set that.
@@ -115,7 +121,7 @@ class EsiResponse extends ArrayObject
         }
 
         // Run the parent constructor
-        parent::__construct(is_array($data) ? (array) $data : (object) $data, ArrayObject::ARRAY_AS_PROPS);
+        parent::__construct($data, ArrayObject::ARRAY_AS_PROPS);
     }
 
     /**
