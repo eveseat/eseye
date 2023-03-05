@@ -3,12 +3,13 @@
     "description": "A Standalone PHP ESI (EVE Swagger Interface) Client Library",
     "type": "library",
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "ext-gmp": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "guzzlehttp/psr7": "^2.0",
+        "monolog/monolog": "^3.0",
         "nesbot/carbon": "^2.0",
         "psr/simple-cache": "^1.0|^2.0|^3.0",
         "psr/http-client": "^1.0",
@@ -25,10 +26,9 @@
         "ext-memcache": "*",
         "guzzlehttp/guzzle": "^7.0",
         "mikey179/vfsstream": "~1",
-        "monolog/monolog": "^2.0",
         "m6web/redis-mock": "^5.0",
         "mockery/mockery": "^1.0",
-        "phpunit/phpunit": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0",
         "predis/predis": "^1.0"
     },
     "suggest": {
