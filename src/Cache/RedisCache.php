@@ -22,6 +22,7 @@
 
 namespace Seat\Eseye\Cache;
 
+use Carbon\Carbon;
 use Predis\Client;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiResponse;
@@ -76,7 +77,8 @@ class RedisCache implements CacheInterface
     public function set(string $uri, string $query, EsiResponse $data)
     {
 
-        $this->redis->set($this->buildCacheKey($uri, $query), serialize($data));
+        $ttl = $data->expires()->timestamp - Carbon::now('UTC')->timestamp;
+        $this->redis->setex($this->buildCacheKey($uri, $query), $ttl, serialize($data));
     }
 
     /**
