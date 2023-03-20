@@ -78,7 +78,7 @@ class RedisCache implements CacheInterface
     {
 
         $ttl = $data->expires()->timestamp - Carbon::now('UTC')->timestamp;
-        $this->redis->setex($this->buildCacheKey($uri, $query), $ttl, serialize($data));
+        $this->redis->setex($this->buildCacheKey($uri, $query), $ttl > 0 ? $ttl : 10, serialize($data));
     }
 
     /**
