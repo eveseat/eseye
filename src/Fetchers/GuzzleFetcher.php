@@ -351,7 +351,7 @@ class GuzzleFetcher implements FetcherInterface
 
         // If we have 'refresh_token' in the URI, strip it.
         if (strpos($uri, 'refresh_token'))
-            return Uri::withoutQueryValue((new Uri($uri)), 'refresh_token')
+            return Uri::withoutQueryValue(new Uri($uri), 'refresh_token')
                 ->__toString();
 
         return $uri;
