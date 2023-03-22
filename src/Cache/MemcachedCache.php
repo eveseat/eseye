@@ -81,7 +81,7 @@ class MemcachedCache implements CacheInterface
             $this->memcached->addServer($configuration->memcached_cache_host, $configuration->memcached_cache_port, 0);
 
             if ($this->is_memcached)
-                $this->memcached->setOption(\Memcached::OPT_COMPRESSION, ($configuration->memcached_cache_compressed));
+                $this->memcached->setOption(\Memcached::OPT_COMPRESSION, $configuration->memcached_cache_compressed);
             else
                 $this->flags = ($configuration->memcached_cache_compressed) ? MEMCACHE_COMPRESSED : 0;
         }
