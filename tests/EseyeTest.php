@@ -45,6 +45,7 @@ use Seat\Eseye\Fetchers\Fetcher;
 use Seat\Eseye\Fetchers\FetcherInterface;
 use Seat\Eseye\Log\NullLogger;
 
+#[RunTestsInSeparateProcesses]
 class EseyeTest extends TestCase
 {
 
@@ -60,8 +61,9 @@ class EseyeTest extends TestCase
         $configuration = Configuration::getInstance();
         $configuration->logger = NullLogger::class;
 
-        // Remove caching
-        $configuration->cache = NullCache::class;
+        // update cache engine to null cache engine
+        $reflection = new ReflectionClass($configuration);
+        $reflection->getProperty('cache')->setValue($configuration, new NullCache());
 
         // Force ESI data-source to be singularity
         $configuration->datasource = 'singularity';
@@ -293,7 +295,7 @@ class EseyeTest extends TestCase
     {
 
         $mock = new MockHandler([
-            new Response(200, ['Expires' => 'Sat, 28 Jan 4017 05:46:49 GMT'], json_encode(['foo' => 'bar'])),
+            new Response(200, ['Expires' => carbon()->addDay()->toRfc7231String()], json_encode(['foo' => 'bar'])),
         ]);
 
         $fetcher = new Fetcher;
@@ -303,12 +305,16 @@ class EseyeTest extends TestCase
 
         // update cache engine to file cache engine
         $configuration = Configuration::getInstance();
-        $configuration->cache = FileCache::class;
+        $configuration->file_cache_location = __DIR__ . '/../cache/' . uniqid('', true);
+        $reflection = new ReflectionClass($configuration);
+        $reflection->getProperty('cache')->setValue($configuration, new FileCache());
+        $configuration->getCache()->clear();
 
         // Update the fetchers client
         $this->esi->setFetcher($fetcher);
 
         $response = $this->esi->invoke('get', '/foo');
+
         $this->assertFalse($response->isCachedLoad());
 
         $response = $this->esi->invoke('get', '/foo');
@@ -330,9 +336,12 @@ class EseyeTest extends TestCase
             ]),
         ]);
 
-        $config = Configuration::getInstance();
-        $config->cache = FileCache::class;
-        $config->file_cache_location = __DIR__ . '/../cache/' . uniqid('', true);
+        // update cache engine to file cache engine
+        $configuration = Configuration::getInstance();
+        $configuration->file_cache_location = __DIR__ . '/../cache/' . uniqid('', true);
+        $reflection = new ReflectionClass($configuration);
+        $reflection->getProperty('cache')->setValue($configuration, new FileCache());
+        $configuration->getCache()->clear();
 
         $fetcher = new Fetcher;
         $fetcher->setClient(new Client([
@@ -366,10 +375,14 @@ class EseyeTest extends TestCase
             ]),
         ]);
 
-        $config = Configuration::getInstance();
-        $config->cache = FileCache::class;
+        // update cache engine to file cache engine
+        $configuration = Configuration::getInstance();
+        $configuration->file_cache_location = __DIR__ . '/../cache/' . uniqid('', true);
+        $reflection = new ReflectionClass($configuration);
+        $reflection->getProperty('cache')->setValue($configuration, new FileCache());
+        $configuration->getCache()->clear();
 
-        $fetcher = new GuzzleFetcher;
+        $fetcher = new Fetcher;
         $fetcher->setClient(new Client([
             'handler' => HandlerStack::create($mock),
         ]));

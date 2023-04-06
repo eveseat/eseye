@@ -23,6 +23,7 @@
 namespace Seat\Tests\Log;
 
 use Mockery;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Log\NullLogger;
@@ -44,6 +45,7 @@ class NullLoggerTest extends TestCase
         Mockery::close();
     }
 
+    #[DoesNotPerformAssertions]
     public function testNullLoggerIgnoresInfo()
     {
         $this->logger->shouldReceive('log')->with('info', 'foo');
@@ -51,6 +53,7 @@ class NullLoggerTest extends TestCase
         $this->logger->log('info', 'foo');
     }
 
+    #[DoesNotPerformAssertions]
     public function testNullLoggerIgnoresNotice()
     {
         $this->logger->shouldReceive('notice')->with('foo');
@@ -58,6 +61,7 @@ class NullLoggerTest extends TestCase
         $this->logger->notice('foo');
     }
 
+    #[DoesNotPerformAssertions]
     public function testInfoLoggerIgnoresNotice()
     {
         $this->logger->shouldReceive('info')->with('foo');
@@ -65,6 +69,7 @@ class NullLoggerTest extends TestCase
         $this->logger->info('foo');
     }
 
+    #[DoesNotPerformAssertions]
     public function testNullLoggerIgnoresDebug()
     {
         $this->logger->shouldReceive('debug')->with('foo');
@@ -72,6 +77,7 @@ class NullLoggerTest extends TestCase
         $this->logger->debug('foo');
     }
 
+    #[DoesNotPerformAssertions]
     public function testNullLoggerIgnoresWarning()
     {
         $this->logger->shouldReceive('warning')->with('foo');
@@ -79,6 +85,7 @@ class NullLoggerTest extends TestCase
         $this->logger->warning('foo');
     }
 
+    #[DoesNotPerformAssertions]
     public function testNullLoggerIgnoresError()
     {
         $this->logger->shouldReceive('error')->with('foo');
@@ -86,6 +93,7 @@ class NullLoggerTest extends TestCase
         $this->logger->error('foo');
     }
 
+    #[DoesNotPerformAssertions]
     public function testNullLoggerIgnoresCritical()
     {
         $this->logger->shouldReceive('critical')->with('foo');
@@ -93,6 +101,7 @@ class NullLoggerTest extends TestCase
         $this->logger->critical('foo');
     }
 
+    #[DoesNotPerformAssertions]
     public function testNullLoggerIgnoresAlert()
     {
         $this->logger->shouldReceive('alert')->with('foo');
@@ -100,6 +109,7 @@ class NullLoggerTest extends TestCase
         $this->logger->alert('foo');
     }
 
+    #[DoesNotPerformAssertions]
     public function testNullLoggerIgnoresEmergency()
     {
         $this->logger->shouldReceive('emergency')->with('foo');
