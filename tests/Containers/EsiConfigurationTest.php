@@ -121,7 +121,7 @@ class EsiConfigurationTest extends TestCase
      *
      * @return array
      */
-    public function providerTestRequiredKeysExists(): array
+    public static function providerTestRequiredKeysExists(): array
     {
         return [
             ['http_user_agent'],

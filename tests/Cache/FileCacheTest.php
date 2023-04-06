@@ -218,7 +218,7 @@ class FileCacheTest extends TestCase
     /**
      * @return array
      */
-    public function providerTestFileCacheSafePathValues(): array
+    public static function providerTestFileCacheSafePathValues(): array
     {
         return [
             ['A/B/C', 'A/B/C'],
