@@ -112,12 +112,20 @@ class EsiAuthenticationTest extends TestCase
         $this->assertArrayHasKey($key, $authentication);
     }
 
+    public function testEsiAuthenticationContainerSetRefreshToken()
+    {
+        $authentication = new EsiAuthentication;
+        $authentication->setRefreshToken('REFRESH_TOKEN');
+
+        $this->assertEquals('REFRESH_TOKEN', $authentication->refresh_token);
+    }
+
     /**
      * Keys that _should_ exists in a new Configuration instance
      *
      * @return array
      */
-    public function providerTestRequiredKeysExists(): array
+    public static function providerTestRequiredKeysExists(): array
     {
         return [
             ['client_id'],
@@ -128,13 +136,4 @@ class EsiAuthenticationTest extends TestCase
             ['scopes'],
         ];
     }
-
-    public function testEsiAuthenticationContainerSetRefreshToken()
-    {
-        $authentication = new EsiAuthentication;
-        $authentication->setRefreshToken('REFRESH_TOKEN');
-
-        $this->assertEquals('REFRESH_TOKEN', $authentication->refresh_token);
-    }
-
 }
