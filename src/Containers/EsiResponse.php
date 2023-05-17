@@ -120,6 +120,10 @@ class EsiResponse extends ArrayObject
                 $this->error_message .= ': ' . $data->error_description;
         }
 
+        // If the query failed to contact the ESI endpoint
+        if ($this->response_code === 502)
+            $this->error_message = 'Bad gateway';
+
         // Run the parent constructor
         parent::__construct($data, ArrayObject::ARRAY_AS_PROPS);
     }
