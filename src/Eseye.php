@@ -322,16 +322,15 @@ class Eseye
             throw new EsiScopeAccessDeniedException('Access denied to ' . $uri);
         }
 
-        // Check if there is a cached response we can return
-        if ($this->isCachable($method))
-            $result = $this->handleCacheEntry($method, $uri);
+        // Attempt to retrieve request related response from cache handler
+        $result = $this->handleCacheEntry($method, $uri);
 
         // Call ESI itself and get the EsiResponse in case it has not already been handled with cache control
         if (! isset($result))
             $result = $this->rawFetch($method, $uri, $this->getBody());
 
         // Cache the response if it was a get and is not already expired
-        if ($this->isCachable($method) && ! $result->expired())
+        if ($this->isCachable($method, $result))
             $this->getCache()->set($uri, $result);
 
         // In preparation for the next request, perform some
@@ -402,11 +401,24 @@ class Eseye
      * Determine if call can be cached.
      *
      * @param  string  $method
+     * @param  EsiResponse  $response
      * @return bool
      */
-    private function isCachable(string $method): bool
+    private function isCachable(string $method, EsiResponse $response): bool
     {
-        return in_array(strtolower($method), $this->cachable_verb);
+        if (! in_array(strtolower($method), $this->cachable_verb))
+            return false;
+
+        if ($response->expired())
+            return false;
+
+        if (in_array('no-cache', strtolower($response->getHeader('Cache-Control'))))
+            return false;
+
+        if (in_array('no-store', strtolower($response->getHeader('Cache-Control'))))
+            return false;
+
+        return true;
     }
 
     /**
