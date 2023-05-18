@@ -64,9 +64,9 @@ class EsiResponse extends ArrayObject
     protected string $expires_at;
 
     /**
-     * @var string
+     * @var int
      */
-    protected string $response_code;
+    protected int $response_code;
 
     /**
      * @var string|null
