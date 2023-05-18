@@ -406,16 +406,18 @@ class Eseye
      */
     private function isCachable(string $method, EsiResponse $response): bool
     {
+        $cache_control = array_map('strtolower', $response->getHeader('Cache-Control'));
+
         if (! in_array(strtolower($method), $this->cachable_verb))
             return false;
 
         if ($response->expired())
             return false;
 
-        if (in_array('no-cache', strtolower($response->getHeader('Cache-Control'))))
+        if (in_array('no-cache', $cache_control))
             return false;
 
-        if (in_array('no-store', strtolower($response->getHeader('Cache-Control'))))
+        if (in_array('no-store', $cache_control))
             return false;
 
         return true;

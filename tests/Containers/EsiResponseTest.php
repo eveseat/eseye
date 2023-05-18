@@ -203,7 +203,7 @@ class EsiResponseTest extends TestCase
     {
 
         $this->assertEquals('Content-Type,Authorization,X-User-Agent',
-            $this->esi_response->headers['Access-Control-Allow-Headers']);
+            $this->esi_response->getHeaderLine('Access-Control-Allow-Headers'));
     }
 
     public function testEsiResponseNotReturningPagesInHeaders()
@@ -246,6 +246,6 @@ class EsiResponseTest extends TestCase
         $this->esi_response->setExpires($new_expires);
 
         $this->assertNotEquals($old_expires, $this->esi_response->expires());
-        $this->assertNotEquals($old_expires->toRfc7231String(), $this->esi_response->getHeader('expires'));
+        $this->assertNotEquals($old_expires->toRfc7231String(), $this->esi_response->getHeaderLine('expires'));
     }
 }
