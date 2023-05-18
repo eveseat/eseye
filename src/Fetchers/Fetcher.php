@@ -23,23 +23,16 @@
 namespace Seat\Eseye\Fetchers;
 
 use GuzzleHttp\Psr7\Uri;
-use Jose\Component\Core\JWKSet;
-use Jose\Easy\Load;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Seat\Eseye\Checker\Claim\AzpChecker;
-use Seat\Eseye\Checker\Claim\NameChecker;
-use Seat\Eseye\Checker\Claim\OwnerChecker;
-use Seat\Eseye\Checker\Claim\SubEveCharacterChecker;
-use Seat\Eseye\Checker\Header\TypeChecker;
+use Seat\Eseye\Checker\EsiTokenValidator;
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Eseye;
-use Seat\Eseye\Exceptions\DiscoverServiceNotAvailableException;
 use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
 
@@ -54,6 +47,11 @@ class Fetcher implements FetcherInterface
      * @var \Psr\Http\Client\ClientInterface
      */
     protected ClientInterface $client;
+
+    /**
+     * @var \Seat\Eseye\Checker\EsiTokenValidator
+     */
+    protected EsiTokenValidator $jwt_validator;
 
     /**
      * @var \Psr\Log\LoggerInterface
@@ -99,6 +97,9 @@ class Fetcher implements FetcherInterface
             Configuration::getInstance()->sso_scheme,
             Configuration::getInstance()->sso_host,
             Configuration::getInstance()->sso_port);
+
+        // Init JWT validator
+        $this->jwt_validator = new EsiTokenValidator();
     }
 
     /**
@@ -225,14 +226,16 @@ class Fetcher implements FetcherInterface
         // Get the current EsiAuth container
         $authentication = $this->getAuthentication();
 
-        $jws_token = $this->verifyToken($json->access_token);
-
-        $this->logger->debug(json_encode($jws_token));
+        $claims = $this->jwt_validator->validateToken($authentication->client_id, $json->access_token);
+        $this->logger->debug('Successfully validate delivered token', [
+            'claims' => $claims,
+        ]);
 
         // Set the new authentication values from the request
         $authentication->access_token = $json->access_token;
         $authentication->refresh_token = $json->refresh_token;
-        $authentication->token_expires = $jws_token['exp'];
+        $authentication->token_expires = $claims['exp'];
+        $authentication->scopes = $claims['scp'];
 
         // ... and update the container
         $this->setAuthentication($authentication);
@@ -248,6 +251,7 @@ class Fetcher implements FetcherInterface
 
     /**
      * @return string
+     *
      * @throws \Psr\Http\Client\ClientExceptionInterface
      * @throws \Seat\Eseye\Exceptions\DiscoverServiceNotAvailableException
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
@@ -382,7 +386,7 @@ class Fetcher implements FetcherInterface
     {
         // If we have 'refresh_token' in the URI, strip it.
         if (strpos($uri, 'refresh_token'))
-            return Uri::withoutQueryValue((new Uri($uri)), 'refresh_token')
+            return Uri::withoutQueryValue(new Uri($uri), 'refresh_token')
                 ->__toString();
 
         return $uri;
@@ -425,81 +429,8 @@ class Fetcher implements FetcherInterface
      */
     public function setAuthenticationScopes(): void
     {
-        $jws_token = $this->verifyToken($this->authentication->access_token);
+        $jws_token = $this->jwt_validator->validateToken($this->authentication->client_id, $this->authentication->access_token);
 
         $this->authentication->scopes = $jws_token['scp'];
-    }
-
-    /**
-     * Verify that an access_token is still valid.
-     *
-     * @param  string  $access_token
-     * @return array
-     *
-     * @throws \Psr\Http\Client\ClientExceptionInterface
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     * @throws \Seat\Eseye\Exceptions\DiscoverServiceNotAvailableException
-     */
-    private function verifyToken(string $access_token): array
-    {
-        $sets = $this->getJwkSets();
-
-        $jwk_sets = JWKSet::createFromKeyData($sets);
-
-        $jws = Load::jws($access_token)
-            ->algs(['RS256', 'ES256', 'HS256'])
-            ->exp()
-            ->iss(Configuration::getInstance()->sso_host)
-            ->header('typ', new TypeChecker(['JWT'], true))
-            ->claim('sub', new SubEveCharacterChecker())
-            ->claim('azp', new AzpChecker($this->authentication->client_id))
-            ->claim('name', new NameChecker())
-            ->claim('owner', new OwnerChecker())
-            ->keyset($jwk_sets)
-            ->run();
-
-        return $jws->claims->all();
-    }
-
-    /**
-     * @return array
-     *
-     * @throws \Psr\Http\Client\ClientExceptionInterface
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     * @throws \Seat\Eseye\Exceptions\DiscoverServiceNotAvailableException
-     */
-    private function getJwkSets(): array
-    {
-        $jwk_uri = $this->getJwkUri();
-
-        $request = $this->request_factory->createRequest('GET', $jwk_uri);
-        $response = $this->getClient()->sendRequest($request);
-
-        return json_decode($response->getBody(), true);
-    }
-
-    /**
-     * @return string
-     *
-     * @throws \Psr\Http\Client\ClientExceptionInterface
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     * @throws \Seat\Eseye\Exceptions\DiscoverServiceNotAvailableException
-     */
-    private function getJwkUri(): string
-    {
-        $oauth_discovery = sprintf('%s://%s:%d/.well-known/oauth-authorization-server',
-            Configuration::getInstance()->sso_scheme,
-            Configuration::getInstance()->sso_host,
-            Configuration::getInstance()->sso_port);
-
-        $request = $this->request_factory->createRequest('GET', $oauth_discovery);
-        $response = $this->getClient()->sendRequest($request);
-
-        if ($response->getStatusCode() >= 400)
-            throw new DiscoverServiceNotAvailableException($response->getBody()->getContents());
-
-        $metadata = json_decode($response->getBody());
-
-        return $metadata->jwks_uri;
     }
 }

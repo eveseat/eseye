@@ -22,14 +22,13 @@
 
 namespace Seat\Tests\Fetchers;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
+use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
-use Jose\Easy\Build;
-use PHPUnit\Framework\TestCase;
+use Jose\Component\Signature\Algorithm\RS256;
+use Jose\Component\Signature\JWSBuilder;
+use Jose\Component\Signature\Serializer\CompactSerializer;
 use Psr\Http\Client\ClientInterface;
 use ReflectionClass;
 use Seat\Eseye\Configuration;
@@ -39,6 +38,7 @@ use Seat\Eseye\Exceptions\InvalidAuthenticationException;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use Seat\Eseye\Fetchers\Fetcher;
 use Seat\Eseye\Log\NullLogger;
+use Seat\Tests\TestCase;
 
 class FetcherTest extends TestCase
 {
@@ -55,7 +55,7 @@ class FetcherTest extends TestCase
         $configuration->logger = NullLogger::class;
 
         // Setup HTTP client
-        $configuration->http_client = Client::class;
+        $configuration->http_client = self::$http_client;
         $configuration->http_stream_factory = HttpFactory::class;
         $configuration->http_request_factory = HttpFactory::class;
 
@@ -165,7 +165,6 @@ class FetcherTest extends TestCase
     {
         $class = new ReflectionClass(Fetcher::class);
         $method = $class->getMethod($name);
-        $method->setAccessible(true);
 
         return $method;
     }
@@ -179,14 +178,10 @@ class FetcherTest extends TestCase
 
     public function testGuzzleCallingWithoutAuthentication()
     {
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             new Response(200, ['X-Foo' => 'Bar'], json_encode(['foo' => 'var'])),
-        ]);
-
-        // Update the fetchers client
-        $this->fetcher->setClient(new Client([
-            'handler' => HandlerStack::create($mock),
-        ]));
+        );
 
         $response = $this->fetcher->call('get', '/foo', ['foo' => 'bar']);
 
@@ -201,7 +196,8 @@ class FetcherTest extends TestCase
         // generate a JWS Token mocking standard CCP format
         $jws = $this->getJwsToken($jwk);
 
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             // RefreshToken response
             new Response(200, ['X-Foo' => 'Bar'], json_encode([
                 'access_token'  => $jws,
@@ -222,12 +218,7 @@ class FetcherTest extends TestCase
             ])),
             // ESI response
             new Response(200, ['X-Foo' => 'Bar'], json_encode(['foo' => 'var'])),
-        ]);
-
-        // Update the fetchers client
-        $this->fetcher->setClient(new Client([
-            'handler' => HandlerStack::create($mock),
-        ]));
+        );
 
         // Update the fetchers authentication
         $this->fetcher->setAuthentication(new EsiAuthentication([
@@ -248,28 +239,20 @@ class FetcherTest extends TestCase
     {
         $this->expectException(RequestFailedException::class);
 
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             new Response(401),
-        ]);
-
-        // Update the fetchers client
-        $this->fetcher->setClient(new Client([
-            'handler' => HandlerStack::create($mock),
-        ]));
+        );
 
         $this->fetcher->call('get', '/foo', ['foo' => 'bar']);
     }
 
     public function testGuzzleFetcherMakesHttpRequest()
     {
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             new Response(200, ['X-Foo' => 'Bar'], json_encode(['foo' => 'var'])),
-        ]);
-
-        // Update the fetchers client
-        $this->fetcher->setClient(new Client([
-            'handler' => HandlerStack::create($mock),
-        ]));
+        );
 
         $response = $this->fetcher->httpRequest('get', '/foo');
 
@@ -285,7 +268,8 @@ class FetcherTest extends TestCase
         // init a JWS Token
         $jws = $this->getJwsToken($jwk);
 
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             // JWK Endpoint
             new Response(200, [], json_encode([
                 'jwks_uri' => 'https://login.eveonline.com/oauth/jwks',
@@ -297,12 +281,7 @@ class FetcherTest extends TestCase
                 ],
                 'SkipUnresolvedJsonWebKeys' => true,
             ])),
-        ]);
-
-        // Update the fetchers client
-        $client = new Client([
-            'handler' => HandlerStack::create($mock),
-        ]);
+        );
 
         // Update the fetchers authentication
         $authentication = new EsiAuthentication([
@@ -314,8 +293,6 @@ class FetcherTest extends TestCase
         ]);
 
         $fetcher = new Fetcher($authentication);
-        $fetcher->setClient($client);
-
         $scopes = $fetcher->getAuthenticationScopes();
 
         $this->assertEquals(['foo', 'bar', 'baz', 'public'], $scopes);
@@ -350,27 +327,36 @@ class FetcherTest extends TestCase
     {
         $time = time();
 
-        return Build::jws()
-            ->exp($time + 1200)
-            ->alg('RS256')
-            ->payload([
-                'scp' => [
-                    "foo",
-                    "bar",
-                    "baz",
-                    "public",
-                ],
-                "jti" => "7f64ea9f-ee6e-4c4a-9486-d668e8c79f25",
-                "kid" => "JWT-Signature-Key",
-                "sub" => "CHARACTER:EVE:90795931",
-                "azp" => "foo",
-                "name" => "Warlof Tutsimo",
-                "owner" => "svnSjVa1uGYyp/ZL3mfkIwkJYzQ=",
-                "exp"   => $time + 3600,
-                "iss" => "login.eveonline.com",
-            ])
-            ->header('typ', 'JWT')
-            ->header('kid', 'JWT-Signature-Key')
-            ->sign($jwk);
+        $manager = new AlgorithmManager([
+            new RS256(),
+        ]);
+
+        $serializer = new CompactSerializer();
+
+        $jws_payload = json_encode([
+            'scp' => [
+                'foo',
+                'bar',
+                'baz',
+                'public',
+            ],
+            'jti' => '7f64ea9f-ee6e-4c4a-9486-d668e8c79f25',
+            'kid' => 'JWT-Signature-Key',
+            'sub' => 'CHARACTER:EVE:90795931',
+            'azp' => 'foo',
+            'aud' => 'EVE Online',
+            'name' => 'Warlof Tutsimo',
+            'owner' => 'svnSjVa1uGYyp/ZL3mfkIwkJYzQ=',
+            'exp'   => $time + 3600,
+            'iss' => 'login.eveonline.com',
+        ]);
+
+        $builder = new JWSBuilder($manager);
+        $jws = $builder->create()
+            ->withPayload($jws_payload)
+            ->addSignature($jwk, ['alg' => 'RS256'])
+            ->build();
+
+        return $serializer->serialize($jws);
     }
 }
