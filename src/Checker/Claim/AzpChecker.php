@@ -55,10 +55,16 @@ class AzpChecker implements ClaimChecker
     public function checkClaim($value): void
     {
         if (! is_string($value))
-            throw new InvalidClaimException('"azp" must be a string.', self::NAME, $value);
+            throw new InvalidClaimException(
+                sprintf('"%s" must be a string.', self::NAME),
+                self::NAME,
+                $value);
 
         if ($value !== $this->client_id)
-            throw new InvalidClaimException('"azp" must match the originating application.', self::NAME, $value);
+            throw new InvalidClaimException(
+                sprintf('"%s" must match the originating application.', self::NAME),
+                self::NAME,
+                $value);
     }
 
     /**
