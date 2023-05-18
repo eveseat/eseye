@@ -40,7 +40,10 @@ class NameChecker implements ClaimChecker
     public function checkClaim($value): void
     {
         if (! is_string($value))
-            throw new InvalidClaimException('"name" must be a string.', self::NAME, $value);
+            throw new InvalidClaimException(
+                sprintf('"%s" must be a string.', self::NAME),
+                self::NAME,
+                $value);
     }
 
     /**

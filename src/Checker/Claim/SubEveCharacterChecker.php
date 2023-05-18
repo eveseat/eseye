@@ -40,10 +40,16 @@ class SubEveCharacterChecker implements ClaimChecker
     public function checkClaim($value): void
     {
         if (! is_string($value))
-            throw new InvalidClaimException('"sub" must be a string.', self::NAME, $value);
+            throw new InvalidClaimException(
+                sprintf('"%s" must be a string.', self::NAME),
+                self::NAME,
+                $value);
 
         if (preg_match('/^CHARACTER:EVE:[0-9]+$/', $value) !== 1)
-            throw new InvalidClaimException('"sub" must be of the form CHARACTER:EVE:{character_id}', self::NAME, $value);
+            throw new InvalidClaimException(
+                sprintf('"%s" must be of the form CHARACTER:EVE:{character_id}', self::NAME),
+                self::NAME,
+                $value);
     }
 
     /**

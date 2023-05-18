@@ -32,7 +32,7 @@ use Jose\Component\Checker\InvalidHeaderException;
  */
 final class TypeChecker implements HeaderChecker
 {
-    private const HEADER_NAME = 'typ';
+    private const NAME = 'typ';
 
     /**
      * @var bool
@@ -62,10 +62,16 @@ final class TypeChecker implements HeaderChecker
     public function checkHeader($value): void
     {
         if (! is_string($value))
-            throw new InvalidHeaderException('"typ" must be a string.', self::HEADER_NAME, $value);
+            throw new InvalidHeaderException(
+                sprintf('"%s" must be a string.', self::NAME),
+                self::NAME,
+                $value);
 
         if (! in_array($value, $this->supported_types, true))
-            throw new InvalidHeaderException('Unsupported type.', self::HEADER_NAME, $value);
+            throw new InvalidHeaderException(
+                sprintf('"%s" type must be one of %s.', self::NAME, implode(',', $this->supported_types)),
+                self::NAME,
+                $value);
     }
 
     /**
@@ -73,7 +79,7 @@ final class TypeChecker implements HeaderChecker
      */
     public function supportedHeader(): string
     {
-        return self::HEADER_NAME;
+        return self::NAME;
     }
 
     /**
