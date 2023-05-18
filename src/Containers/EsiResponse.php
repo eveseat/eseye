@@ -138,16 +138,6 @@ class EsiResponse extends ArrayObject
         // Set the raw headers as we got from the constructor.
         $this->raw_headers = $headers;
 
-        // flatten the headers array so that values are not arrays themselves
-        // but rather simple key value pairs.
-        $headers = array_map(function ($value) {
-
-            if (! is_array($value))
-                return $value;
-
-            return implode(';', $value);
-        }, $headers);
-
         // Set the parsed headers.
         $this->headers = $headers;
 
@@ -155,9 +145,9 @@ class EsiResponse extends ArrayObject
         // such as the current error limit and number of pages
         // available.
         $this->hasHeader('X-Esi-Error-Limit-Remain') ?
-            $this->error_limit = (int) $this->getHeader('X-Esi-Error-Limit-Remain') : null;
+            $this->error_limit = (int) $this->getHeaderLine('X-Esi-Error-Limit-Remain') : null;
 
-        $this->hasHeader('X-Pages') ? $this->pages = (int) $this->getHeader('X-Pages') : null;
+        $this->hasHeader('X-Pages') ? $this->pages = (int) $this->getHeaderLine('X-Pages') : null;
     }
 
     /**
@@ -252,9 +242,9 @@ class EsiResponse extends ArrayObject
 
     /**
      * @param  string  $name
-     * @return mixed|null
+     * @return array
      */
-    public function getHeader(string $name): mixed
+    public function getHeader(string $name): array
     {
         // turn header name into case-insensitive
         $insensitive_key = strtolower($name);
@@ -266,7 +256,16 @@ class EsiResponse extends ArrayObject
         if (array_key_exists($insensitive_key, $key_map))
             return $key_map[$insensitive_key];
 
-        return null;
+        return [];
+    }
+
+    /**
+     * @param  string  $name
+     * @return string
+     */
+    public function getHeaderLine(string $name): string
+    {
+        return implode(',', $this->getHeader($name));
     }
 
     /**
@@ -274,12 +273,9 @@ class EsiResponse extends ArrayObject
      */
     public function setExpires(Carbon $date)
     {
-        // turn headers into case-insensitive array
-        $key_map = array_change_key_case($this->headers, CASE_LOWER);
+        $formatted_date = $date->toRfc7231String();
 
-        // update expires header with provided date
-        $key_map['expires'] = $date->toRfc7231String();
-        $this->expires_at = strlen($key_map['expires']) > 2 ? $key_map['expires'] : 'now';
-        $this->headers = $key_map;
+        $this->expires_at = strlen($formatted_date) > 2 ? $formatted_date : 'now';
+        $this->headers['expires'] = [$formatted_date];
     }
 }
