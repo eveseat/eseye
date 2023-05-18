@@ -22,12 +22,8 @@
 
 namespace Seat\Tests;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use ReflectionClass;
@@ -45,7 +41,6 @@ use Seat\Eseye\Fetchers\Fetcher;
 use Seat\Eseye\Fetchers\FetcherInterface;
 use Seat\Eseye\Log\NullLogger;
 
-#[RunTestsInSeparateProcesses]
 class EseyeTest extends TestCase
 {
 
@@ -69,7 +64,7 @@ class EseyeTest extends TestCase
         $configuration->datasource = 'singularity';
 
         // Setup HTTP client
-        $configuration->http_client = Client::class;
+        $configuration->http_client = self::$http_client;
         $configuration->http_stream_factory = HttpFactory::class;
         $configuration->http_request_factory = HttpFactory::class;
 
@@ -204,7 +199,6 @@ class EseyeTest extends TestCase
     {
         $class = new ReflectionClass(Eseye::class);
         $method = $class->getMethod($name);
-        $method->setAccessible(true);
 
         return $method;
     }
@@ -294,14 +288,12 @@ class EseyeTest extends TestCase
     public function testEseyeMakesEsiApiCallWithCachedResponse()
     {
 
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             new Response(200, ['Expires' => carbon()->addDay()->toRfc7231String()], json_encode(['foo' => 'bar'])),
-        ]);
+        );
 
         $fetcher = new Fetcher;
-        $fetcher->setClient(new Client([
-            'handler' => HandlerStack::create($mock),
-        ]));
 
         // update cache engine to file cache engine
         $configuration = Configuration::getInstance();
@@ -325,7 +317,8 @@ class EseyeTest extends TestCase
 
     public function testEseyeMakesEsiApiCallWithExpiredCachedResponseAndValidEtag()
     {
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             new Response(200, [
                 'Expires' => carbon()->addSeconds(3)->toRfc7231String(),
                 'ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0819"',
@@ -334,7 +327,7 @@ class EseyeTest extends TestCase
                 'Expires' => carbon()->addHour()->toRfc7231String(),
                 'ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0819"',
             ]),
-        ]);
+        );
 
         // update cache engine to file cache engine
         $configuration = Configuration::getInstance();
@@ -344,9 +337,6 @@ class EseyeTest extends TestCase
         $configuration->getCache()->clear();
 
         $fetcher = new Fetcher;
-        $fetcher->setClient(new Client([
-            'handler' => HandlerStack::create($mock),
-        ]));
 
         // Update the fetchers client
         $this->esi->setFetcher($fetcher);
@@ -364,7 +354,8 @@ class EseyeTest extends TestCase
 
     public function testEseyeMakesEsiApiCallWithExpiredCachedResponseAndInvalidEtag()
     {
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             new Response(200, [
                 'Expires' => carbon()->addSeconds(3)->toRfc7231String(),
                 'ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0819"',
@@ -373,7 +364,7 @@ class EseyeTest extends TestCase
                 'Expires' => carbon()->addHour()->toRfc7231String(),
                 'ETag' => 'W/"b3ef78b1064a27974cbf18270c1f126d519f7b467ba2e35ccb6f0818"',
             ]),
-        ]);
+        );
 
         // update cache engine to file cache engine
         $configuration = Configuration::getInstance();
@@ -383,9 +374,6 @@ class EseyeTest extends TestCase
         $configuration->getCache()->clear();
 
         $fetcher = new Fetcher;
-        $fetcher->setClient(new Client([
-            'handler' => HandlerStack::create($mock),
-        ]));
 
         // Update the fetchers client
         $this->esi->setFetcher($fetcher);
@@ -403,15 +391,12 @@ class EseyeTest extends TestCase
 
     public function testEseyeMakesEsiApiCallWithoutCachedResponse()
     {
-
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             new Response(200, ['Foo' => 'Bar'], json_encode(['foo' => 'bar'])),
-        ]);
+        );
 
         $fetcher = new Fetcher;
-        $fetcher->setClient(new Client([
-            'handler' => HandlerStack::create($mock),
-        ]));
 
         // Update the fetchers client
         $this->esi->setFetcher($fetcher);
@@ -427,14 +412,13 @@ class EseyeTest extends TestCase
 
         $this->expectException(EsiScopeAccessDeniedException::class);
 
-        $mock = new MockHandler([
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
             new Response(401),
-        ]);
+        );
 
         // Update the fetchers client
-        $this->esi->setFetcher(new Fetcher(null, new Client([
-            'handler' => HandlerStack::create($mock),
-        ])));
+        $this->esi->setFetcher(new Fetcher(null));
 
         $this->esi->invoke('get', '/characters/{character_id}/assets/', [
             'character_id' => 123,
