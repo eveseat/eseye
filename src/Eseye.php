@@ -473,7 +473,7 @@ class Eseye
             $logging_msg = 'Loaded cached response for ' . $method . ' -> ' . $uri;
 
             if ($cache_entry->hasHeader('ETag'))
-                $logging_msg = sprintf('%s [%s]', $logging_msg, $cache_entry->getHeader('ETag'));
+                $logging_msg = sprintf('%s [%s]', $logging_msg, $cache_entry->getHeaderLine('ETag'));
 
             $this->getLogger()->debug($logging_msg);
 
