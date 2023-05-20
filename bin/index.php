@@ -36,7 +36,7 @@ function redirect_to_new()
 {
 
     header('Location: ' . $_SERVER['PHP_SELF'] . '?action=new');
-    exit();
+    exit;
 }
 
 /**
@@ -332,7 +332,7 @@ switch ($_GET['action']) {
             echo 'All fields are mandatory!<br>' . PHP_EOL;
             echo '<a href="' . $_SERVER['PHP_SELF'] . '?action=new">Start again</a>';
 
-            exit();
+            exit;
         }
 
         $_SESSION['clientid'] = $_REQUEST['clientid'];
@@ -354,7 +354,7 @@ switch ($_GET['action']) {
 
             echo 'Invalid State! You will have to start again!<br>';
             echo '<a href="' . $_SERVER['PHP_SELF'] . '?action=new">Start again</a>';
-            exit();
+            exit;
         }
 
         // Clear the state value.

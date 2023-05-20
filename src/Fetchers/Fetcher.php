@@ -23,6 +23,7 @@
 namespace Seat\Eseye\Fetchers;
 
 use GuzzleHttp\Psr7\Uri;
+use Jose\Component\Checker\InvalidClaimException;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -414,11 +415,18 @@ class Fetcher implements FetcherInterface
         if (is_null($this->getAuthentication()))
             return ['public'];
 
-        // If there are no scopes that we know of, update them.
-        // There will always be at least 1 as we add the internal
-        // 'public' scope.
-        if (count($this->getAuthentication()->scopes) <= 0)
-            $this->setAuthenticationScopes();
+        try {
+            // If there are no scopes that we know of, update them.
+            // There will always be at least 1 as we add the internal
+            // 'public' scope.
+            if (count($this->getAuthentication()->scopes) <= 0)
+                $this->setAuthenticationScopes();
+        } catch (InvalidClaimException $e) {
+            if ($e->getClaim() !== 'exp')
+                throw $e;
+
+            $this->refreshToken();
+        }
 
         return $this->getAuthentication()->scopes;
     }
@@ -426,6 +434,13 @@ class Fetcher implements FetcherInterface
     /**
      * Query the eveseat/resources repository for SDE
      * related information.
+     *
+     * @return void
+     *
+     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @throws \Seat\Eseye\Exceptions\DiscoverServiceNotAvailableException
+     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
     public function setAuthenticationScopes(): void
     {
