@@ -35,9 +35,9 @@ class ScpChecker implements ClaimChecker
      */
     public function checkClaim(mixed $value): void
     {
-        if (! is_array($value))
+        if (! is_array($value) && ! is_string($value))
             throw new InvalidClaimException(
-                sprintf('"%s" must be of type array', self::NAME),
+                sprintf('"%s" must either be of type array or string', self::NAME),
                 self::NAME,
                 $value);
     }
