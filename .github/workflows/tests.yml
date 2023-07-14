@@ -21,7 +21,7 @@ jobs:
           php-version: ${{ matrix.php }}
           tools: composer:v2
           extensions: curl gmp json mbstring memcached openssl
-          coverage: xdebug2
+          coverage: xdebug
 
       - name: Install Dependencies
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
