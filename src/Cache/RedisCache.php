@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,6 @@ class RedisCache implements CacheInterface
      * @param  string  $key
      * @param  \Seat\Eseye\Containers\EsiResponse  $value
      * @param  int|\DateInterval|null  $ttl
-     *
      * @return bool
      */
     public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
@@ -105,7 +104,6 @@ class RedisCache implements CacheInterface
     /**
      * @param  string  $key
      * @param  mixed|null  $default
-     *
      * @return \Seat\Eseye\Containers\EsiResponse
      */
     public function get(string $key, mixed $default = null): mixed
@@ -133,7 +131,6 @@ class RedisCache implements CacheInterface
 
     /**
      * @param  string  $key
-     *
      * @return bool
      */
     public function has(string $key): bool
@@ -145,7 +142,6 @@ class RedisCache implements CacheInterface
 
     /**
      * @param  string  $key
-     *
      * @return bool
      */
     public function delete(string $key): bool
@@ -166,7 +162,6 @@ class RedisCache implements CacheInterface
     /**
      * @param  string  $uri
      * @param  string  $query
-     *
      * @return string
      */
     public function buildCacheKey(string $uri, string $query = ''): string
