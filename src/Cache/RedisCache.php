@@ -22,6 +22,7 @@
 
 namespace Seat\Eseye\Cache;
 
+use Carbon\Carbon;
 use DateInterval;
 use InvalidArgumentException;
 use Predis\Client;
@@ -82,7 +83,21 @@ class RedisCache implements CacheInterface
 
         $this->validateCacheKey($key, $uri_path, $uri_query);
 
-        $this->redis->set($this->buildCacheKey($uri_path, $uri_query), serialize($value));
+        switch (true) {
+            case $ttl == null:
+                $this->redis->set($this->buildCacheKey($uri_path, $uri_query), serialize($value));
+
+                break;
+            case $ttl instanceof DateInterval:
+                $now = Carbon::now('UTC');
+                $expires = $now->clone()->add($ttl);
+
+                $this->redis->setex($this->buildCacheKey($uri_path, $uri_query), $now->diffInSeconds($expires), serialize($value));
+
+                break;
+            default:
+                $this->redis->setex($this->buildCacheKey($uri_path, $uri_query), $ttl, serialize($value));
+        }
 
         return true;
     }
