@@ -53,6 +53,7 @@ class EsiConfiguration extends AbstractArrayAccess
         // Eve Online SSO
         'sso_scheme'                 => 'https',
         'sso_host'                   => 'login.eveonline.com',
+        'sso_iss'                    => ['login.eveonline.com', 'https://login.eveonline.com'],
         'sso_port'                   => 443,
 
         // Fetcher

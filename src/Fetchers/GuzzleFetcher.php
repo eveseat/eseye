@@ -432,7 +432,7 @@ class GuzzleFetcher implements FetcherInterface
         $jws = Load::jws($access_token)
             ->algs(['RS256', 'ES256', 'HS256'])
             ->exp()
-            ->iss(Configuration::getInstance()->sso_host)
+            ->claim('iss', new \Jose\Component\Checker\IssuerChecker(Configuration::getInstance()->sso_iss, true))
             ->header('typ', new TypeChecker(['JWT'], true))
             ->claim('sub', new SubEveCharacterChecker())
             ->claim('azp', new AzpChecker($this->authentication->client_id))
