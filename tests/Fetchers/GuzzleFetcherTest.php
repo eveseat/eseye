@@ -377,7 +377,7 @@ class GuzzleFetcherTest extends TestCase
                 "name" => "Warlof Tutsimo",
                 "owner" => "svnSjVa1uGYyp/ZL3mfkIwkJYzQ=",
                 "exp"   => $time + 3600,
-                "iss" => "login.eveonline.com",
+                "iss" => "https://login.eveonline.com",
             ])
             ->header('typ', 'JWT')
             ->header('kid', 'JWT-Signature-Key')
