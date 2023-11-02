@@ -148,7 +148,8 @@ class EsiTokenValidator
     {
         return new ClaimCheckerManager([
             new IssuerChecker([
-                sprintf('%s://%s', Configuration::getInstance()->sso_scheme, Configuration::getInstance()->sso_host),
+                sprintf('%s://%s', Configuration::getInstance()->sso_scheme, Configuration::getInstance()->sso_host), // the currently used iss claim
+                Configuration::getInstance()->sso_host, // just to be sure, still allow the old claim without protocol
             ]),
             new ExpirationTimeChecker(),
             new AudienceChecker('EVE Online'),
