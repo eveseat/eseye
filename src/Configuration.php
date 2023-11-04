@@ -122,7 +122,7 @@ class Configuration
     public function getCache(): CacheInterface
     {
 
-        if (! $this->cache)
+        if (! $this->cache || get_class($this->cache) !== $this->configuration->cache)
             $this->cache = new $this->configuration->cache;
 
         return $this->cache;
