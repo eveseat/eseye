@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -256,7 +256,7 @@ EOF;
 }
 
 /**
- * @param $url
+ * @param  $url
  */
 function print_sso_url($url)
 {
@@ -281,8 +281,8 @@ EOF;
 }
 
 /**
- * @param $access_token
- * @param $refresh_token
+ * @param  $access_token
+ * @param  $refresh_token
  */
 function print_tokens($access_token, $refresh_token)
 {
