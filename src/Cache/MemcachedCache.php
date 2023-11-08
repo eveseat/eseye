@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ class MemcachedCache implements CacheInterface
             $this->memcached->addServer($configuration->memcached_cache_host, $configuration->memcached_cache_port, 0);
 
             if ($this->is_memcached)
-                $this->memcached->setOption(\Memcached::OPT_COMPRESSION, ($configuration->memcached_cache_compressed));
+                $this->memcached->setOption(\Memcached::OPT_COMPRESSION, $configuration->memcached_cache_compressed);
             else
                 $this->flags = ($configuration->memcached_cache_compressed) ? MEMCACHE_COMPRESSED : 0;
         }
@@ -91,7 +91,6 @@ class MemcachedCache implements CacheInterface
      * @param  string  $key
      * @param  mixed  $value
      * @param  int|\DateInterval|null  $ttl
-     *
      * @return bool
      */
     public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
@@ -108,7 +107,6 @@ class MemcachedCache implements CacheInterface
     /**
      * @param  string  $key
      * @param  mixed|null  $default
-     *
      * @return \Seat\Eseye\Containers\EsiResponse
      */
     public function get(string $key, mixed $default = null): mixed
@@ -136,7 +134,6 @@ class MemcachedCache implements CacheInterface
 
     /**
      * @param  string  $key
-     *
      * @return bool
      */
     public function delete(string $key): bool
@@ -148,7 +145,6 @@ class MemcachedCache implements CacheInterface
 
     /**
      * @param  string  $key
-     *
      * @return bool
      */
     public function has(string $key): bool

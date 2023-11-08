@@ -3,7 +3,7 @@
 /*
  * This file is part of SeAT
  *
- * Copyright (C) 2015 to 2022 Leon Jacobs
+ * Copyright (C) 2015 to present Leon Jacobs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,7 +101,6 @@ class FileCache implements CacheInterface
      * @param  string  $key
      * @param  mixed  $value
      * @param  int|\DateInterval|null  $ttl
-     *
      * @return bool
      */
     public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
@@ -120,7 +119,6 @@ class FileCache implements CacheInterface
 
     /**
      * @param  string  $key
-     *
      * @return bool
      */
     public function has(string $key): bool
@@ -131,7 +129,6 @@ class FileCache implements CacheInterface
     /**
      * @param  string  $key
      * @param  mixed|null  $default
-     *
      * @return \Seat\Eseye\Containers\EsiResponse
      */
     public function get(string $key, mixed $default = null): mixed
@@ -162,7 +159,6 @@ class FileCache implements CacheInterface
 
     /**
      * @param  string  $key
-     *
      * @return bool
      */
     public function delete(string $key): bool
@@ -184,7 +180,6 @@ class FileCache implements CacheInterface
 
     /**
      * @param  string  $base_path
-     *
      * @return bool
      */
     private function clearContainer(string $base_path): bool
@@ -209,7 +204,6 @@ class FileCache implements CacheInterface
     /**
      * @param  string  $path
      * @param  string  $query
-     *
      * @return string
      */
     public function buildRelativePath(string $path, string $query = ''): string
@@ -224,7 +218,6 @@ class FileCache implements CacheInterface
 
     /**
      * @param  string  $uri
-     *
      * @return string
      */
     public function safePath(string $uri): string
