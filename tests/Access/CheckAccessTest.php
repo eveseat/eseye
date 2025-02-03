@@ -63,7 +63,7 @@ class CheckAccessTest extends TestCase
         $scopes = [
             'esi-assets.read_assets.v1',
         ];
-        $result = $this->check_access->can('get', '/characters/{character_id}/bookmarks/', $scopes);
+        $result = $this->check_access->can('get', '/characters/{character_id}/calendar/', $scopes);
 
         $this->assertFalse($result);
     }

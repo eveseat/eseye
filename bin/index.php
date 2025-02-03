@@ -168,8 +168,6 @@ function new_login()
                 <option value="esi-alliances.read_contacts.v1">esi-alliances.read_contacts.v1</option>
                 <option value="esi-assets.read_assets.v1">esi-assets.read_assets.v1</option>
                 <option value="esi-assets.read_corporation_assets.v1">esi-assets.read_corporation_assets.v1</option>
-                <option value="esi-bookmarks.read_character_bookmarks.v1">esi-bookmarks.read_character_bookmarks.v1</option>
-                <option value="esi-bookmarks.read_corporation_bookmarks.v1">esi-bookmarks.read_corporation_bookmarks.v1</option>
                 <option value="esi-calendar.read_calendar_events.v1">esi-calendar.read_calendar_events.v1</option>
                 <option value="esi-calendar.respond_calendar_events.v1">esi-calendar.respond_calendar_events.v1</option>
                 <option value="esi-characters.read_agents_research.v1">esi-characters.read_agents_research.v1</option>
@@ -182,7 +180,6 @@ function new_login()
                 <option value="esi-characters.read_loyalty.v1">esi-characters.read_loyalty.v1</option>
                 <option value="esi-characters.read_medals.v1">esi-characters.read_medals.v1</option>
                 <option value="esi-characters.read_notifications.v1">esi-characters.read_notifications.v1</option>
-                <option value="esi-characters.read_opportunities.v1">esi-characters.read_opportunities.v1</option>
                 <option value="esi-characters.read_standings.v1">esi-characters.read_standings.v1</option>
                 <option value="esi-characters.read_titles.v1">esi-characters.read_titles.v1</option>
                 <option value="esi-characters.write_contacts.v1">esi-characters.write_contacts.v1</option>
