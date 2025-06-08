@@ -183,7 +183,6 @@ function new_login()
                 <option value="esi-characters.read_standings.v1">esi-characters.read_standings.v1</option>
                 <option value="esi-characters.read_titles.v1">esi-characters.read_titles.v1</option>
                 <option value="esi-characters.write_contacts.v1">esi-characters.write_contacts.v1</option>
-                <option value="esi-characterstats.read.v1">esi-characterstats.read.v1</option>
                 <option value="esi-clones.read_clones.v1" selected="selected">esi-clones.read_clones.v1</option>
                 <option value="esi-clones.read_implants.v1">esi-clones.read_implants.v1</option>
                 <option value="esi-contracts.read_character_contracts.v1">esi-contracts.read_character_contracts.v1</option>

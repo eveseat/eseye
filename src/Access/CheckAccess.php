@@ -52,7 +52,6 @@ class CheckAccess implements AccessInterface
             '/characters/{character_id}/calendar/'                            => 'esi-calendar.read_calendar_events.v1',
             '/characters/{character_id}/calendar/{event_id}/'                 => 'esi-calendar.read_calendar_events.v1',
             '/characters/{character_id}/calendar/{event_id}/attendees/'       => 'esi-calendar.read_calendar_events.v1',
-            '/characters/{character_id}/stats/'                               => 'esi-characterstats.read.v1',
             '/characters/{character_id}/'                                     => 'public',
             '/characters/names/'                                              => 'public',
             '/characters/{character_id}/portrait/'                            => 'public',
