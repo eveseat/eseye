@@ -76,11 +76,6 @@ class Eseye
     protected array $request_body = [];
 
     /**
-     * @var string
-     */
-    protected string $version = '/latest';
-
-    /**
      * HTTP verbs that could have their responses cached.
      *
      * @var array
@@ -277,28 +272,27 @@ class Eseye
     }
 
     /**
-     * Get the versioned baseURI to use.
+     * Get the versioned baseURI to use. Since ESI no longer uses versioned endpoints, this just returns a default value.
+     *
+     * @deprecated ESI no longer uses versioned endpoints. This method will be removed in eseye 4.0
      *
      * @return string
      */
     public function getVersion(): string
     {
-        return $this->version;
+        return "/latest";
     }
 
     /**
-     * Set the version of the API endpoints base URI.
+     * Set the version of the API endpoints base URI. Since ESI no longer uses versioned endpoints, this method does nothing but is retained for compatibility.
+     *
+     * @deprecated ESI no longer uses versioned endpoints. This method will be removed in eseye 4.0
      *
      * @param  string  $version
      * @return \Seat\Eseye\Eseye
      */
     public function setVersion(string $version): Eseye
     {
-        if (! str_starts_with($version, '/'))
-            $version = '/' . $version;
-
-        $this->version = $version;
-
         return $this;
     }
 
@@ -370,7 +364,7 @@ class Eseye
             'scheme' => $this->getConfiguration()->esi_scheme,
             'host' => $this->getConfiguration()->esi_host,
             'port' => $this->getConfiguration()->esi_port,
-            'path' => rtrim($this->getVersion(), '/') . $this->mapDataToUri($endpoint, $data),
+            'path' => $this->mapDataToUri($endpoint, $data),
             'query' => http_build_query($query_params),
         ]);
     }

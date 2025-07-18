@@ -19,10 +19,6 @@ Its supposed to be simple!
 // initialization stuff
 $esi = new Eseye();
 
-// Optionally, set the ESI endpoint version to use.
-// If you dont set this, Eseye will use /latest
-$esi->setVersion('v4');
-
 // make a call
 $character_info = $esi->invoke('get', '/characters/{character_id}/', [
     'character_id' => 1477919642,

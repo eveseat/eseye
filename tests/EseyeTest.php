@@ -236,30 +236,6 @@ class EseyeTest extends TestCase
         $this->assertEquals(['foo'], $this->esi->getBody());
     }
 
-    public function testEseyeGetDefaultVersionString()
-    {
-
-        $version = $this->esi->getVersion();
-
-        $this->assertEquals('/latest', $version);
-    }
-
-    public function testEseyeSetIncompleteVersionStringAndGetsCompleteVersionString()
-    {
-
-        $this->esi->setVersion('v1');
-
-        $this->assertEquals('/v1', $this->esi->getVersion());
-    }
-
-    public function testEseyeReturnsEseyeAfterSettingEsiApiVersion()
-    {
-
-        $esi = $this->esi->setVersion('v4');
-
-        $this->assertInstanceOf(Eseye::class, $esi);
-    }
-
     public function testEseyeBuildValidDataUri()
     {
 
