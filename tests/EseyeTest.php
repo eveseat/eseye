@@ -241,7 +241,7 @@ class EseyeTest extends TestCase
 
         $uri = $this->esi->buildDataUri('/{foo}/', ['foo' => 'bar']);
 
-        $this->assertEquals('https://esi.evetech.net/latest/bar/?datasource=singularity',
+        $this->assertEquals('https://esi.evetech.net/bar/?datasource=singularity',
             $uri->__toString());
     }
 
@@ -417,6 +417,24 @@ class EseyeTest extends TestCase
         $this->esi->setRefreshToken('ALTERNATE_REFRESH_TOKEN');
 
         $this->assertEquals('ALTERNATE_REFRESH_TOKEN', $this->esi->getAuthentication()->refresh_token);
+    }
+
+    public function testEseyeCompatibilityDateHeader()
+    {
+        self::$http_feed_handler->reset();
+        self::$http_feed_handler->append(
+            new Response(200, ['X-Foo' => 'Bar'], json_encode(['foo' => 'var'])),
+        );
+
+        $this->esi->setCompatibilityDate("2025-01-01");
+        $this->esi->invoke('get', '/universe/regions/', [
+            'character_id' => 123,
+        ]);
+
+        $request_headers = self::$request_logs[count(self::$request_logs)-1]['request']->getHeaders();
+
+        $this->assertArrayHasKey('X-Compatibility-Date',$request_headers);
+        $this->assertEquals('2025-01-01', $request_headers['X-Compatibility-Date'][0]);
     }
 
 }
