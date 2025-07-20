@@ -76,6 +76,11 @@ class Eseye
     protected array $request_body = [];
 
     /**
+     * @var string
+     */
+    protected string $compatibility_date = "2025-07-20";
+
+    /**
      * HTTP verbs that could have their responses cached.
      *
      * @var array
@@ -297,6 +302,27 @@ class Eseye
     }
 
     /**
+     * Set the date for the X-Compatibility-Date header
+     *
+     * @param string $date
+     * @return void
+     */
+    public function setCompatibilityDate(string $date): void
+    {
+        $this->compatibility_date = $date;
+    }
+
+    /**
+     * Get the date for the X-Compatibility-Date header
+     *
+     * @return string
+     */
+    public function getCompatibilityDate(): string
+    {
+        return $this->compatibility_date;
+    }
+
+    /**
      * @param  string  $method
      * @param  string  $uri
      * @param  array  $uri_data
@@ -330,7 +356,9 @@ class Eseye
 
         // Call ESI itself and get the EsiResponse in case it has not already been handled with cache control
         if (! isset($result))
-            $result = $this->rawFetch($method, $uri, $this->getBody());
+            $result = $this->rawFetch($method, $uri, $this->getBody(),[
+                'X-Compatibility-Date' => $this->compatibility_date
+            ]);
 
         // Cache the response if it was a get and is not already expired
         if ($this->isCachable($method, $result))
@@ -453,7 +481,10 @@ class Eseye
         // Sending a request with the stored ETag in header - if we have a 304 response, data has not been altered.
         if ($cache_entry->hasHeader('ETag') && $cache_entry->expired()) {
 
-            $result = $this->rawFetch($method, $uri, $this->getBody(), ['If-None-Match' => $cache_entry->getHeader('ETag')]);
+            $result = $this->rawFetch($method, $uri, $this->getBody(), [
+                'If-None-Match' => $cache_entry->getHeader('ETag'),
+                'X-Compatibility-Date' => $this->compatibility_date
+            ]);
 
             // in case response was distinct from 304 (unmodified) - return it directly
             if ($result->getErrorCode() !== 304)
