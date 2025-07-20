@@ -78,7 +78,7 @@ class Eseye
     /**
      * @var string
      */
-    protected string $compatibility_date = "2025-07-20";
+    protected string $compatibility_date = '2025-07-20';
 
     /**
      * HTTP verbs that could have their responses cached.
@@ -94,7 +94,7 @@ class Eseye
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function __construct(EsiAuthentication $authentication = null)
+    public function __construct(?EsiAuthentication $authentication = null)
     {
         if (! is_null($authentication))
             $this->authentication = $authentication;
@@ -285,7 +285,7 @@ class Eseye
      */
     public function getVersion(): string
     {
-        return "/latest";
+        return '/latest';
     }
 
     /**
@@ -302,9 +302,9 @@ class Eseye
     }
 
     /**
-     * Set the date for the X-Compatibility-Date header
+     * Set the date for the X-Compatibility-Date header.
      *
-     * @param string $date
+     * @param  string  $date
      * @return void
      */
     public function setCompatibilityDate(string $date): void
@@ -313,7 +313,7 @@ class Eseye
     }
 
     /**
-     * Get the date for the X-Compatibility-Date header
+     * Get the date for the X-Compatibility-Date header.
      *
      * @return string
      */
@@ -356,8 +356,8 @@ class Eseye
 
         // Call ESI itself and get the EsiResponse in case it has not already been handled with cache control
         if (! isset($result))
-            $result = $this->rawFetch($method, $uri, $this->getBody(),[
-                'X-Compatibility-Date' => $this->compatibility_date
+            $result = $this->rawFetch($method, $uri, $this->getBody(), [
+                'X-Compatibility-Date' => $this->compatibility_date,
             ]);
 
         // Cache the response if it was a get and is not already expired
@@ -483,7 +483,7 @@ class Eseye
 
             $result = $this->rawFetch($method, $uri, $this->getBody(), [
                 'If-None-Match' => $cache_entry->getHeader('ETag'),
-                'X-Compatibility-Date' => $this->compatibility_date
+                'X-Compatibility-Date' => $this->compatibility_date,
             ]);
 
             // in case response was distinct from 304 (unmodified) - return it directly
