@@ -78,7 +78,7 @@ class Eseye
     /**
      * @var string
      */
-    protected string $version = '/latest';
+    protected string $compatibility_date = '2025-07-20';
 
     /**
      * HTTP verbs that could have their responses cached.
@@ -94,7 +94,7 @@ class Eseye
      *
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function __construct(EsiAuthentication $authentication = null)
+    public function __construct(?EsiAuthentication $authentication = null)
     {
         if (! is_null($authentication))
             $this->authentication = $authentication;
@@ -277,29 +277,49 @@ class Eseye
     }
 
     /**
-     * Get the versioned baseURI to use.
+     * Get the versioned baseURI to use. Since ESI no longer uses versioned endpoints, this just returns a default value.
+     *
+     * @deprecated ESI no longer uses versioned endpoints. This method will be removed in eseye 4.0
      *
      * @return string
      */
     public function getVersion(): string
     {
-        return $this->version;
+        return '/latest';
     }
 
     /**
-     * Set the version of the API endpoints base URI.
+     * Set the version of the API endpoints base URI. Since ESI no longer uses versioned endpoints, this method does nothing but is retained for compatibility.
+     *
+     * @deprecated ESI no longer uses versioned endpoints. This method will be removed in eseye 4.0
      *
      * @param  string  $version
      * @return \Seat\Eseye\Eseye
      */
     public function setVersion(string $version): Eseye
     {
-        if (! str_starts_with($version, '/'))
-            $version = '/' . $version;
-
-        $this->version = $version;
-
         return $this;
+    }
+
+    /**
+     * Set the date for the X-Compatibility-Date header.
+     *
+     * @param  string  $date
+     * @return void
+     */
+    public function setCompatibilityDate(string $date): void
+    {
+        $this->compatibility_date = $date;
+    }
+
+    /**
+     * Get the date for the X-Compatibility-Date header.
+     *
+     * @return string
+     */
+    public function getCompatibilityDate(): string
+    {
+        return $this->compatibility_date;
     }
 
     /**
@@ -336,7 +356,9 @@ class Eseye
 
         // Call ESI itself and get the EsiResponse in case it has not already been handled with cache control
         if (! isset($result))
-            $result = $this->rawFetch($method, $uri, $this->getBody());
+            $result = $this->rawFetch($method, $uri, $this->getBody(), [
+                'X-Compatibility-Date' => $this->compatibility_date,
+            ]);
 
         // Cache the response if it was a get and is not already expired
         if ($this->isCachable($method, $result))
@@ -370,7 +392,7 @@ class Eseye
             'scheme' => $this->getConfiguration()->esi_scheme,
             'host' => $this->getConfiguration()->esi_host,
             'port' => $this->getConfiguration()->esi_port,
-            'path' => rtrim($this->getVersion(), '/') . $this->mapDataToUri($endpoint, $data),
+            'path' => $this->mapDataToUri($endpoint, $data),
             'query' => http_build_query($query_params),
         ]);
     }
@@ -459,7 +481,10 @@ class Eseye
         // Sending a request with the stored ETag in header - if we have a 304 response, data has not been altered.
         if ($cache_entry->hasHeader('ETag') && $cache_entry->expired()) {
 
-            $result = $this->rawFetch($method, $uri, $this->getBody(), ['If-None-Match' => $cache_entry->getHeader('ETag')]);
+            $result = $this->rawFetch($method, $uri, $this->getBody(), [
+                'If-None-Match' => $cache_entry->getHeader('ETag'),
+                'X-Compatibility-Date' => $this->compatibility_date,
+            ]);
 
             // in case response was distinct from 304 (unmodified) - return it directly
             if ($result->getErrorCode() !== 304)
