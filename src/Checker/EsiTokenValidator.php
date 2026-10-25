@@ -98,7 +98,10 @@ class EsiTokenValidator
         // apply claims policy
         $claims = json_decode($jws->getPayload(), true);
 
-        return $claims_checker_manager->check($claims, ['iss', 'exp', 'aud']);
+        // aud stays validated by AudienceChecker whenever the token carries
+        // one, but tokens issued by SSO-compatible regional gateways may omit
+        // the claim entirely, so it must not be mandatory.
+        return $claims_checker_manager->check($claims, ['iss', 'exp']);
     }
 
     /**
